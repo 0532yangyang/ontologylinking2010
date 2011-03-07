@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import multir.preprocess.nell.NellOntology;
-import multir.preprocess.nell.NellRelation;
+import nell.preprocess.NellOntology;
+import nell.preprocess.NellRelation;
+
 import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.DelimitedWriter;
 

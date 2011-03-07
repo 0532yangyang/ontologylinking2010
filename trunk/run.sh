@@ -1,0 +1,1 @@
+java -Xmx10g -cp ".:bin:lib/*" $1 
