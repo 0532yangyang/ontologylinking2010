@@ -1,0 +1,21 @@
+*To get SeedLink file:
+Bfs2.java
+
+
+* nellSeedsWrittenInUrl
+GetNellEntityFreebaseId2.java
+
+* nellseed2zclid
+GetNellEntityFreebaseId3.java
+
+
+* auto Type mapping 
+NellTypeMap2FBType.java
+(I manually created the mapping in /projects/pardosa/s5/clzhang/ontologylink/nelltypemap_manual)
+
+* Show the candidate Relations gotten by BFS
+BfsShowSeedLinks.java
+
+
+
+
