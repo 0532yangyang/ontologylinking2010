@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javatools.administrative.D;
 
@@ -21,6 +22,9 @@ public class NellOntology {
 	public HashMap<String, Integer> className2Id;
 
 	/** Entity 2 class */
+	public HashMap<String,HashSet<String>> entity2class = new HashMap<String,HashSet<String>>();
+	
+	/** Entity 2 class */
 	public HashMap<String, Integer> entity2classId;
 
 	/** Pair 2 relationId */
@@ -32,8 +36,70 @@ public class NellOntology {
 	public NellOntology(String file) throws IOException {
 		createNellOntology(file);
 	}
+	
+	private void putEntityClass(String entity,String classname){
+		if(!entity2class.containsKey(entity)){
+			entity2class.put(entity,new HashSet<String>());
+		}
+		entity2class.get(entity).add(classname);
+	}
+	private void createNellOntology(String file)throws IOException {
+		DelimitedReader dr = new DelimitedReader(file);
+		String[] line;
+		HashSet<String> relationNamesTmp = new HashSet<String>();
+		HashSet<String> classNamesTmp = new HashSet<String>();
 
-	private void createNellOntology(String file) throws IOException {
+		while ((line = dr.read()) != null) {
+			// if(line[0].startsWith("actorStarredInMovie")){
+			// //System.out.println(line[0]);
+			// }
+
+			NellRelation nro = new NellRelation(line);
+			relationNamesTmp.add(nro.relation_name);
+			classNamesTmp.add(nro.domain);
+			classNamesTmp.add(nro.range);
+			for(String []a: nro.seedInstances){
+				putEntityClass(a[0],nro.domain);
+				putEntityClass(a[1],nro.range);
+			}
+			for(String []a: nro.known_negatives){
+				putEntityClass(a[0],nro.domain);
+				putEntityClass(a[1],nro.range);
+			}
+			relname2DomainRange.put(nro.relation_name, new String[] { nro.domain, nro.range });
+			this.nellRelationList.add(nro);
+		}
+		dr.close();
+
+		{
+			/** Init relation names */
+			relationNames = new String[relationNamesTmp.size() + 1];
+			relationName2Id = new HashMap<String, Integer>();
+			int rid = 1;
+			for (String a : relationNamesTmp) {
+				relationNames[rid] = a;
+				relationName2Id.put(a, rid);
+				rid++;
+			}
+		}
+		{
+			/** Init class names */
+			classNames = new String[classNamesTmp.size() + 1];
+			className2Id = new HashMap<String, Integer>();
+			int cid = 1;
+			for (String a : classNamesTmp) {
+				classNames[cid] = a;
+				className2Id.put(a, cid);
+				cid++;
+			}
+		}
+		// get Entity 2 Class id;
+		getEntity2classId();
+		// Get entity pair to relationId
+		getEntitypair2eidrid();
+	}
+	
+	private void createNellOntology3(String file) throws IOException {
 		DelimitedReader dr = new DelimitedReader(file);
 		String[] line;
 		HashSet<String> relationNamesTmp = new HashSet<String>();
@@ -150,7 +216,7 @@ public class NellOntology {
 		}
 	}
 
-	public NellOntology() throws IOException {
+	public NellOntology() {
 		try {
 			String file = "/projects/pardosa/s5/clzhang/ontologylink/nell/relations.nell.seed";
 			createNellOntology(file);
