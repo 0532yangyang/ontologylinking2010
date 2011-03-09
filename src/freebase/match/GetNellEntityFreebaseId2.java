@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javatools.webapi.FBSearchEngine;
+
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 

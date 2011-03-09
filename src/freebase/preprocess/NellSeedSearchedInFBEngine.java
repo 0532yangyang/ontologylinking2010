@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javatools.webapi.FBSearchEngine;
+
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
-import freebase.match.FBSearchEngine;
 
 import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.DelimitedWriter;

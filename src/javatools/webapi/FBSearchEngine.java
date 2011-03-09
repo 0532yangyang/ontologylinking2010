@@ -1,4 +1,4 @@
-package freebase.match;
+package javatools.webapi;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
