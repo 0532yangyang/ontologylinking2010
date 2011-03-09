@@ -1,4 +1,4 @@
-package javatool.ml.weightedmaxsat;
+package javatools.ml.weightedmaxsat;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package javatool.ml.weightedmaxsat;
+package javatools.ml.weightedmaxsat;
 
 import javatools.datatypes.SparseVector;
 
