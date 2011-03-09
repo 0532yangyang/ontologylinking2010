@@ -10,17 +10,20 @@ public class Main {
 
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink/";
 	
+	/**nice looking types, we only consider these types*/
+	static String fin_fbtype_nicelooking = dir+"/fb_nice_types";
+	
 	/**This file is created by freebase.preprocess.NellSeedSearchInFBEngineClean*/
 	static String fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid = dir
 			+ "/enid_mid_wid_argname_otherarg_relation_label.sortbyWid";
 
 	/**Input: freebase entity 2 type*/
-	static String fin_freebase_type_sortMid = pdir+"/freebase_type.sbmid";
-	static String fout_freebase_type_sortMid_subset = dir+"/freebase_type.sbmid.nellsubset";
+	static String fin_freebase_type_sortMid = dir+"/fb_mid_type_argname.temp";
+	static String fout_freebase_type_sortMid_subset = dir+"/fb_mid_type_argname.subset";
 	
 	/**output the candidate type mappings, just by entity mapping result*/
 	static String fout_candidatemapping_nelltype_fbtype_count = dir+"/candidatemapping_nelltype_fbtype_count";
-	
+	static String fout_candidatemapping_nelltype_fbtype_argname_mid = dir+"/candidatemapping_nelltype_fbtype_argname_mid";
 	
 	
 	
