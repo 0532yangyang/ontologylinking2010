@@ -59,6 +59,10 @@ public class StringUtil {
 		return result;
 	}
 	
+	public static List<String> tokenize(String str){
+		return tokenize(str, new char[]{' ', '\t'});
+	}
+	
 	private static void addWord(List<String>list, int start, int end, String str){
 		if(end>start)list.add(str.substring(start,end));
 	}
