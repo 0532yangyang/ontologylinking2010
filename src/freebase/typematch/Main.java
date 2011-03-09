@@ -28,10 +28,14 @@ public class Main {
 	
 	
 	public static void main(String[] args) throws Exception{
-		// TODO Auto-generated method stub
+
+		/**Get a subset of fbtype infomation, the whole set is in
+		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
+		 * */
+		S0_subset_fbtype.main(null);
 		
 		/**Generate candidate Nell type vs FB Type*/
-		Step1_candidatemapping_nelltype_fbtype_count.main(null);
+		S1_variable_nelltype_fbtype_count.main(null);
 		
 		/***/
 		

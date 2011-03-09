@@ -13,29 +13,9 @@ import multir.util.HashCount;
 import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.DelimitedWriter;
 
-public class Step1_candidatemapping_nelltype_fbtype_count {
+public class S1_variable_nelltype_fbtype_count {
 
-	public static void subsetfin_freebase_type_sortMid() throws Exception {
-		DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
-		DelimitedWriter dw = new DelimitedWriter(Main.fout_freebase_type_sortMid_subset);
-		String[] line;
-		HashSet<String> usedMid = new HashSet<String>();
-		while ((line = dr.read()) != null) {
-			String mid = line[1];
-			usedMid.add(mid);
-		}
-		dr.close();
 
-		dr = new DelimitedReader(Main.fin_freebase_type_sortMid);
-		while ((line = dr.read()) != null) {
-			String mid = line[0];
-			if (usedMid.contains(mid)) {
-				dw.write(line);
-			}
-		}
-		dr.close();
-		dw.close();
-	}
 
 	static HashMap<String, List<String>> mid2ftype = new HashMap<String, List<String>>();
 
@@ -169,7 +149,7 @@ public class Step1_candidatemapping_nelltype_fbtype_count {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		// subsetfin_freebase_type_sortMid();
+		
 		mapping();
 		// D.p("joke");
 
