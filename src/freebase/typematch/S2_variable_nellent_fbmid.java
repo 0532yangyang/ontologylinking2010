@@ -2,6 +2,7 @@ package freebase.typematch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.string.StringUtil;
 import javatools.webapi.FBSearchEngine;
 
 import nell.preprocess.NellOntology;
@@ -158,35 +160,35 @@ public class S2_variable_nellent_fbmid {
 	}
 
 	static void filter_wp_stanford() {
-//		try {
-//			HashSet<Integer>usedArtId = new HashSet<Integer>();
-//			{
-//				DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
-//				String[] line;
-//				while ((line = dr.read()) != null) {
-//					int artid = Integer.parseInt(line[2]);
-//					usedArtId.add(artid);
-//				}
-//				dr.close();
-//			}
-//			D.p(usedArtId);
-//			DelimitedReader dr = new DelimitedReader(Main.fin_wp_stanford);
-//			DelimitedWriter dw = new DelimitedWriter(Main.fin_wp_stanford_subset+".temp");
-//			String[] line;
-//			while ((line = dr.read()) != null) {
-//				int artid = Integer.parseInt(line[1]);
-//				if(usedArtId.contains(artid)){
-//					dw.write(line);
-//				}
-//			}
-//			dw.close();
-//			dr.close();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		try {
+			HashSet<Integer>usedArtId = new HashSet<Integer>();
+			{
+				DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
+				String[] line;
+				while ((line = dr.read()) != null) {
+					int artid = Integer.parseInt(line[2]);
+					usedArtId.add(artid);
+				}
+				dr.close();
+			}
+			D.p(usedArtId);
+			DelimitedReader dr = new DelimitedReader(Main.fin_wp_stanford);
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_wp_stanford_subset+".temp");
+			String[] line;
+			while ((line = dr.read()) != null) {
+				int artid = Integer.parseInt(line[1]);
+				if(usedArtId.contains(artid)){
+					dw.write(line);
+				}
+			}
+			dw.close();
+			dr.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		try{
-			Sort.sort(Main.fin_wp_stanford_subset+".temp", Main.fin_wp_stanford_subset, Main.dir, new Comparator<String[]>(){
+			Sort.sort(Main.fout_wp_stanford_subset+".temp", Main.fout_wp_stanford_subset, Main.dir, new Comparator<String[]>(){
 
 				@Override
 				public int compare(String[] o1, String[] o2) {
@@ -199,7 +201,116 @@ public class S2_variable_nellent_fbmid {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public static void nellstringMidScore(){
+		try {
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_temp_mid_wid_argA_argB_appearInWiki);
+			List<String[]>raw = (new DelimitedReader(Main.fout_fbsearchresult_clean)).readAll();
+			DelimitedReader dr = new DelimitedReader(Main.fout_wp_stanford_subset);
+			List<RecordWpSenToken> rl = RecordWpSenToken.readByArticleId(dr);
+			HashSet<String> wkappear_midnellstr = new HashSet<String>();
+			for(String []line: raw){
+				int artid = Integer.parseInt(line[2]);
+				while(rl !=null && rl.get(0).articleId < artid &&
+						(rl = RecordWpSenToken.readByArticleId(dr))!=null );
+				//if we find some match
+				if(rl != null && rl.size()>0 && rl.get(0).articleId == artid){
+					//D.p("match "+artid);
+					String mid = line[1];
+					String arg = line[3];
+					String otherarg = line[4];
+					String relationname = line[5];
+					String label = line[6];
+					if(label.equals("-1"))continue; //sometimes -1 examples has some problem
+					
+					List<String>otherargtoken = StringUtil.tokenize(otherarg);
+					List<String> relationnametoken = StringUtil.tokenize(relationname);
+					
+					
+					for(RecordWpSenToken r: rl){
+						List<String> tokens = new ArrayList<String>();
+						for(String t: r.token)tokens.add(t);
+						int sharwords = StringUtil.numOfShareWords(tokens, otherargtoken);
+						if(sharwords == otherargtoken.size()){
+							dw.write(mid,artid,arg,otherarg);
+							wkappear_midnellstr.add(mid+"\t"+arg);
+						}
+					}
+				}
+			}
+			dw.close();
+			
+			Collections.sort(raw, new Comparator<String[]>(){
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					// TODO Auto-generated method stub
+					String a = o1[1]+"\t"+o1[3];
+					String b = o2[1]+"\t"+o2[3];
+					return a.compareTo(b);
+				}
+			});
+			
+			DelimitedWriter dw2 = new DelimitedWriter(Main.fout_candidatemapping_nellstring_mid);
+			HashSet<String>written = new HashSet<String>();
+			for(String []l: raw){
+				String key = l[1]+"\t"+l[3];
+				double weight = 0;
+				if(wkappear_midnellstr.contains(key)){
+					weight = 1;
+				}else{
+					weight = 0.1;
+				}
+				
+				if(!written.contains(key)){
+					dw2.write(l[1],l[3],weight);
+					written.add(key);
+				}
+			}
+			
+			dw2.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void nellstringMidScore2(){
+		try{
+			List<String[]>raw = (new DelimitedReader(Main.fout_fbsearchresult_clean)).readAll();
+			Collections.sort(raw, new Comparator<String[]>(){
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					// TODO Auto-generated method stub
+					String a = o1[1]+"\t"+o1[3];
+					String b = o2[1]+"\t"+o2[3];
+					return a.compareTo(b);
+				}
+			});
+			
+			
+			int s = 0;
+			List<String[]>block;
+			while((block = readNextPair(raw,s))!=null && block.size()>0){
+				D.p("a");
+				s += block.size();
+			}
+		}catch(Exception e){
+			
+		}
+	}
+	private static List<String[]>readNextPair(List<String[]>raw, int start){
+		D.p(start);
+		List<String[]>result = new ArrayList<String[]>();
+		if(start < 0 || start >=raw.size())return null;
+		String key = raw.get(start)[1]+"\t"+raw.get(start)[3];
+		for(int i=start;i<raw.size();i++){
+			String key0 = raw.get(i)[1]+"\t"+raw.get(i)[3];
+			if(key.equals(key0)){
+				result.add(raw.get(i));
+			}
+		}
+		return result;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
@@ -212,10 +323,11 @@ public class S2_variable_nellent_fbmid {
 		// getClean();
 
 		/** filter stanford wikipedia to get subset stanford */
-		filter_wp_stanford();
+		//filter_wp_stanford();
 		
-		/***/
-
+		/**for every pair of <nellstring, mid>, get a similarity score for it*/
+		//nellstringMidScore();
+		
 	}
 
 }

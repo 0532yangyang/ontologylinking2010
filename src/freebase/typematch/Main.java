@@ -38,11 +38,16 @@ public class Main {
 	
 	
 	/**wikipedia stanford parsed result*/
-	static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner";
-	static String fin_wp_stanford_subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.subset";
+	static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
+	static String fout_wp_stanford_subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.subset.sbaid";
 	
 	/**candidate nell string 2 mid & score*/
+	static String fout_candidatemapping_nellstring_mid = dir+"/candidatemapping_nellstring_mid";
+	static String fout_temp_mid_wid_argA_argB_appearInWiki = dir+"/temp_mid_wid_argA_argB_appearInWiki";
 	
+	/**fbname and alias*/
+	static String fin_fbnamealias_unsorted = pdir+"/fbnamealias";
+	static String fin_fbnamealias = pdir+"/mid_fbnamealias.sbmid";
 	public static void main(String[] args) throws Exception{
 
 		/**Get a subset of fbtype infomation, the whole set is in

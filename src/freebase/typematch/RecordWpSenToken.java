@@ -30,7 +30,7 @@ public class RecordWpSenToken {
 			StringBuilder sb = new StringBuilder();
 			try {
 				rwst.token = line[3].split(" ");
-				for(String t: rwst.token){
+				for (String t : rwst.token) {
 					sb.append(t).append(" ");
 				}
 				rwst.pos = line[4].split(" ");
@@ -47,35 +47,41 @@ public class RecordWpSenToken {
 
 	public static List<RecordWpSenToken> readByArticleId(DelimitedReader dr) throws IOException {
 		List<RecordWpSenToken> rwstlist = new ArrayList<RecordWpSenToken>();
-		if (buffer_rwst == null)
-			buffer_rwst = RecordWpSenToken.read(dr);
+
+		if (buffer_rwst == null) {
+			if (!dr.EOF) {
+				buffer_rwst = RecordWpSenToken.read(dr);
+			} else {
+				return null;
+			}
+		}
 		rwstlist.add(buffer_rwst);
 		RecordWpSenToken rwst;
 		while ((rwst = RecordWpSenToken.read(dr)) != null) {
 			if (rwst.articleId == rwstlist.get(0).articleId) {
 				rwstlist.add(rwst);
 			} else {
-				buffer_rwst = rwst;
 				break;
 			}
 		}
+		buffer_rwst = rwst;
 		return rwstlist;
 	}
 
 	public String toString() {
 		return text;
 	}
-	
-	public static void main(String []args){
-		try{
-			DelimitedReader dr = new DelimitedReader(Main.fin_wp_stanford_subset);
+
+	public static void main(String[] args) {
+		try {
+			DelimitedReader dr = new DelimitedReader(Main.fout_wp_stanford_subset);
 			List<RecordWpSenToken> rl;
-			while((rl = readByArticleId(dr))!=null && rl.size()>0){
+			while ((rl = readByArticleId(dr)) != null ) {
 				D.p(rl.size());
 			}
 			dr.close();
-		}catch(Exception e){
-			
+		} catch (Exception e) {
+
 		}
 	}
 }
