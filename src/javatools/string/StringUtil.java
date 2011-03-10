@@ -84,6 +84,20 @@ public class StringUtil {
 		}
 		return num;
 	}
+	public static int numOfShareWords(String str1, String str2, int []par_return){
+		List<String> l1 = tokenize(str1,new char[]{' ','_'});
+		List<String> l2 = tokenize(str2,new char[]{' ','_'});
+		List<String>sorted_l1 = new ArrayList<String>();
+		List<String>sorted_l2 = new ArrayList<String>();
+		for(String a:l1)sorted_l1.add(a.toLowerCase());
+		for(String a:l2)sorted_l2.add(a.toLowerCase());
+		Collections.sort(sorted_l1);
+		Collections.sort(sorted_l2);
+		par_return[0] = l1.size();
+		par_return[1] = l2.size();
+		return numOfShareWords(sorted_l1,sorted_l2);
+	}
+	
 	public static int numOfShareWords(String str1, String str2){
 		List<String> l1 = tokenize(str1,new char[]{' ','_'});
 		List<String> l2 = tokenize(str2,new char[]{' ','_'});

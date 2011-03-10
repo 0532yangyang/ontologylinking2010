@@ -110,7 +110,7 @@ public class FBSearchEngine {
 	// }
 
 	public static void main(String[] args) throws Exception {
-		List<String >x = query2("piano",10);
+		List<String >x = query2("1998 Wimbledon Championship",10);
 		System.out.println(x);
 
 	}
