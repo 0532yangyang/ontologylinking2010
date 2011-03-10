@@ -53,6 +53,13 @@ public class Main {
 	static String fin_fbnamealias_unsorted = pdir+"/fbnamealias";
 	static String fin_fbnamealias = pdir+"/mid_fbnamealias.sbmid";
 	static String fin_fbnamealias_subset = dir+"/mid_fbnamealias.sbmid.subset";
+	
+	
+	/**weighted disjunctive clauses */
+	static String fout_clauses = dir+"/clauses";
+	
+	/**canonical rule weight*/
+	static final int WEIGHT_CANONICAL = 1000;
 	public static void main(String[] args) throws Exception{
 
 		/**Get a subset of fbtype infomation, the whole set is in
