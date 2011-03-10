@@ -16,6 +16,7 @@ public class S0_join_MidWikiurl_wpArticleidTitle {
 	static void doit(){
 		
 		try {
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_artid);
 			DelimitedReader dr = new DelimitedReader("/projects/pardosa/s5/clzhang/ontologylink/mid2Wikiurl");
 			String []line;
 			while((line = dr.read())!=null){
@@ -26,7 +27,7 @@ public class S0_join_MidWikiurl_wpArticleidTitle {
 			dr.close();
 			
 			dr = new DelimitedReader("/projects/pardosa/s5/clzhang/tmp/wp/enwiki_title");
-			DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_artid);
+			
 			while((line = dr.read())!=null){
 				String title = line[1].trim().replace(" ", "_");
 				if(wptitle2mid.containsKey(title)){

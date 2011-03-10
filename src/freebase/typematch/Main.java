@@ -57,7 +57,7 @@ public class Main {
 	
 	/**weighted disjunctive clauses */
 	static String fout_clauses = dir+"/clauses";
-	
+	static String fout_predict1 = dir+"/predict1";
 	/**canonical rule weight*/
 	static final int WEIGHT_CANONICAL = 1000;
 	public static void main(String[] args) throws Exception{
@@ -65,13 +65,32 @@ public class Main {
 		/**Get a subset of fbtype infomation, the whole set is in
 		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
 		 * */
-		S0_subset_fbtype.main(null);
+		//S0_subset_fbtype.main(null);
+		
+		/**Get mid to wikipedia article id,with the help of 
+		 * mid_wikiurl file
+		 * wikipedia article id VS title*/
+		//S0_join_MidWikiurl_wpArticleidTitle.main(null);
+		
+		/**Sort freebase name file, by mid*/
+		//S0_sort_fbnamealias.main(null);
+		
+		
+		/**Generate candidate nell entity vs fb entity
+		 * (VERY BIG java file)*/
+		//S2_variable_nellent_fbmid.main(null);
+		
 		
 		/**Generate candidate Nell type vs FB Type*/
-		S1_variable_nelltype_fbtype_count.main(null);
+		//S1_variable_nelltype_fbtype_count.main(null);
 		
-		/***/
+
 		
+		/**Generate clauses*/
+		S3_clause.main(null);
+		
+		/**Weigthed maximum sat*/
+		S4_weightedmaxsat.main(null);
 	}
 
 }
