@@ -1,5 +1,6 @@
 package freebase.typematch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,8 +15,6 @@ import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.DelimitedWriter;
 
 public class S1_variable_nelltype_fbtype_count {
-
-
 
 	static HashMap<String, List<String>> mid2ftype = new HashMap<String, List<String>>();
 
@@ -43,7 +42,40 @@ public class S1_variable_nelltype_fbtype_count {
 		}
 	}
 
-	public static void mapping() throws Exception {
+	public static void getCandidate_nelltype_fbtype() {
+		
+		try {
+			DelimitedWriter dw0 = new DelimitedWriter(Main.fout_candidatemapping_nelltype_fbtype);
+			DelimitedReader dr = new DelimitedReader(Main.fout_weight_type_shareentity);
+			List<String[]> raw = dr.readAll();
+			String last = "";
+			int lastcount = 0;
+			for(String []l: raw){
+				String nelltype = l[0];
+				String fbtype = l[1];
+				double score = Integer.parseInt(l[2])*1.0/ Integer.parseInt(l[3]);
+				String key = nelltype;
+				if(key.equals(last) && lastcount<Main.CANDIDATE_NUM){
+					dw0.write(nelltype,fbtype);
+					lastcount++;
+				}
+				if(!key.equals(last)){
+					last = key;
+					dw0.write(nelltype,fbtype);
+					lastcount= 1;
+				}
+			}
+			dr.close();
+			dw0.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void getWeight_typesharingentity() throws Exception {
+		DelimitedWriter dwtemp = new DelimitedWriter(Main.fout_weight_type_shareentity + ".temp");
+		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity);
 		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
 
 		DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
@@ -56,7 +88,8 @@ public class S1_variable_nelltype_fbtype_count {
 
 			String argname = line[3];
 			String label = line[6];
-			if(label.equals("-1"))continue;
+			if (label.equals("-1"))
+				continue;
 			HashSet<String> nellclass = Main.nellontology.entity2class.get(argname);
 
 			if (fbtypes == null) {
@@ -75,65 +108,63 @@ public class S1_variable_nelltype_fbtype_count {
 		}
 		// output
 		HashSet<String> appearedNellType = new HashSet<String>();
-		DelimitedWriter dw = new DelimitedWriter(Main.fout_candidatemapping_nelltype_fbtype_argname_mid);
-		
-		HashMap<String,HashSet<String>> nelltype_object_count = new HashMap<String,HashSet<String>>();
-		HashMap<String,HashSet<String>> variable_count = new HashMap<String,HashSet<String>>();
-		
+
+		HashMap<String, HashSet<String>> nelltype_object_count = new HashMap<String, HashSet<String>>();
+		HashMap<String, HashSet<String>> variable_count = new HashMap<String, HashSet<String>>();
+
 		ArrayList<String> interestingList = new ArrayList<String>();
 		interestingList.addAll(intresting);
 		Collections.sort(interestingList);
-		
+
 		for (String a : interestingList) {
 			String[] x = a.split("\t");
-			dw.write(x);
+			dwtemp.write(x);
 			appearedNellType.add(x[0]);
-			
-			//add to nelltype_object_count
+
+			// add to nelltype_object_count
 			String nelltype = x[0];
-			if(!nelltype_object_count.containsKey(nelltype)){
-				nelltype_object_count.put(nelltype,new HashSet<String>());
+			if (!nelltype_object_count.containsKey(nelltype)) {
+				nelltype_object_count.put(nelltype, new HashSet<String>());
 			}
 			nelltype_object_count.get(nelltype).add(x[2]);
-			
-			//add to variable
-			String typematchingvariable = x[0]+"\t"+x[1];
-			if(!variable_count.containsKey(typematchingvariable)){
+
+			// add to variable
+			String typematchingvariable = x[0] + "\t" + x[1];
+			if (!variable_count.containsKey(typematchingvariable)) {
 				variable_count.put(typematchingvariable, new HashSet<String>());
 			}
 			variable_count.get(typematchingvariable).add(x[2]);
 		}
-		dw.close();
+
 		dr.close();
-		
-		
-		List<String[]>dbtemp = new ArrayList<String[]>();
-		for(Entry<String,HashSet<String>>e: variable_count.entrySet()){
-			String []ab = e.getKey().split("\t");
-			//dwcount.write(ab[0],ab[1],e.getValue().size());
-			dbtemp.add(new String[]{ab[0],ab[1],e.getValue().size()+""});
+
+		List<String[]> dbtemp = new ArrayList<String[]>();
+		for (Entry<String, HashSet<String>> e : variable_count.entrySet()) {
+			String[] ab = e.getKey().split("\t");
+			// dwcount.write(ab[0],ab[1],e.getValue().size());
+			dbtemp.add(new String[] { ab[0], ab[1], e.getValue().size() + "" });
 		}
-		Collections.sort(dbtemp,new Comparator<String[]>(){
+		Collections.sort(dbtemp, new Comparator<String[]>() {
 			@Override
 			public int compare(String[] o1, String[] o2) {
 				// TODO Auto-generated method stub
 				int v1 = o1[0].compareTo(o2[0]);
-				if(v1!=0){
+				if (v1 != 0) {
 					return v1;
-				}else{
+				} else {
 					int a = Integer.parseInt(o1[2]);
 					int b = Integer.parseInt(o2[2]);
-					return b-a;
+					return b - a;
 				}
 			}
 		});
-		DelimitedWriter dwcount = new DelimitedWriter(Main.fout_candidatemapping_nelltype_fbtype_count);
-		for(String []a:dbtemp){
-			String nelltype = a[0];
-			dwcount.write(nelltype,a[1],a[2],nelltype_object_count.get(nelltype).size());
-		}
-		dwcount.close();
 
+		for (String[] a : dbtemp) {
+			String nelltype = a[0];
+			dw.write(nelltype, a[1], a[2], nelltype_object_count.get(nelltype).size());
+		}
+		dw.close();
+		dwtemp.close();
 		// check if some nell type is missing in this candidate step
 		{
 			D.p("Missing types in the candidate step");
@@ -149,12 +180,10 @@ public class S1_variable_nelltype_fbtype_count {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		
-		mapping();
-		// D.p("joke");
 
-		// how many classes there are ?
+		getWeight_typesharingentity();
 
+		getCandidate_nelltype_fbtype();
 	}
 
 }
