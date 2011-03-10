@@ -15,7 +15,7 @@ import multir.util.delimited.DelimitedWriter;
 
 public class S3_clause {
 
-	static private String getVariableNameEntity(String mid, String nellstring) {
+	static private String getVariableNameEntity(String nellstring, String mid) {
 		String n = convertNellstring(nellstring);
 		String m = mid;
 		return n + "::" + m;
@@ -41,7 +41,7 @@ public class S3_clause {
 				DelimitedReader dr = new DelimitedReader(Main.fout_candidatemapping_nellstring_mid);
 				List<String[]> raw = dr.readAll();
 				for (String[] l : raw) {
-					variable_sim.put(getVariableNameEntity(l[0], l[1]), 0.0);
+					variable_sim.put(getVariableNameEntity(l[1], l[0]), 0.0);
 				}
 				dr.close();
 			}
@@ -49,7 +49,7 @@ public class S3_clause {
 				DelimitedReader dr = new DelimitedReader(Main.fout_weight_nellstring_mid_cosine);
 				List<String[]> allweight = dr.readAll();
 				for (String[] l : allweight) {
-					String variable = getVariableNameEntity(l[0], l[1]);
+					String variable = getVariableNameEntity(l[1], l[0]);
 					if (variable_sim.containsKey(variable)) {
 						variable_sim.put(variable, Double.parseDouble(l[2]));
 					}
@@ -186,7 +186,7 @@ public class S3_clause {
 			}
 			canonialoneside_type(0, list_ntype_fbtype);
 
-			canonialoneside_type(1, list_ntype_fbtype);
+			//canonialoneside_type(1, list_ntype_fbtype);
 
 			D.p("abc");
 		} catch (IOException e) {
@@ -265,8 +265,8 @@ public class S3_clause {
 			getCanonical_entity();
 
 			/** questionable assumption here...
-			 * Every fb type can only be mapped to one nell type????? 
-			 * This assumption is questionable
+			 * Every fb type can only be mapped to one nell typ. THIS IS WRONG!!!
+			 * 
 			 * */
 			getCanonical_type();
 			dwclause.close();

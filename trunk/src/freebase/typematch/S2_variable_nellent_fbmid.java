@@ -416,19 +416,19 @@ public class S2_variable_nellent_fbmid {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		// getraw();
+		getraw();
 
 		/**
 		 * Using a lot of files to get good looking, nellstring 2 mid &
 		 * wikipedia id
 		 */
-		// getClean();
+		getClean();
 
 		/** filter stanford wikipedia to get subset stanford */
-		// filter_wp_stanford();
+		filter_wp_stanford();
 
 		/** get all candidate <nellstring, mid> */
-		// getCandidateNellstringMid();
+		getCandidateNellstringMid();
 
 		/** for every pair of <nellstring, mid>, get a similarity score for it */
 		getWeightEntitynameCosine();
