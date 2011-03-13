@@ -20,6 +20,7 @@ public class Main {
 	/**Input: freebase entity 2 type*/
 	static String fin_freebase_type_sortMid = pdir+"/mid_type_argname.sbmid";
 	static String fout_freebase_type_sortMid_subset = dir+"/mid_type_argname.subset";
+	static String fout_fbtype_count = dir+"/fbtype_count";
 	
 	/**output the candidate type mappings, just by entity mapping result*/
 	static final int CANDIDATE_NUM= 10;
@@ -62,10 +63,8 @@ public class Main {
 	static final int WEIGHT_CANONICAL = 1000;
 	public static void main(String[] args) throws Exception{
 
-		/**Get a subset of fbtype infomation, the whole set is in
-		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
-		 * */
-		//S0_subset_fbtype.main(null);
+
+
 		
 		/**Get mid to wikipedia article id,with the help of 
 		 * mid_wikiurl file
@@ -78,11 +77,11 @@ public class Main {
 		
 		/**Generate candidate nell entity vs fb entity
 		 * (VERY BIG java file)*/
-		//S2_variable_nellent_fbmid.main(null);
+		S2_variable_nellent_fbmid.main(null);
 		
 		
 		/**Generate candidate Nell type vs FB Type*/
-		//S1_variable_nelltype_fbtype_count.main(null);
+		S1_variable_nelltype_fbtype_count.main(null);
 		
 
 		

@@ -149,6 +149,7 @@ public class S3_clause {
 			}
 			block.add(list_nellstr_mid.get(i));
 		}
+		num += help_canonical_entity(block);
 		D.p("Canonical entity key " + key + " clauses number " + num);
 	}
 
@@ -215,6 +216,7 @@ public class S3_clause {
 			}
 			block.add(list_ntype_fbtype.get(i));
 		}
+		num += help_canonical_type(block);
 		D.p("Canonical type key " + key + " clauses number " + num);
 	}
 

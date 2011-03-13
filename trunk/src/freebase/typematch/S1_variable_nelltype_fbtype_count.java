@@ -102,6 +102,9 @@ public class S1_variable_nelltype_fbtype_count {
 			}
 			for (String ft : fbtypes) {
 				for (String nt : nellclass) {
+					if(nt.equals("sportsTeam") && ft.equals("/business/employer")){
+						D.p("sportsteam");
+					}
 					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
 				}
 			}
