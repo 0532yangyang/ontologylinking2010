@@ -25,9 +25,22 @@ public class S2_variable_nellent_fbmid {
 	/**
 	 * @param args
 	 */
+	static HashMap<String, List<String>> store = new HashMap<String, List<String>>();
+
 	private static String[] doit(String arg1, String arg2) {
-		List<String> ares = FBSearchEngine.query2(arg1, 10);
-		List<String> bres = FBSearchEngine.query2(arg2, 10);
+		List<String> ares, bres;
+		if (store.containsKey(arg1)) {
+			ares = store.get(arg1);
+		} else {
+			ares = FBSearchEngine.query2(arg1, 10);
+			store.put(arg1, ares);
+		}
+		if (store.containsKey(arg2)) {
+			bres = store.get(arg2);
+		} else {
+			bres = FBSearchEngine.query2(arg2, 10);
+			store.put(arg2, bres);
+		}
 		StringBuilder sba = new StringBuilder();
 		StringBuilder sbb = new StringBuilder();
 		for (String t1 : ares) {
@@ -207,9 +220,10 @@ public class S2_variable_nellent_fbmid {
 		// create a subset of mid_fbnamealias
 
 		try {
+
 			List<String[]> candidates = (new DelimitedReader(Main.fout_candidatemapping_nellstring_mid)).readAll();
 
-			if (false) {
+			if (true) {
 				/** take a subset of mid_fbname to speed up everything */
 				HashSet<String> usedMids = new HashSet<String>();
 				for (String[] l : candidates) {
@@ -243,7 +257,7 @@ public class S2_variable_nellent_fbmid {
 				DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_nellstring_mid_cosine);
 				for (String[] c : candidates) {
 					String mid = c[0];
-					if(mid.equals("/m/058b6")){
+					if (mid.equals("/m/058b6")) {
 						D.p("a");
 					}
 					String nellstring = c[1];
@@ -256,7 +270,7 @@ public class S2_variable_nellent_fbmid {
 						if (s > similarity)
 							similarity = s;
 					}
-					dw.write(mid,nellstring,similarity);
+					dw.write(mid, nellstring, similarity);
 				}
 				dw.close();
 			}
@@ -413,25 +427,57 @@ public class S2_variable_nellent_fbmid {
 		return result;
 	}
 
+	public static void subsetfin_freebase_type_sortMid() {
+		try {
+			DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_freebase_type_sortMid_subset);
+			String[] line;
+			HashSet<String> usedMid = new HashSet<String>();
+			while ((line = dr.read()) != null) {
+				String mid = line[1];
+				usedMid.add(mid);
+			}
+			dr.close();
+
+			dr = new DelimitedReader(Main.fin_freebase_type_sortMid);
+			while ((line = dr.read()) != null) {
+				String mid = line[0];
+				if (usedMid.contains(mid)) {
+					dw.write(line);
+				}
+			}
+			dr.close();
+			dw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		getraw();
+		// getraw();
 
 		/**
 		 * Using a lot of files to get good looking, nellstring 2 mid &
 		 * wikipedia id
 		 */
-		getClean();
+		// getClean();
 
 		/** filter stanford wikipedia to get subset stanford */
-		filter_wp_stanford();
+		// filter_wp_stanford();
 
 		/** get all candidate <nellstring, mid> */
-		getCandidateNellstringMid();
+		// getCandidateNellstringMid();
 
 		/** for every pair of <nellstring, mid>, get a similarity score for it */
-		getWeightEntitynameCosine();
+		//getWeightEntitynameCosine();
+
+		
+		/**Get a subset of fbtype infomation, the whole set is in
+		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
+		 * */
+		//subsetfin_freebase_type_sortMid();
 	}
 
 }
