@@ -9,7 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import percept.util.delimited.Sort;
+
 import javatools.administrative.D;
+import javatools.mydb.StringTable;
 import multir.util.HashCount;
 import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.DelimitedWriter;
@@ -43,26 +46,26 @@ public class S1_variable_nelltype_fbtype_count {
 	}
 
 	public static void getCandidate_nelltype_fbtype() {
-		
+
 		try {
 			DelimitedWriter dw0 = new DelimitedWriter(Main.fout_candidatemapping_nelltype_fbtype);
 			DelimitedReader dr = new DelimitedReader(Main.fout_weight_type_shareentity);
 			List<String[]> raw = dr.readAll();
 			String last = "";
 			int lastcount = 0;
-			for(String []l: raw){
+			for (String[] l : raw) {
 				String nelltype = l[0];
 				String fbtype = l[1];
-				double score = Integer.parseInt(l[2])*1.0/ Integer.parseInt(l[3]);
+				double score = Integer.parseInt(l[2]) * 1.0 / Integer.parseInt(l[3]);
 				String key = nelltype;
-				if(key.equals(last) && lastcount<Main.CANDIDATE_NUM){
-					dw0.write(nelltype,fbtype);
+				if (key.equals(last) && lastcount < Main.CANDIDATE_NUM) {
+					dw0.write(nelltype, fbtype);
 					lastcount++;
 				}
-				if(!key.equals(last)){
+				if (!key.equals(last)) {
 					last = key;
-					dw0.write(nelltype,fbtype);
-					lastcount= 1;
+					dw0.write(nelltype, fbtype);
+					lastcount = 1;
 				}
 			}
 			dr.close();
@@ -70,6 +73,96 @@ public class S1_variable_nelltype_fbtype_count {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	static HashMap<String, Integer> map_typecount = new HashMap<String, Integer>();
+
+	private static void loadTypeCount(String file) {
+		try {
+			List<String[]> all = (new DelimitedReader(file)).readAll();
+			for (String[] a : all) {
+				map_typecount.put(a[0], Integer.parseInt(a[1]));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void getWeight_typesharingentity_tfidf() throws Exception {
+		DelimitedWriter dwtemp = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf + ".temp");
+		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf);
+
+		List<String[]> list_intresting = new ArrayList<String[]>();
+		List<String[]> nt_ft_tfidf = new ArrayList<String[]>();
+		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
+		loadTypeCount(Main.fout_fbtype_count);
+
+		DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+		String[] line;
+
+		HashSet<String> intresting = new HashSet<String>();
+		int fbtypenull = 0, fbtypeNotnull = 0, nellclasstypenull = 0;
+		while ((line = dr.read()) != null) {
+			String mid = line[1];
+			List<String> fbtypes = mid2ftype.get(mid);
+
+			String argname = line[3];
+			String label = line[6];
+			if (label.equals("-1"))
+				continue;
+			HashSet<String> nellclass = Main.nellontology.entity2class.get(argname);
+			{
+				if (fbtypes == null) {
+					fbtypenull++;
+					// D.p("fb type is null:", mid, line[0]);
+					continue;
+				}
+				if (nellclass == null) {
+					nellclasstypenull++;
+					// D.p("nell class type is null:", argname);
+					continue;
+				}
+			}
+			fbtypeNotnull++;
+			for (String ft : fbtypes) {
+				for (String nt : nellclass) {
+					// if (nt.equals("sportsTeam") &&
+					// ft.equals("/business/employer")) {
+					// D.p("sportsteam");
+					// }
+					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
+				}
+			}
+		}
+		D.p("fb type null & not null:", fbtypenull, fbtypeNotnull);
+		D.p("nell class type null", nellclasstypenull);
+		{
+			/** interesting to list*/
+			for (String a : intresting) {
+				list_intresting.add(a.split("\t"));
+			}
+		}
+		{
+			/**uniq -c*/
+			List<String[]> temp = StringTable.squeeze(list_intresting, new int[] { 0, 1 });
+			for (String[] a : temp) {
+				int v = Integer.parseInt(a[0]);
+				int idf = map_typecount.get(a[2]);
+				double u = v * 1.0 / Math.log(idf + 1);
+				dwtemp.write(a[1], a[2], u, v, idf);
+				nt_ft_tfidf.add(new String[] { a[1], a[2], u + "" });
+			}
+			dwtemp.close();
+		}
+		{
+			/**sort columns by tfidf*/
+			StringTable.sortByColumn(nt_ft_tfidf, new int[] { 0, 2 }, new boolean[] { false, true });
+			for (String[] a : nt_ft_tfidf) {
+				dw.write(a);
+			}
+			dw.close();
 		}
 	}
 
@@ -102,7 +195,7 @@ public class S1_variable_nelltype_fbtype_count {
 			}
 			for (String ft : fbtypes) {
 				for (String nt : nellclass) {
-					if(nt.equals("sportsTeam") && ft.equals("/business/employer")){
+					if (nt.equals("sportsTeam") && ft.equals("/business/employer")) {
 						D.p("sportsteam");
 					}
 					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
@@ -184,7 +277,8 @@ public class S1_variable_nelltype_fbtype_count {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		getWeight_typesharingentity();
+		getWeight_typesharingentity_tfidf();
+		// getWeight_typesharingentity();
 
 		getCandidate_nelltype_fbtype();
 	}
