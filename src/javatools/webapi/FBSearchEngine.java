@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javatools.administrative.D;
+import javatools.parsers.PlingStemmer;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -41,7 +44,9 @@ public class FBSearchEngine {
 	public static List<String> query2(String q, int k) {
 		// "http://api.freebase.com/api/service/search?query=madonna"
 		try {
+			D.p(q);
 			Thread.sleep(2000);
+			q = PlingStemmer.stem(q);
 			URL yahoo = new URL("http://api.freebase.com/api/service/search?query=" + q.replaceAll("\\s", "%20"));
 			URLConnection yc = yahoo.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
@@ -54,7 +59,7 @@ public class FBSearchEngine {
 			in.close();
 
 			JSONObject o = new JSONObject(sb.toString());
-			System.out.println(o.toString());
+			//System.out.println(o.toString());
 
 			JSONArray a = o.getJSONArray("result");
 			List<String> res = new ArrayList<String>();
@@ -110,7 +115,7 @@ public class FBSearchEngine {
 	// }
 
 	public static void main(String[] args) throws Exception {
-		List<String >x = query2("1998 Wimbledon Championship",10);
+		List<String >x = query2("euros",10);
 		System.out.println(x);
 
 	}

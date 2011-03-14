@@ -20,12 +20,13 @@ public class Main {
 	/**Input: freebase entity 2 type*/
 	static String fin_freebase_type_sortMid = pdir+"/mid_type_argname.sbmid";
 	static String fout_freebase_type_sortMid_subset = dir+"/mid_type_argname.subset";
-	static String fout_fbtype_count = dir+"/fbtype_count";
+	static String fout_fbtype_count = pdir+"/fbtype_count";
 	
 	/**output the candidate type mappings, just by entity mapping result*/
 	static final int CANDIDATE_NUM= 10;
 	static String fout_candidatemapping_nelltype_fbtype = dir+"/candidatemapping_nelltype_fbtype";
 	static String fout_weight_type_shareentity = dir+"/weight_typeshareentity";
+	static String fout_weight_type_shareentity_tfidf = dir+"/weight_typeshareentity_tfidf";
 	//static String fout_candidatemapping_nelltype_fbtype_count = dir+"/candidatemapping_nelltype_fbtype_count";
 	//static String fout_candidatemapping_nelltype_fbtype_argname_mid = dir+"/candidatemapping_nelltype_fbtype_argname_mid";
 	

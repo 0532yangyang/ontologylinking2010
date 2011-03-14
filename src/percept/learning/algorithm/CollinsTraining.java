@@ -1,5 +1,7 @@
 package percept.learning.algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import percept.learning.algorithm.Viterbi.Parse;
@@ -138,21 +140,35 @@ public class CollinsTraining {
 		}
 	}
 
+	public List<Integer> testUnknown(Dataset testData, CRFParameters params) {
+		List<Integer> predicts = new ArrayList<Integer>();
+		Example doc = new Example();
+		Scorer s = new Scorer();
+		s.setParameters(params);
+
+		while (testData.next(doc)) {
+			Viterbi v = new Viterbi(model, s);
+			Parse predictParse = v.parse(doc);
+			predicts.add(predictParse.state);
+		}
+		return predicts;
+	}
+
 	public void test(Dataset testData, CRFParameters params) {
 		Example doc = new Example();
 		Scorer s = new Scorer();
 		s.setParameters(params);
-		int correct = 0,wrong = 0;
+		int correct = 0, wrong = 0;
 		while (testData.next(doc)) {
 			Viterbi v = new Viterbi(model, s);
 			Parse predictParse = v.parse(doc);
-			if(predictParse.state == doc.Y){
+			if (predictParse.state == doc.Y) {
 				correct++;
-			}else{
+			} else {
 				wrong++;
 			}
 		}
-		System.out.println(correct+"\t"+wrong);
+		System.out.println(correct + "\t" + wrong);
 	}
 
 	private void finalizeRel() {
