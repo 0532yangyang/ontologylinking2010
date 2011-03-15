@@ -41,7 +41,7 @@ public class Main {
 	static String fout_mid_artid_sbmid =  pdir+"/mid_wid_title.sbmid";
 	//static String fout_mid_mainwid = pdir+"/mid_mainwid.sbwid";
 	//static String fout_mid_mainwid_sbmid = pdir+"/mid_mainwid.sbmid";
-	static String fout_mid_categorywiki = pdir+"/mid_catwiki.sbwid";
+	static String fout_wid_categorywiki = pdir+"/wid_catwiki.sbwid";
 	/**mid enurl*/
 	static String fin_mid_enurl = pdir+"/mid2enurl";
 	
@@ -62,7 +62,8 @@ public class Main {
 	
 	/**nellclass classifier*/
 	static String fout_nelltype_mid_mainwid = dir+"/nelltype_mid_mainwid";
-	
+	static String fout_nelltype_training= dir+"/nelltypeclassifier/training";
+	static final int TOPKSentenceInWkarticle = 10;
 	/**weighted disjunctive clauses */
 	static String fout_clauses = dir+"/clauses";
 	static String fout_predict1 = dir+"/predict1";

@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import javatools.filehandlers.DelimitedWriter;
+
 import multir.learning.algorithm.CRFParameters;
 import multir.learning.algorithm.MILModel;
 import multir.learning.algorithm.Scorer;
 import multir.learning.algorithm.Viterbi;
 import multir.learning.data.Dataset;
 import multir.learning.data.MILDocument;
-import multir.util.delimited.DelimitedWriter;
 
 public class TopFalse {
 

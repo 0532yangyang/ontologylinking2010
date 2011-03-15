@@ -11,6 +11,8 @@ import java.util.List;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.parsers.PlingStemmer;
 import javatools.string.StringUtil;
 import javatools.webapi.FBSearchEngine;
@@ -18,8 +20,6 @@ import javatools.webapi.FBSearchEngine;
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 public class S2_variable_nellent_fbmid {
 

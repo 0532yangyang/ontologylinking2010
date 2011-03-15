@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.Builder;
@@ -52,7 +53,7 @@ public class CreateProtobufDatasets {
 		{
 			RelationECML ecml = new RelationECML();
 			
-			multir.util.delimited.DelimitedReader isTokens = new DelimitedReader(input5);
+			javatools.filehandlers.DelimitedReader isTokens = new DelimitedReader(input5);
 			DelimitedReader isPos = new DelimitedReader(input6); 
 			DelimitedReader isDeps = new DelimitedReader(input7);
 			DelimitedReader isNer = new DelimitedReader(input8);

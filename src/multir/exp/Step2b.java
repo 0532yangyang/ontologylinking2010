@@ -3,10 +3,11 @@ package multir.exp;
 import java.io.File;
 import java.io.IOException;
 
+import javatools.filehandlers.DelimitedReader;
+
 import multir.learning.algorithm.MILModel;
 import multir.preprocess.ConvertProtobufToMILDocument;
 import multir.preprocess.Mappings;
-import multir.util.delimited.DelimitedReader;
 
 public class Step2b {
 

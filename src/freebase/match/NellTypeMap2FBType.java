@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
 import multir.util.HashCount;
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 /**Map nell type into freebase type
  * Give up freebase type starting with /user /base

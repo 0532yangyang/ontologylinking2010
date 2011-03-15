@@ -1,10 +1,11 @@
-package multir.util.delimited;
+package javatools.filehandlers;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DelimitedReader {
@@ -87,7 +88,31 @@ public class DelimitedReader {
 		}
 		return all;
 	}
+	public HashMap<String,String> readAll2Hash(int keyId, int valueId) throws IOException{
+		HashMap<String,String>all = new HashMap<String,String>();
+		String []l;
+		while((l = read())!=null){
+			all.put(l[keyId], l[valueId]);
+		}
+		return all;
+	}
 
+	private String[] blockbuffer;
+	public List<String[]> readBlock(int key) throws IOException{
+		if(blockbuffer == null){
+			blockbuffer = this.read();
+		}
+		if(this.EOF || blockbuffer == null)
+			return null;
+		List<String[]> block = new ArrayList<String[]>();
+		block.add(blockbuffer);
+		String []l;
+		while((l = this.read())!=null && l[key].equals(block.get(0)[key])){
+			block.add(l);
+		}
+		blockbuffer = l;
+		return block;
+	}
 	public void close() throws IOException {
 		br.close();
 	}

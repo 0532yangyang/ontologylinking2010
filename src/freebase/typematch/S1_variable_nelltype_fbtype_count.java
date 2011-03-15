@@ -12,10 +12,10 @@ import java.util.Map.Entry;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 import multir.util.HashCount;
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 public class S1_variable_nelltype_fbtype_count {
 

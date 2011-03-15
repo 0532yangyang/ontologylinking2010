@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import multir.util.delimited.DelimitedReader;
 import multir.util.delimited.Sort;
 
 import java.util.Arrays;
@@ -13,8 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import freebase.match.Setting;
-import multir.util.delimited.DelimitedWriter;
 class GraphEdge {
 	int relationId;
 	int size;

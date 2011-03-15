@@ -2,7 +2,6 @@ package javatools.filehandlers;
 
 import java.io.*;
 
-import multir.util.delimited.DelimitedReader;
 
 
 public class MergeRead {

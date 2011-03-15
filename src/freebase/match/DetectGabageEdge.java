@@ -7,8 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 
 /**This algorithm */
 public class DetectGabageEdge {

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.parsers.PlingStemmer;
 
 import org.apache.http.client.HttpClient;
@@ -23,8 +25,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 import cc.factorie.protobuf.DocumentProtos.Entity;
 import cc.factorie.protobuf.DocumentProtos.Relation;

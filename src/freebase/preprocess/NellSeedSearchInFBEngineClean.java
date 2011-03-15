@@ -10,8 +10,8 @@ import percept.util.delimited.DelimitedWriter;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
 
-import multir.util.delimited.DelimitedReader;
 
 public class NellSeedSearchInFBEngineClean {
 

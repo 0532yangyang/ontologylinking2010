@@ -5,7 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import multir.util.delimited.DelimitedReader;
+import javatools.filehandlers.DelimitedReader;
+
 
 public class ConvertSentencesToInput {
 

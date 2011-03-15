@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import multir.util.delimited.DelimitedReader;
+import javatools.filehandlers.DelimitedReader;
+
 
 public class RecordWpSenToken {
 

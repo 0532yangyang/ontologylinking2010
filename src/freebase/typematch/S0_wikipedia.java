@@ -9,10 +9,10 @@ import java.util.List;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 public class S0_wikipedia {
 	static HashMap<String, String> wptitle2mid = new HashMap<String, String>();
@@ -138,7 +138,7 @@ public class S0_wikipedia {
 
 	static void wid2category() {
 		try {
-			DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_categorywiki + ".temp");
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_wid_categorywiki + ".temp");
 			DelimitedReader dr = new DelimitedReader(Main.fin_wex_category);
 			String[] l;
 			while ((l = dr.read()) != null) {
@@ -149,7 +149,7 @@ public class S0_wikipedia {
 			dw.close();
 
 			{
-				Sort.sort(Main.fout_mid_categorywiki + ".temp", Main.fout_mid_categorywiki, Main.pdir,
+				Sort.sort(Main.fout_wid_categorywiki + ".temp", Main.fout_wid_categorywiki, Main.pdir,
 						new Comparator<String[]>() {
 							@Override
 							public int compare(String[] o1, String[] o2) {

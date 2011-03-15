@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
 
-import multir.util.delimited.DelimitedReader;
 
 public class NellOntology {
 	public List<NellRelation> nellRelationList = new ArrayList<NellRelation>();
