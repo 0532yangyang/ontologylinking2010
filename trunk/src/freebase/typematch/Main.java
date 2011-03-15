@@ -35,9 +35,13 @@ public class Main {
 	static String fout_fbsearchresult_clean = dir+"/enid_mid_wid_argname_otherarg_relation_label.sbwid";
 	
 	/**Mid 2 Wikipedia Id*/
+	static String fin_wex_category = "/projects/pardosa/s5/clzhang/tmp/wex/a/wex-category.tsv";
+	static String fin_freebasedump_wikipedia_enid = pdir+"/fbdump_wikipedia_enid.temp";
 	static String fout_mid_artid = pdir+"/mid_wid_title.sbwid";
 	static String fout_mid_artid_sbmid =  pdir+"/mid_wid_title.sbmid";
-	
+	//static String fout_mid_mainwid = pdir+"/mid_mainwid.sbwid";
+	//static String fout_mid_mainwid_sbmid = pdir+"/mid_mainwid.sbmid";
+	static String fout_mid_categorywiki = pdir+"/mid_catwiki.sbwid";
 	/**mid enurl*/
 	static String fin_mid_enurl = pdir+"/mid2enurl";
 	
@@ -45,7 +49,7 @@ public class Main {
 	/**wikipedia stanford parsed result*/
 	static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
 	static String fout_wp_stanford_subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.subset.sbaid";
-	
+	static String fout_wp_stanford_s4subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.s4subset.sbwid";
 	/**candidate nell string 2 mid & score*/
 	static String fout_candidatemapping_nellstring_mid = dir+"/candidatemapping_nellstring_mid";
 	static String fout_weight_nellstring_mid_cosine = dir+"/weight_entityname_cosine";
@@ -56,10 +60,14 @@ public class Main {
 	static String fin_fbnamealias = pdir+"/mid_fbnamealias.sbmid";
 	static String fin_fbnamealias_subset = dir+"/mid_fbnamealias.sbmid.subset";
 	
+	/**nellclass classifier*/
+	static String fout_nelltype_mid_mainwid = dir+"/nelltype_mid_mainwid";
 	
 	/**weighted disjunctive clauses */
 	static String fout_clauses = dir+"/clauses";
 	static String fout_predict1 = dir+"/predict1";
+	
+	
 	/**canonical rule weight*/
 	static final int WEIGHT_CANONICAL = 1000;
 	public static void main(String[] args) throws Exception{
@@ -90,7 +98,7 @@ public class Main {
 		S3_clause.main(null);
 		
 		/**Weigthed maximum sat*/
-		S4_weightedmaxsat.main(null);
+		SX_weightedmaxsat.main(null);
 	}
 
 }

@@ -49,14 +49,14 @@ public class S1_variable_nelltype_fbtype_count {
 
 		try {
 			DelimitedWriter dw0 = new DelimitedWriter(Main.fout_candidatemapping_nelltype_fbtype);
-			DelimitedReader dr = new DelimitedReader(Main.fout_weight_type_shareentity);
+			DelimitedReader dr = new DelimitedReader(Main.fout_weight_type_shareentity_tfidf);
 			List<String[]> raw = dr.readAll();
 			String last = "";
 			int lastcount = 0;
 			for (String[] l : raw) {
 				String nelltype = l[0];
 				String fbtype = l[1];
-				double score = Integer.parseInt(l[2]) * 1.0 / Integer.parseInt(l[3]);
+				//double score = Integer.parseInt(l[2]) * 1.0 / Integer.parseInt(l[3]);
 				String key = nelltype;
 				if (key.equals(last) && lastcount < Main.CANDIDATE_NUM) {
 					dw0.write(nelltype, fbtype);

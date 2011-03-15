@@ -11,6 +11,7 @@ import java.util.List;
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.parsers.PlingStemmer;
 import javatools.string.StringUtil;
 import javatools.webapi.FBSearchEngine;
 
@@ -263,9 +264,11 @@ public class S2_variable_nellent_fbmid {
 					String nellstring = c[1];
 					List<String> names = mid_map_names.get(mid);
 					double similarity = 0;
+					String nell0 = PlingStemmer.stem(nellstring);
 					for (String n : names) {
 						int[] par_return = new int[2];
-						int share = StringUtil.numOfShareWords(n, nellstring, par_return);
+						String n0 = PlingStemmer.stem(n);
+						int share = StringUtil.numOfShareWords(n0, nell0, par_return);
 						double s = Math.min(share * 1.0 / par_return[0], share * 1.0 / par_return[1]);
 						if (s > similarity)
 							similarity = s;
@@ -471,7 +474,7 @@ public class S2_variable_nellent_fbmid {
 		// getCandidateNellstringMid();
 
 		/** for every pair of <nellstring, mid>, get a similarity score for it */
-		//getWeightEntitynameCosine();
+		getWeightEntitynameCosine();
 
 		
 		/**Get a subset of fbtype infomation, the whole set is in
