@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.string.StringUtil;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 
 public class Nellseed2zclid_man {

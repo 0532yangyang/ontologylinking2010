@@ -3,7 +3,8 @@ package freebase.maxent;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import multir.util.delimited.DelimitedReader;
+import javatools.filehandlers.DelimitedReader;
+
 
 public class MainRelLevel {
 

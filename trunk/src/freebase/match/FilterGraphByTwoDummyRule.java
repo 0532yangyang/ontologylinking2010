@@ -5,8 +5,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import multir.util.delimited.Sort;
 
 /**Let us assume at most two dummies between Two objects*/

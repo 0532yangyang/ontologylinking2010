@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
 
-import multir.util.delimited.DelimitedReader;
 
 public class Evaluation {
 	static String dir = "/projects/pardosa/s5/clzhang/ontologylink";

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 public class S3_clause {
 

@@ -13,8 +13,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javatools.filehandlers.DelimitedWriter;
+
 import multir.util.FileOperations;
-import multir.util.delimited.DelimitedWriter;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTagger;
 import opennlp.tools.postag.POSTaggerME;

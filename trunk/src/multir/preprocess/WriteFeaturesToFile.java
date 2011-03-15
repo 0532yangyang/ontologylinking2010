@@ -7,8 +7,9 @@ import java.io.InputStream;
 import java.util.Comparator;
 import java.util.zip.GZIPInputStream;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;

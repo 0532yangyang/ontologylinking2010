@@ -10,13 +10,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.filehandlers.MergeRead;
 import javatools.filehandlers.MergeReadRes;
 import javatools.filehandlers.MergeReadResStr;
 import javatools.filehandlers.MergeReadStr;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 import multir.util.delimited.Sort;
 
 public class FBlength0Relation {

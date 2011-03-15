@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 public class S4_nellclass_classifier {
 
@@ -22,8 +22,8 @@ public class S4_nellclass_classifier {
 		try {
 			DelimitedWriter dw = new DelimitedWriter(Main.fout_nelltype_mid_mainwid);
 			HashMap<String, String> nellstr_mid_sbweight = new HashMap<String, String>();
-			HashMap<String, String> map_mid2mainwid = (new DelimitedReader(Main.fout_mid_artid_sbmid)).readAll2Hash(
-					0, 1);
+			HashMap<String, String> map_mid2mainwid = (new DelimitedReader(Main.fout_mid_artid_sbmid)).readAll2Hash(0,
+					1);
 			{
 				List<String[]> all = (new DelimitedReader(Main.fout_weight_nellstring_mid_cosine)).readAll();
 				StringTable.sortByColumn(all, new int[] { 1, 2 }, new boolean[] { false, true });
@@ -100,19 +100,19 @@ public class S4_nellclass_classifier {
 		}
 	}
 
-	public static void subset_stanfordwiki(){
+	public static void subset_stanfordwiki() {
 		try {
-			HashSet<Integer>usedArtid = new HashSet<Integer>();
+			HashSet<Integer> usedArtid = new HashSet<Integer>();
 			List<String[]> all = (new DelimitedReader(Main.fout_nelltype_mid_mainwid)).readAll();
-			for(String []l: all){
+			for (String[] l : all) {
 				usedArtid.add(Integer.parseInt(l[3]));
 			}
 			DelimitedReader dr = new DelimitedReader(Main.fin_wp_stanford);
 			DelimitedWriter dw = new DelimitedWriter(Main.fout_wp_stanford_s4subset);
-			String []l;
-			while((l = dr.read())!=null){
+			String[] l;
+			while ((l = dr.read()) != null) {
 				int wid = Integer.parseInt(l[1]);
-				if(usedArtid.contains(wid)){
+				if (usedArtid.contains(wid)) {
 					dw.write(l);
 				}
 			}
@@ -123,33 +123,68 @@ public class S4_nellclass_classifier {
 			e.printStackTrace();
 		}
 	}
-	/**Featurize*/
-	public static void featurize(){
+
+	/** Featurize */
+	public static void featurize() {
 		try {
-			
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_nelltype_training);
 			DelimitedReader dr = new DelimitedReader(Main.fout_nelltype_mid_mainwid);
-			String []l;
-			while((l = dr.read())!=null){
+			DelimitedReader drwk = new DelimitedReader(Main.fout_wp_stanford_s4subset);
+			DelimitedReader drcat = new DelimitedReader(Main.fout_wid_categorywiki);
+			List<String[]> catblock = drcat.readBlock(0);
+			List<RecordWpSenToken> wkreader = RecordWpSenToken.readByArticleId(drwk);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int wid = Integer.parseInt(l[3]);
+				String nelltype = l[0];
+				{
+					/**Sentence feature*/
+					while (wkreader.get(0).articleId < wid
+							&& (wkreader = RecordWpSenToken.readByArticleId(drwk)) != null) {
+						// wait
+					}
+					if (wkreader.get(0).articleId == wid) {
+						StringBuilder sb = new StringBuilder();
+						for (int i = 0; i < Main.TOPKSentenceInWkarticle && i < wkreader.size(); i++) {
+							sb.append(wkreader.get(i).text + " ");
+						}
+						dw.write(l[0], wid, sb.toString());
+					} else {
+						D.p("Missing one wkarticle:", wid);
+					}
+				}
 				
+				{
+					/**Category feature*/
+					while(Integer.parseInt(catblock.get(0)[0])< wid &&
+							(catblock = drcat.readBlock(0))!=null){
+						D.p("a");
+					}
+					
+				}
 			}
+			dw.close();
 			dr.close();
+			drcat.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		/** nelltype_nellstring_mid_wid,
-		 * then sample subset of the Wikipedia article */
-//		nelltype_nellstring_mid_wid();
-		subset_stanfordwiki();
-		
-		
-		
-		
+		/**
+		 * nelltype_nellstring_mid_wid, then sample subset of the Wikipedia
+		 * article
+		 */
+		// nelltype_nellstring_mid_wid();
+		// subset_stanfordwiki();
+
+		featurize();
+
 	}
 
 }

@@ -2,8 +2,9 @@ package freebase.match;
 
 import java.util.HashSet;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 
 public class DetectGabageEdge3 {
 

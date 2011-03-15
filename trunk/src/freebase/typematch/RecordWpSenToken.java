@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
 
-import multir.util.delimited.DelimitedReader;
 
 public class RecordWpSenToken {
 

@@ -6,12 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.filehandlers.MergeRead;
 import javatools.filehandlers.MergeReadRes;
 import javatools.filehandlers.MergeReadResStr;
 import javatools.filehandlers.MergeReadStr;
 
-import multir.util.delimited.DelimitedWriter;
 import multir.util.delimited.Sort;
 
 public class FBlength1Relation {

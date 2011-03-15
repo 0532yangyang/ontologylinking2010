@@ -11,11 +11,11 @@ import percept.util.delimited.Sort;
 import freebase.maxent.Featurizer.FeaturizerConfig;
 
 import multir.util.HashCount;
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 import javatools.administrative.D;
 
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
 import javatools.filehandlers.MergeRead;
 import javatools.filehandlers.MergeReadRes;
 

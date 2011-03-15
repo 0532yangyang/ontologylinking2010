@@ -12,8 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javatools.filehandlers.DelimitedReader;
+
 import multir.preprocess.Mappings;
-import multir.util.delimited.DelimitedReader;
 
 public class PrintOriginalSentences {
 	

@@ -7,11 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
-import multir.util.delimited.DelimitedReader;
-import multir.util.delimited.DelimitedWriter;
 
 /**My goal is to get the freebase entity id of nell seed instances;
  * 

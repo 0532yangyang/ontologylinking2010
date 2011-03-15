@@ -2,7 +2,8 @@ package freebase.maxent;
 
 import java.io.IOException;
 
-import multir.util.delimited.DelimitedReader;
+import javatools.filehandlers.DelimitedReader;
+
 
 public class RecordRelMatch {
 	String nellRelation;

@@ -2,8 +2,8 @@ package freebase.preprocess;
 
 import java.util.List;
 
-import multir.util.delimited.DelimitedWriter;
 
+import javatools.filehandlers.DelimitedWriter;
 import javatools.filehandlers.MergeRead;
 import javatools.filehandlers.MergeReadRes;
 
