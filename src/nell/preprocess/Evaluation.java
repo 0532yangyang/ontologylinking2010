@@ -3,9 +3,9 @@ package nell.preprocess;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 
-import multir.util.HashCount;
 
 public class Evaluation {
 

@@ -13,7 +13,6 @@ import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 
-
 public class S0_wikipedia {
 	static HashMap<String, String> wptitle2mid = new HashMap<String, String>();
 
@@ -98,43 +97,66 @@ public class S0_wikipedia {
 		}
 	}
 
-//	static void mainwid() {
-//		try {
-//			DelimitedReader dr = new DelimitedReader(Main.fout_mid_artid);
-//			DelimitedReader dr0 = new DelimitedReader(Main.fin_wp_stanford);
-//			DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_mainwid);
-//			List<RecordWpSenToken> list_record = RecordWpSenToken.readByArticleId(dr0);
-//
-//			String[] l;
-//			while ((l = dr.read()) != null) {
-//				int wid = Integer.parseInt(l[1]);
-//				while (list_record.get(0).articleId < wid
-//						&& (list_record = RecordWpSenToken.readByArticleId(dr0)) != null) {
-//					// do nothing... wait
-//				}
-//				if (list_record.get(0).articleId == wid) {
-//					dw.write(l);
-//				}
-//			}
-//
-//			dr.close();
-//			dr0.close();
-//			dw.close();
-//
-//			{
-//				Sort.sort(Main.fout_mid_mainwid, Main.fout_mid_mainwid_sbmid, Main.pdir, new Comparator<String[]>() {
-//					@Override
-//					public int compare(String[] o1, String[] o2) {
-//						// TODO Auto-generated method stub
-//						return o1[0].compareTo(o2[0]);
-//					}
-//				});
-//			}
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	static void mainwid() {
+		try {
+			DelimitedReader dr = new DelimitedReader(Main.fin_wp_stanford);
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_wp_mainidlist);
+			int last = -1;
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int id = Integer.parseInt(l[1]);
+				if (id != last) {
+					dw.write(id);
+					last = id;
+				}
+			}
+			dw.close();
+			dr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// static void mainwid() {
+	// try {
+	// DelimitedReader dr = new DelimitedReader(Main.fout_mid_artid);
+	// DelimitedReader dr0 = new DelimitedReader(Main.fin_wp_stanford);
+	// DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_mainwid);
+	// List<RecordWpSenToken> list_record =
+	// RecordWpSenToken.readByArticleId(dr0);
+	//
+	// String[] l;
+	// while ((l = dr.read()) != null) {
+	// int wid = Integer.parseInt(l[1]);
+	// while (list_record.get(0).articleId < wid
+	// && (list_record = RecordWpSenToken.readByArticleId(dr0)) != null) {
+	// // do nothing... wait
+	// }
+	// if (list_record.get(0).articleId == wid) {
+	// dw.write(l);
+	// }
+	// }
+	//
+	// dr.close();
+	// dr0.close();
+	// dw.close();
+	//
+	// {
+	// Sort.sort(Main.fout_mid_mainwid, Main.fout_mid_mainwid_sbmid, Main.pdir,
+	// new Comparator<String[]>() {
+	// @Override
+	// public int compare(String[] o1, String[] o2) {
+	// // TODO Auto-generated method stub
+	// return o1[0].compareTo(o2[0]);
+	// }
+	// });
+	// }
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	static void wid2category() {
 		try {
@@ -168,13 +190,13 @@ public class S0_wikipedia {
 		/**
 		 * join_mid wikiurl and wpArticleidTitle to get file: mid_wid
 		 */
-		mid_wid();
+		//mid_wid();
 
 		/**
 		 * dealing with Main.fout_mid_artid, getting those mid_wid pairs that
 		 * wid has the documents
 		 */
-		//mainwid();
+		mainwid();
 
 		/** get the category information for all wiki articles */
 		// wid2category();

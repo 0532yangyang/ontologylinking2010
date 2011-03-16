@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 
-import multir.util.HashCount;
 import multir.util.HashList;
 
 import multir.util.delimited.Sort;
