@@ -1,6 +1,5 @@
 package javatools.datatypes;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,6 +66,18 @@ public class HashCount<T> {
 			ids.add(nc.name);
 			counts.add(nc.count);
 		}
+	}
+	public List<String[]> getAll(){
+		if(nclist == null)sort();
+		List<String[]>result = new ArrayList<String[]>();
+		
+		for(NameCount<T> nc : nclist) {
+			String []a = new String[2];
+			a[0] = (String)nc.name;
+			a[1] = ""+nc.count;
+			result.add(a);
+		}
+		return result;
 	}
 	public int size() {
 		return count.size();

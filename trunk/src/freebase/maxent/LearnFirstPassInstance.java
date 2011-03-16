@@ -10,10 +10,10 @@ import percept.util.delimited.Sort;
 
 import freebase.maxent.Featurizer.FeaturizerConfig;
 
-import multir.util.HashCount;
 
 import javatools.administrative.D;
 
+import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.filehandlers.MergeRead;

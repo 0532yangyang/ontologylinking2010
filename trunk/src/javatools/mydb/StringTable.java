@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javatools.administrative.D;
+import javatools.datatypes.HashCount;
 
-import multir.util.HashCount;
 
 public class StringTable {
 	/**

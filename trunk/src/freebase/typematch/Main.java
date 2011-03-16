@@ -48,6 +48,7 @@ public class Main {
 	
 	/**wikipedia stanford parsed result*/
 	static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
+	static String fout_wp_mainidlist = dir+"/mainwidlist";
 	static String fout_wp_stanford_subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.subset.sbaid";
 	static String fout_wp_stanford_s4subset = dir+"/stanfordwiki_senid_artid_secid_token_pos_ner.s4subset.sbwid";
 	/**candidate nell string 2 mid & score*/
@@ -62,8 +63,14 @@ public class Main {
 	
 	/**nellclass classifier*/
 	static String fout_nelltype_mid_mainwid = dir+"/nelltype_mid_mainwid";
-	static String fout_nelltype_training= dir+"/nelltypeclassifier/training";
-	static final int TOPKSentenceInWkarticle = 10;
+	static String fout_nelltypeNA = dir+"/nelltypeNA_nullmid_wid";
+	static String dir_nellclassifier = dir+"/nelltypeclassifier";
+	static String fout_nelltype_featurized= dir_nellclassifier+"/features";
+	static String fout_nelltype_binary = dir_nellclassifier+"/binary";
+	static String fout_wid_categorywiki_subset = dir+"/wid_wikicat_subset";
+	static final int TOPKSentenceInWkarticle = 5;
+	static final double NATakeRatio = 0.3;
+	static final int MIN_TRAINING_INSTANCE = 10;
 	/**weighted disjunctive clauses */
 	static String fout_clauses = dir+"/clauses";
 	static String fout_predict1 = dir+"/predict1";

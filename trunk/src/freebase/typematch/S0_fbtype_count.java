@@ -2,11 +2,11 @@ package freebase.typematch;
 
 import java.util.List;
 
+import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 
 import percept.util.delimited.DelimitedWriter;
 
-import multir.util.HashCount;
 
 public class S0_fbtype_count {
 	static HashCount<String> hc = new HashCount<String>();

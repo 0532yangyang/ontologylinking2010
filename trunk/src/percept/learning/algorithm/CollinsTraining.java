@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javatools.administrative.D;
+
 import percept.learning.algorithm.Viterbi.Parse;
 import percept.learning.data.Dataset;
 import percept.learning.data.Example;
@@ -77,7 +79,7 @@ public class CollinsTraining {
 	int avgIteration = 0;
 
 	public void trainingIteration(Dataset trainingData, float delta, boolean useIterAverage) {
-		System.out.println("iter");
+		// System.out.println("iter");
 
 		Example doc = new Example();
 
@@ -145,12 +147,34 @@ public class CollinsTraining {
 		Example doc = new Example();
 		Scorer s = new Scorer();
 		s.setParameters(params);
-
+		int correct = 0, wrong = 0;
 		while (testData.next(doc)) {
 			Viterbi v = new Viterbi(model, s);
 			Parse predictParse = v.parse(doc);
 			predicts.add(predictParse.state);
+
 		}
+		return predicts;
+	}
+	
+	public List<Integer> testUnknown(Dataset testData, CRFParameters params, int [][]confusionMatrix) {
+		List<Integer> predicts = new ArrayList<Integer>();
+		Example doc = new Example();
+		Scorer s = new Scorer();
+		s.setParameters(params);
+		int correct = 0, wrong = 0;
+		while (testData.next(doc)) {
+			Viterbi v = new Viterbi(model, s);
+			Parse predictParse = v.parse(doc);
+			predicts.add(predictParse.state);
+			confusionMatrix[doc.Y][predictParse.state]++;
+//			if (predictParse.state == doc.Y) {
+//				correct++;
+//			} else {
+//				wrong++;
+//			}
+		}
+		//D.p("Correct & Wrong",correct,wrong);
 		return predicts;
 	}
 

@@ -32,8 +32,8 @@ public class CRFParameters {
 	public void init() {
 		if (stateParameters == null) {
 			stateParameters = new DenseVector[model.numStates];
-			System.out.println(model.numStates);
-			System.out.println("requesting " + (8*stateParameters.length*(long)model.numFeaturesPerState[0]));
+			//System.out.println(model.numStates);
+			//System.out.println("requesting " + (8*stateParameters.length*(long)model.numFeaturesPerState[0]));
 			for (int j=0; j < stateParameters.length; j++) {
 				stateParameters[j] = 
 					new DenseVector(model.numFeatures(j));

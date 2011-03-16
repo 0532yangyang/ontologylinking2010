@@ -39,6 +39,10 @@ public class Mappings {
 			return null;
 		}
 	}
+	
+	public List<String> getStateName() {
+		return list_states;
+	}
 
 	public String getFeatureName(int ftId) {
 		if (ftId < list_fts.size()) {
