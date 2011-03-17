@@ -19,6 +19,9 @@ public class Main {
 
 	/**Input: freebase entity 2 type*/
 	static String fin_freebase_type_sortMid = pdir+"/mid_type_argname.sbmid";
+	static String fin_freebase_type_clean_sortMid = pdir+"/mid_type_argname.clean.sbmid";
+	static String fin_freebase_type_clean_sample = dir+"/mid_type_argname.clean.sample";
+	static String fin_freebase_type_sortType = pdir+"/mid_type_argname.sbtype";
 	static String fout_freebase_type_sortMid_subset = dir+"/mid_type_argname.subset";
 	static String fout_fbtype_count = pdir+"/fbtype_count";
 	
@@ -62,15 +65,20 @@ public class Main {
 	static String fin_fbnamealias_subset = dir+"/mid_fbnamealias.sbmid.subset";
 	
 	/**nellclass classifier*/
-	static String fout_nelltype_mid_mainwid = dir+"/nelltype_mid_mainwid";
+	static String fout_training_nelltype_mid_mainwid = dir+"/training_nelltype_mid_mainwid";
+	static String fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid = dir+"/testing_nt_ft_fte_mid_wid";
 	static String fout_nelltypeNA = dir+"/nelltypeNA_nullmid_wid";
 	static String dir_nellclassifier = dir+"/nelltypeclassifier";
-	static String fout_nelltype_featurized= dir_nellclassifier+"/features";
-	static String fout_nelltype_binary = dir_nellclassifier+"/binary";
+	static String fout_training_featurized= dir_nellclassifier+"/trainingfeatures";
+	static String fout_testing_featurized = dir_nellclassifier+"/testingfeatures";
+	static String fout_testing_pred = dir_nellclassifier + "/testingpredict";
+	//static String fout_nelltype_binary = dir_nellclassifier+"/binary";
 	static String fout_wid_categorywiki_subset = dir+"/wid_wikicat_subset";
 	static final int TOPKSentenceInWkarticle = 5;
 	static final double NATakeRatio = 0.3;
 	static final int MIN_TRAINING_INSTANCE = 10;
+	static final int SAMPLPE_SIZE_PER_FBTYPE = 100;
+	
 	/**weighted disjunctive clauses */
 	static String fout_clauses = dir+"/clauses";
 	static String fout_predict1 = dir+"/predict1";
@@ -94,16 +102,16 @@ public class Main {
 		
 		/**Generate candidate nell entity vs fb entity
 		 * (VERY BIG java file)*/
-		S2_variable_nellent_fbmid.main(null);
+		//S2_variable_nellent_fbmid.main(null);
 		
 		
 		/**Generate candidate Nell type vs FB Type*/
-		S1_variable_nelltype_fbtype_count.main(null);
+		//S1_variable_nelltype_fbtype_count.main(null);
 		
 
 		
 		/**Generate clauses*/
-		S3_clause.main(null);
+		S5_clause.main(null);
 		
 		/**Weigthed maximum sat*/
 		SX_weightedmaxsat.main(null);

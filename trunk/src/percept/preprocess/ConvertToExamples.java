@@ -65,13 +65,13 @@ public class ConvertToExamples {
 	    	
 	    	// set ground truth label (e.g. Nell relation)
 	    	{
-	    		String state = t[0]; // Nell relation
+	    		String state = t[1]; // Nell relation
 	    		doc.Y = m.getStateID(state, writeRelationMapping);
 	    	}
 	    	
 	    	doc.features = new SparseBinaryVector();
     		//SparseBinaryVector sv = new SparseBinaryVector();
-	    	String []s = t[1].split(" ");
+	    	String []s = t[2].split(" ");
     		int countFts = s.length; // set to number of features for this example
     		int[] fts = new int[countFts];
     		for (int i=0; i < countFts; i++) {

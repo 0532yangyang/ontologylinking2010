@@ -53,13 +53,14 @@ public class StringTable {
 		});
 	}
 
+	/**Small to big*/
 	public static void sortByIntColumn(List<String[]> table, final int[] columns) {
 		Collections.sort(table, new Comparator<String[]>() {
 			@Override
 			public int compare(String[] o1, String[] o2) {
 				// TODO Auto-generated method stub
 				for (int i = 0; i < columns.length; i++) {
-					int cmp = Integer.parseInt(o2[columns[i]]) - Integer.parseInt(o1[columns[i]]);
+					int cmp = Integer.parseInt(o1[columns[i]]) - Integer.parseInt(o2[columns[i]]);
 					if (cmp != 0) {
 						return cmp;
 					}

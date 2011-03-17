@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.StringTable;
 
-
-public class S3_clause {
+public class S5_clause {
 
 	static private String getVariableNameEntity(String nellstring, String mid) {
 		String n = convertNellstring(nellstring);
@@ -175,7 +175,7 @@ public class S3_clause {
 		return num;
 	}
 
-	static void getCanonical_type(){
+	static void getCanonical_type() {
 		try {
 			List<String[]> list_ntype_fbtype = new ArrayList<String[]>();
 			DelimitedReader dr = new DelimitedReader(Main.fout_candidatemapping_nelltype_fbtype);
@@ -187,7 +187,7 @@ public class S3_clause {
 			}
 			canonialoneside_type(0, list_ntype_fbtype);
 
-			//canonialoneside_type(1, list_ntype_fbtype);
+			// canonialoneside_type(1, list_ntype_fbtype);
 
 			D.p("abc");
 		} catch (IOException e) {
@@ -195,6 +195,7 @@ public class S3_clause {
 			e.printStackTrace();
 		}
 	}
+
 	private static void canonialoneside_type(final int key, List<String[]> list_ntype_fbtype) {
 		int num = 0;
 		Collections.sort(list_ntype_fbtype, new Comparator<String[]>() {
@@ -241,7 +242,52 @@ public class S3_clause {
 		}
 		return num;
 	}
-	
+
+	/**
+	 * For sampled FB entity e_f if, M(t_n, t_f) & Class(e_f, t_n), the weight
+	 * should be negative
+	 * */
+	public static void getFBInstanceClause() {
+		try {
+			List<String[]> candidatemapping = (new DelimitedReader(Main.fout_candidatemapping_nelltype_fbtype))
+					.readAll();
+			DelimitedReader dr = new DelimitedReader(Main.fout_testing_pred);
+			HashMap<String, List<String[]>> classifierPred = new HashMap<String, List<String[]>>();
+			String[] l;
+			while ((l = dr.read()) != null) {
+				if (!classifierPred.containsKey(l[0])) {
+					classifierPred.put(l[0], new ArrayList<String[]>());
+				}
+				classifierPred.get(l[0]).add(l);
+			}
+			int iter = 0;
+			for (String[] c : candidatemapping) {
+				String nelltype = c[0];
+				String fbtype = c[1];
+				List<String[]> pool = classifierPred.get(fbtype);
+				int good = 0, bad = 0;
+				if (pool == null || pool.size() ==0) {
+					bad = 1;
+				} else {
+					for (String[] a : pool) {
+						if (a[1].equals(nelltype)) {
+							good++;
+						} else if (!a[1].equals("NA")) {
+							bad++;
+						}
+					}
+				}
+				double negweight = -1.0 * bad / (bad + good);
+
+				dwclause.write(negweight, getVariableNameType(nelltype, fbtype));
+			}
+			//D.p(candidatemapping);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	static DelimitedWriter dwclause;
 
@@ -250,6 +296,8 @@ public class S3_clause {
 
 		try {
 			dwclause = new DelimitedWriter(Main.fout_clauses);
+
+			getFBInstanceClause();
 
 			getSimilarityClause4Entity();
 
@@ -266,11 +314,13 @@ public class S3_clause {
 			 */
 			getCanonical_entity();
 
-			/** questionable assumption here...
-			 * Every fb type can only be mapped to one nell typ. THIS IS WRONG!!!
+			/**
+			 * questionable assumption here... Every fb type can only be mapped
+			 * to one nell typ. THIS IS WRONG!!!
 			 * 
 			 * */
 			getCanonical_type();
+
 			dwclause.close();
 
 		} catch (IOException e) {
