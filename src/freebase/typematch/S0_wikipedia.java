@@ -185,6 +185,7 @@ public class S0_wikipedia {
 			e.printStackTrace();
 		}
 	}
+	
 
 	public static void main(String[] args) {
 		/**
@@ -196,7 +197,7 @@ public class S0_wikipedia {
 		 * dealing with Main.fout_mid_artid, getting those mid_wid pairs that
 		 * wid has the documents
 		 */
-		mainwid();
+		//mainwid();
 
 		/** get the category information for all wiki articles */
 		// wid2category();
