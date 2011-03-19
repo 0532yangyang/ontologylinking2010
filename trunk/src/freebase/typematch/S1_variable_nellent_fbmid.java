@@ -20,8 +20,7 @@ import javatools.webapi.FBSearchEngine;
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
-
-public class S2_variable_nellent_fbmid {
+public class S1_variable_nellent_fbmid {
 
 	/**
 	 * @param args
@@ -83,8 +82,23 @@ public class S2_variable_nellent_fbmid {
 	static HashMap<String, String> enurl2mid = new HashMap<String, String>();
 	static HashMap<String, List<Integer>> mid2artid = new HashMap<String, List<Integer>>();
 
+	// public static void getClean(){
+	// try{
+	// DelimitedReader dr = new DelimitedReader(Main.fout_mid_artid);
+	// String []line;
+	// while ((line = dr.read()) != null) {
+	// String mid = line[0];
+	// int artid = Integer.parseInt(line[1]);
+	// if (!mid2artid.containsKey(mid)) {
+	// mid2artid.put(mid, new ArrayList<Integer>());
+	// }
+	// mid2artid.get(mid).add(artid);
+	// }
+	// }catch(Exception e){
+	//
+	// }
+	// }
 	public static void getClean() {
-
 		try {
 			DelimitedReader dr = new DelimitedReader(Main.fin_mid_enurl);
 			String[] line;
@@ -322,11 +336,12 @@ public class S2_variable_nellent_fbmid {
 			DelimitedWriter dw = new DelimitedWriter(Main.fout_temp_mid_wid_argA_argB_appearInWiki);
 			List<String[]> raw = (new DelimitedReader(Main.fout_fbsearchresult_clean)).readAll();
 			DelimitedReader dr = new DelimitedReader(Main.fout_wp_stanford_subset);
-			List<RecordWpSenToken> rl = RecordWpSenToken.readByArticleId(dr);
+			List<RecordWpSenToken> rl = RecordWpSenToken.readByArticleId(dr, true);
 			HashSet<String> wkappear_midnellstr = new HashSet<String>();
 			for (String[] line : raw) {
 				int artid = Integer.parseInt(line[2]);
-				while (rl != null && rl.get(0).articleId < artid && (rl = RecordWpSenToken.readByArticleId(dr)) != null)
+				while (rl != null && rl.get(0).articleId < artid
+						&& (rl = RecordWpSenToken.readByArticleId(dr, false)) != null)
 					;
 				// if we find some match
 				if (rl != null && rl.size() > 0 && rl.get(0).articleId == artid) {
@@ -432,7 +447,7 @@ public class S2_variable_nellent_fbmid {
 
 	public static void subsetfin_freebase_type_sortMid() {
 		try {
-			DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+			DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
 			DelimitedWriter dw = new DelimitedWriter(Main.fout_freebase_type_sortMid_subset);
 			String[] line;
 			HashSet<String> usedMid = new HashSet<String>();
@@ -459,28 +474,28 @@ public class S2_variable_nellent_fbmid {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		// getraw();
+		getraw();
 
 		/**
 		 * Using a lot of files to get good looking, nellstring 2 mid &
 		 * wikipedia id
 		 */
-		// getClean();
+		getClean();
 
 		/** filter stanford wikipedia to get subset stanford */
-		// filter_wp_stanford();
+		filter_wp_stanford();
 
 		/** get all candidate <nellstring, mid> */
-		// getCandidateNellstringMid();
+		getCandidateNellstringMid();
 
 		/** for every pair of <nellstring, mid>, get a similarity score for it */
 		getWeightEntitynameCosine();
 
-		
-		/**Get a subset of fbtype infomation, the whole set is in
+		/**
+		 * Get a subset of fbtype infomation, the whole set is in
 		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
 		 * */
-		//subsetfin_freebase_type_sortMid();
+		subsetfin_freebase_type_sortMid();
 	}
 
 }

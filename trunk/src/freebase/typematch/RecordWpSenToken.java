@@ -45,7 +45,8 @@ public class RecordWpSenToken {
 
 	static RecordWpSenToken buffer_rwst = null;
 
-	public static List<RecordWpSenToken> readByArticleId(DelimitedReader dr) throws IOException {
+	public static List<RecordWpSenToken> readByArticleId(DelimitedReader dr, boolean isFirst) throws IOException {
+		if(isFirst)buffer_rwst = null;
 		List<RecordWpSenToken> rwstlist = new ArrayList<RecordWpSenToken>();
 
 		if (buffer_rwst == null) {
@@ -76,7 +77,7 @@ public class RecordWpSenToken {
 		try {
 			DelimitedReader dr = new DelimitedReader(Main.fout_wp_stanford_subset);
 			List<RecordWpSenToken> rl;
-			while ((rl = readByArticleId(dr)) != null ) {
+			while ((rl = readByArticleId(dr,false)) != null ) {
 				D.p(rl.size());
 			}
 			dr.close();

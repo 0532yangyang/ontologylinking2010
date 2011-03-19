@@ -17,7 +17,7 @@ import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 
-public class S1_variable_nelltype_fbtype_count {
+public class S2_variable_nelltype_fbtype_count {
 
 	static HashMap<String, List<String>> mid2ftype = new HashMap<String, List<String>>();
 
@@ -99,7 +99,7 @@ public class S1_variable_nelltype_fbtype_count {
 		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
 		loadTypeCount(Main.fout_fbtype_count);
 
-		DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+		DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
 		String[] line;
 
 		HashSet<String> intresting = new HashSet<String>();
@@ -171,7 +171,7 @@ public class S1_variable_nelltype_fbtype_count {
 		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity);
 		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
 
-		DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+		DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
 		String[] line;
 
 		HashSet<String> intresting = new HashSet<String>();

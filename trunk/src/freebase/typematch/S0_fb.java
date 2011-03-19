@@ -12,8 +12,6 @@ import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 
-
-
 public class S0_fb {
 	static HashCount<String> hc = new HashCount<String>();
 
@@ -35,13 +33,14 @@ public class S0_fb {
 			e.printStackTrace();
 		}
 	}
-	public static void cleanFBType(){
+
+	public static void cleanFBType() {
 		try {
 			DelimitedReader dr = new DelimitedReader(Main.fin_freebase_type_sortMid);
 			DelimitedWriter dw = new DelimitedWriter(Main.fin_freebase_type_clean_sortMid);
-			String []l;
-			while((l = dr.read())!=null){
-				if(l[0].startsWith("/m/") && !l[1].equals("/common/topic")){
+			String[] l;
+			while ((l = dr.read()) != null) {
+				if (l[0].startsWith("/m/") && !l[1].equals("/common/topic")) {
 					dw.write(l);
 				}
 			}
@@ -50,8 +49,9 @@ public class S0_fb {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
+
 	public static void sortByType() {
 		try {
 			D.p("sort by type");
@@ -69,29 +69,35 @@ public class S0_fb {
 			e.printStackTrace();
 		}
 	}
-	public static void sample1000EveryType(){
+
+	public static void sample1000EveryType() {
 		try {
-			DelimitedReader dr  = new DelimitedReader(Main.fin_freebase_type_clean_sortMid);
+			DelimitedReader dr = new DelimitedReader(Main.fin_freebase_type_clean_sortMid);
 			DelimitedWriter dw = new DelimitedWriter(Main.fin_freebase_type_clean_sample);
-			String []l;
+			String[] l;
 			HashCount<String> hc = new HashCount<String>();
-			while((l = dr.read())!=null){
+			while ((l = dr.read()) != null) {
 				int c = hc.see(l[1]);
-				if(c<1000){
+				if (c < 1000) {
 					dw.write(l);
 					hc.add(l[1]);
 				}
-			}	
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
-		//cleanFBType();
-		sample1000EveryType();
-		//sortByType();
+		if (Main.s0_fb_cleanFBType)
+			cleanFBType();
+		
+		if (Main.s0_sample1000EveryType)
+			sample1000EveryType();
+		
+		if (Main.s0_sortByType)
+			sortByType();
 	}
 }

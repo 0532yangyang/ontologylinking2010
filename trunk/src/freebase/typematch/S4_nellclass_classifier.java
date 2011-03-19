@@ -48,7 +48,7 @@ public class S4_nellclass_classifier {
 				}
 			}
 
-			DelimitedReader dr = new DelimitedReader(Main.fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid);
+			DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
 			List<String[]> interesting = new ArrayList<String[]>();
 
 			String[] line;
@@ -230,9 +230,10 @@ public class S4_nellclass_classifier {
 			DelimitedReader drwk = new DelimitedReader(Main.fout_wp_stanford_s4subset);
 			DelimitedReader drcat = new DelimitedReader(Main.fout_wid_categorywiki_subset);
 			List<String[]> catblock = drcat.readBlock(0);
-			List<RecordWpSenToken> wkreader = RecordWpSenToken.readByArticleId(drwk);
+			List<RecordWpSenToken> wkreader = RecordWpSenToken.readByArticleId(drwk, true);
 			String[] l;
 			Random r = new Random();
+			List<String[]> towrite = new ArrayList<String[]>();
 			while ((l = dr.read()) != null) {
 				int wid = Integer.parseInt(l[3]);
 				String nelltype = l[0];
@@ -254,7 +255,7 @@ public class S4_nellclass_classifier {
 				{
 					/** Sentence feature */
 					while (wkreader.get(0).articleId < wid
-							&& (wkreader = RecordWpSenToken.readByArticleId(drwk)) != null) {
+							&& (wkreader = RecordWpSenToken.readByArticleId(drwk, false)) != null) {
 						// wait
 					}
 					if (wid == 25395149) {
@@ -297,9 +298,18 @@ public class S4_nellclass_classifier {
 						}
 					}
 				}
+				towrite.add(new String[] { wid + "", nelltype, sb.toString() });
 				dw.write(wid, nelltype, sb.toString());
 			}
 			// hc_nelltype.printAll();
+			{
+				List<String[]> tosee = StringTable.squeeze(towrite, new int[] { 1 });
+				D.p("Count of training size");
+				for (String[] a : tosee) {
+					D.p(a[0], a[1]);
+				}
+			}
+			drwk.close();
 			dw.close();
 			dr.close();
 			drcat.close();
@@ -310,95 +320,101 @@ public class S4_nellclass_classifier {
 	}
 
 	/** Featurize training */
-	public static void featurize() {
-		try {
-			HashCount<String> hc_nelltype = new HashCount<String>();
-			{
-
-				List<String[]> preprocess = (new DelimitedReader(Main.fout_training_nelltype_mid_mainwid)).readAll();
-				for (String[] a : preprocess) {
-					hc_nelltype.add(a[0]);
-				}
-			}
-
-			DelimitedWriter dw = new DelimitedWriter(Main.fout_training_featurized);
-			DelimitedReader dr = new DelimitedReader(Main.fout_training_nelltype_mid_mainwid);
-			DelimitedReader drwk = new DelimitedReader(Main.fout_wp_stanford_s4subset);
-			DelimitedReader drcat = new DelimitedReader(Main.fout_wid_categorywiki_subset);
-			List<String[]> catblock = drcat.readBlock(0);
-			List<RecordWpSenToken> wkreader = RecordWpSenToken.readByArticleId(drwk);
-			String[] l;
-			Random r = new Random();
-			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[3]);
-				String nelltype = l[0];
-				int nelltypefreq = hc_nelltype.see(nelltype);
-				if (nelltypefreq < Main.MIN_TRAINING_INSTANCE)
-					continue;
-				if (nelltype.equals("NA")) {
-					double ran = r.nextDouble();
-					if (ran > Main.NATakeRatio) {
-						continue;
-					}
-				}
-				StringBuilder sb = new StringBuilder();
-				// sb.append(nelltype + " ");
-
-				{
-					/** Sentence feature */
-					while (wkreader.get(0).articleId < wid
-							&& (wkreader = RecordWpSenToken.readByArticleId(drwk)) != null) {
-						// wait
-					}
-					if (wkreader.get(0).articleId == wid) {
-						for (int i = 0; i < Main.TOPKSentenceInWkarticle && i < wkreader.size(); i++) {
-							// only take noun
-							// String []tokens = wkreader.get(i).token;
-							// String []pos = wkreader.get(i).pos;
-							// for(int k=0;k<tokens.length;k++){
-							// if(pos[k].startsWith("N")){
-							// sb.append("W_" + tokens[k] + " ");
-							// }
-							// }
-							for (String t : wkreader.get(i).token) {
-								sb.append("W_" + t + " ");
-							}
-						}
-					} else {
-						D.p("Missing one wkarticle:", wid);
-					}
-				}
-
-				{
-					/** Category feature */
-					while (Integer.parseInt(catblock.get(0)[0]) < wid && (catblock = drcat.readBlock(0)) != null) {
-						// wait, do nothing
-					}
-					if (Integer.parseInt(catblock.get(0)[0]) == wid) {
-						for (String c[] : catblock) {
-							sb.append(c[1] + " ");
-						}
-						for (String c[] : catblock) {
-							String s = c[1].replace("Category:", "");
-							List<String> sl = StringUtil.tokenize(s, new char[] { '_', ' ' });
-							for (String a : sl) {
-								sb.append("CW_" + a + " ");
-							}
-						}
-					}
-				}
-				dw.write(wid, nelltype, sb.toString());
-			}
-			// hc_nelltype.printAll();
-			dw.close();
-			dr.close();
-			drcat.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	// public static void featurize() {
+	// try {
+	// HashCount<String> hc_nelltype = new HashCount<String>();
+	// {
+	//
+	// List<String[]> preprocess = (new
+	// DelimitedReader(Main.fout_training_nelltype_mid_mainwid)).readAll();
+	// for (String[] a : preprocess) {
+	// hc_nelltype.add(a[0]);
+	// }
+	// }
+	//
+	// DelimitedWriter dw = new DelimitedWriter(Main.fout_training_featurized);
+	// DelimitedReader dr = new
+	// DelimitedReader(Main.fout_training_nelltype_mid_mainwid);
+	// DelimitedReader drwk = new
+	// DelimitedReader(Main.fout_wp_stanford_s4subset);
+	// DelimitedReader drcat = new
+	// DelimitedReader(Main.fout_wid_categorywiki_subset);
+	// List<String[]> catblock = drcat.readBlock(0);
+	// List<RecordWpSenToken> wkreader = RecordWpSenToken.readByArticleId(drwk);
+	// String[] l;
+	// Random r = new Random();
+	// while ((l = dr.read()) != null) {
+	// int wid = Integer.parseInt(l[3]);
+	// String nelltype = l[0];
+	// int nelltypefreq = hc_nelltype.see(nelltype);
+	// if (nelltypefreq < Main.MIN_TRAINING_INSTANCE)
+	// continue;
+	// if (nelltype.equals("NA")) {
+	// double ran = r.nextDouble();
+	// if (ran > Main.NATakeRatio) {
+	// continue;
+	// }
+	// }
+	// StringBuilder sb = new StringBuilder();
+	// // sb.append(nelltype + " ");
+	//
+	// {
+	// /** Sentence feature */
+	// while (wkreader.get(0).articleId < wid
+	// && (wkreader = RecordWpSenToken.readByArticleId(drwk)) != null) {
+	// // wait
+	// }
+	// if (wkreader.get(0).articleId == wid) {
+	// for (int i = 0; i < Main.TOPKSentenceInWkarticle && i < wkreader.size();
+	// i++) {
+	// // only take noun
+	// // String []tokens = wkreader.get(i).token;
+	// // String []pos = wkreader.get(i).pos;
+	// // for(int k=0;k<tokens.length;k++){
+	// // if(pos[k].startsWith("N")){
+	// // sb.append("W_" + tokens[k] + " ");
+	// // }
+	// // }
+	// for (String t : wkreader.get(i).token) {
+	// sb.append("W_" + t + " ");
+	// }
+	// }
+	// } else {
+	// D.p("Missing one wkarticle:", wid);
+	// }
+	// }
+	//
+	// {
+	// /** Category feature */
+	// while (Integer.parseInt(catblock.get(0)[0]) < wid && (catblock =
+	// drcat.readBlock(0)) != null) {
+	// // wait, do nothing
+	// }
+	// if (Integer.parseInt(catblock.get(0)[0]) == wid) {
+	// for (String c[] : catblock) {
+	// sb.append(c[1] + " ");
+	// }
+	// for (String c[] : catblock) {
+	// String s = c[1].replace("Category:", "");
+	// List<String> sl = StringUtil.tokenize(s, new char[] { '_', ' ' });
+	// for (String a : sl) {
+	// sb.append("CW_" + a + " ");
+	// }
+	// }
+	// }
+	// }
+	// dw.write(wid, nelltype, sb.toString());
+	// }
+	// // hc_nelltype.printAll();
+	// dw.close();
+	// dr.close();
+	// drcat.close();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// }
 
 	/** Totally don't work at all */
 	// public static void binaryTrain() {
@@ -483,10 +499,10 @@ public class S4_nellclass_classifier {
 			for (int i = 0; i < all.size(); i++) {
 				pool.add(new String[] { all.get(i)[1], pred.get(i) });
 			}
-			StringTable.sortByColumn(pool, new int[]{0,1});
+			StringTable.sortByColumn(pool, new int[] { 0, 1 });
 			DelimitedWriter dw = new DelimitedWriter(Main.fout_testing_pred);
-			for (String []a : pool) {
-				dw.write(a[0],a[1]);
+			for (String[] a : pool) {
+				dw.write(a[0], a[1]);
 			}
 			dw.close();
 		} catch (IOException e) {
@@ -501,6 +517,15 @@ public class S4_nellclass_classifier {
 		try {
 
 			HashMap<String, List<String>> map_fbtype_listnelltypes = new HashMap<String, List<String>>();
+			HashSet<Integer> mainwidlist = new HashSet<Integer>();
+			{
+				DelimitedReader dr = new DelimitedReader(Main.fout_wp_mainidlist);
+				String[] l;
+				while ((l = dr.read()) != null) {
+					mainwidlist.add(Integer.parseInt(l[0]));
+				}
+				dr.close();
+			}
 			{
 				List<String[]> candidateFBTypes = (new DelimitedReader(Main.fout_candidatemapping_nelltype_fbtype))
 						.readAll();
@@ -536,7 +561,7 @@ public class S4_nellclass_classifier {
 					int c = hc.see(l[1]);
 					if (c > 0 && c <= Main.SAMPLPE_SIZE_PER_FBTYPE + 1) {
 						Integer wid = mid2wid.get(l[0]);
-						if (wid != null) {
+						if (wid != null && mainwidlist.contains(wid)) {
 							pool.add(new String[] { l[0], l[1], l[2], wid.toString() });
 							hc.add(l[1]);
 						}
@@ -572,16 +597,14 @@ public class S4_nellclass_classifier {
 		 * Wikipedia article
 		 */
 		{
-			// getTraining_nelltype_nellstring_mid_wid();
-			// getTestForCandidateFBTypes();
-			// subset_stanfordwiki();
-			// subset_category();
+			 getTraining_nelltype_nellstring_mid_wid();
+			 getTestForCandidateFBTypes();
+			 subset_stanfordwiki();
+			 subset_category();
 		}
 		/** featurize */
-		// featurize(Main.fout_training_nelltype_mid_mainwid,
-		// Main.fout_training_featurized, true);
-		// featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid,
-		// Main.fout_testing_featurized, false);
+		featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);
+		featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid, Main.fout_testing_featurized, false);
 
 		/** self test, split the train test 1:9 and get a performance */
 		for (int i = 0; i < 10; i++) {
