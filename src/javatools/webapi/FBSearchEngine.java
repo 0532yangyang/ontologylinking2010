@@ -46,31 +46,39 @@ public class FBSearchEngine {
 		try {
 			D.p(q);
 			Thread.sleep(2000);
-			q = PlingStemmer.stem(q);
-			URL yahoo = new URL("http://api.freebase.com/api/service/search?query=" + q.replaceAll("\\s", "%20"));
-			URLConnection yc = yahoo.openConnection();
-			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-			String inputLine;
-			StringBuilder sb = new StringBuilder();
-
-			while ((inputLine = in.readLine()) != null) {
-				sb.append(inputLine);
+			String queries[] = null;
+			String q2 = PlingStemmer.stem(q);
+			if(!q2.equals(q)){
+				queries = new String[]{q,q2};
+			}else{
+				queries = new String[]{q};
 			}
-			in.close();
-
-			JSONObject o = new JSONObject(sb.toString());
-			//System.out.println(o.toString());
-
-			JSONArray a = o.getJSONArray("result");
 			List<String> res = new ArrayList<String>();
-			for (int i = 0; i < a.length() && i < k; i++) {
-				JSONObject ar = a.getJSONObject(i);
-				if(ar == null)continue;
-				String urlstuff = ar.get("id").toString();
-				//String mid = urlstuff.replace("{\"id\":\"", "").replace("\"}", "");
-				//if(mid.startsWith("/m/"))res.add(mid);
-				res.add(urlstuff);
+			for(String q0: queries){
+				URL yahoo = new URL("http://api.freebase.com/api/service/search?query=" + q0.replaceAll("\\s", "%20"));
+				URLConnection yc = yahoo.openConnection();
+				BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+				String inputLine;
+				StringBuilder sb = new StringBuilder();
 
+				while ((inputLine = in.readLine()) != null) {
+					sb.append(inputLine);
+				}
+				in.close();
+
+				JSONObject o = new JSONObject(sb.toString());
+				System.out.println(o.toString());
+
+				JSONArray a = o.getJSONArray("result");
+				
+				for (int i = 0; i < a.length() && i < k; i++) {
+					JSONObject ar = a.getJSONObject(i);
+					if(ar == null)continue;
+					String urlstuff = ar.get("id").toString();
+					//String mid = urlstuff.replace("{\"id\":\"", "").replace("\"}", "");
+					//if(mid.startsWith("/m/"))res.add(mid);
+					res.add(urlstuff);
+				}
 			}
 			return res;
 			// if (a.length() > 0) {
@@ -115,9 +123,8 @@ public class FBSearchEngine {
 	// }
 
 	public static void main(String[] args) throws Exception {
-		List<String >x = query2("euros",10);
+		List<String >x = query2("NetJets",10);
 		System.out.println(x);
-
 	}
 
 	private static void blah(HashMap<String, String> guid2mid, HashMap<String, List<String>> m, String input,
