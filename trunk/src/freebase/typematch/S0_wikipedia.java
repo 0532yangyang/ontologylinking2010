@@ -58,6 +58,52 @@ public class S0_wikipedia {
 		}
 	}
 
+	static void mid_wid_title() {
+		try {
+//			DelimitedReader dr = new DelimitedReader(Main.fout_mid_artid_sbmid);
+//			DelimitedWriter dw = new DelimitedWriter(Main.fout_mid_wid_title);
+//			DelimitedReader drblock = new DelimitedReader(Main.fin_fbnamealias);
+//			int key = 0;
+//			List<String[]> block = drblock.readBlock(key);
+//			String[] l;
+//			while ((l = dr.read()) != null) {
+//				String mid = l[0];
+//				String widstr = l[1];
+//				if (block == null)
+//					break;
+//				while (block.get(0)[key].compareTo(mid) < 0 && (block = drblock.readBlock(key)) != null) {
+//
+//				}
+//				if (block.get(0)[key].equals(mid)) {
+//					StringBuilder sb = new StringBuilder();
+//					for (String[] b : block) {
+//						sb.append(b[1].replaceAll(" ", "_") + " ");
+//					}
+//					dw.write(mid, widstr, sb.toString());
+//				}
+//
+//			}
+//			dw.close();
+//			dr.close();
+
+			Sort.sort(Main.fout_mid_wid_title, Main.fout_mid_wid_title_sbwid, Main.dir, new Comparator<String[]>() {
+
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					// TODO Auto-generated method stub
+					int wid1 = Integer.parseInt(o1[1]);
+					int wid2 = Integer.parseInt(o2[1]);
+					return wid1 - wid2;
+				}
+
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//
+	}
+
 	static void mid_artid_fake() {
 
 		try {
@@ -185,19 +231,20 @@ public class S0_wikipedia {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public static void main(String[] args) {
 		/**
 		 * join_mid wikiurl and wpArticleidTitle to get file: mid_wid
 		 */
-		//mid_wid();
+		// mid_wid();
 
 		/**
 		 * dealing with Main.fout_mid_artid, getting those mid_wid pairs that
 		 * wid has the documents
 		 */
-		//mainwid();
+		// mainwid();
+
+		mid_wid_title();
 
 		/** get the category information for all wiki articles */
 		// wid2category();

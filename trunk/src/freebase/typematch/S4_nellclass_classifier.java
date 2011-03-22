@@ -251,26 +251,19 @@ public class S4_nellclass_classifier {
 				}
 				StringBuilder sb = new StringBuilder();
 				// sb.append(nelltype + " ");
-
+ 
 				{
 					/** Sentence feature */
 					while (wkreader.get(0).articleId < wid
 							&& (wkreader = RecordWpSenToken.readByArticleId(drwk, false)) != null) {
 						// wait
 					}
-					if (wid == 25395149) {
-						D.p(wid);
-					}
+					// if (wid == 25395149) {
+					// D.p(wid);
+					// }
 					if (wkreader.get(0).articleId == wid) {
 						for (int i = 0; i < Main.TOPKSentenceInWkarticle && i < wkreader.size(); i++) {
-							// only take noun
-							// String []tokens = wkreader.get(i).token;
-							// String []pos = wkreader.get(i).pos;
-							// for(int k=0;k<tokens.length;k++){
-							// if(pos[k].startsWith("N")){
-							// sb.append("W_" + tokens[k] + " ");
-							// }
-							// }
+
 							for (String t : wkreader.get(i).token) {
 								sb.append("W_" + t + " ");
 							}
@@ -597,10 +590,10 @@ public class S4_nellclass_classifier {
 		 * Wikipedia article
 		 */
 		{
-			 getTraining_nelltype_nellstring_mid_wid();
-			 getTestForCandidateFBTypes();
-			 subset_stanfordwiki();
-			 subset_category();
+			// getTraining_nelltype_nellstring_mid_wid();
+			// getTestForCandidateFBTypes();
+			// subset_stanfordwiki();
+			// subset_category();
 		}
 		/** featurize */
 		featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);

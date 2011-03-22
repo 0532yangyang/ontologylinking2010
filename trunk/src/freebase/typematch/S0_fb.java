@@ -83,6 +83,7 @@ public class S0_fb {
 					hc.add(l[1]);
 				}
 			}
+			dw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,13 +92,10 @@ public class S0_fb {
 	}
 
 	public static void main(String[] args) {
-		if (Main.s0_fb_cleanFBType)
-			cleanFBType();
-		
-		if (Main.s0_sample1000EveryType)
-			sample1000EveryType();
-		
-		if (Main.s0_sortByType)
-			sortByType();
+		//cleanFBType();
+
+		sample1000EveryType();
+
+		//sortByType();
 	}
 }

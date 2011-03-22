@@ -98,6 +98,76 @@ public class S1_variable_nellent_fbmid {
 	//
 	// }
 	// }
+
+	public static void getCleanNo1Only() {
+		try {
+			DelimitedReader dr = new DelimitedReader(Main.fin_mid_enurl);
+			String[] line;
+			while ((line = dr.read()) != null) {
+				String mid = line[0];
+				String enurl = line[1];
+				if (enurl2mid.containsKey(enurl))
+					D.p("Duplicate enurl " + enurl);
+				enurl2mid.put(enurl, mid);
+			}
+
+			dr = new DelimitedReader(Main.fout_mid_artid);
+			while ((line = dr.read()) != null) {
+				String mid = line[0];
+				int artid = Integer.parseInt(line[1]);
+				if (!mid2artid.containsKey(mid)) {
+					mid2artid.put(mid, new ArrayList<Integer>());
+				}
+				mid2artid.get(mid).add(artid);
+			}
+
+			dr = new DelimitedReader(Main.fout_fbsearchresult_raw);
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_fbsearchresult_cleanno1 + ".temp");
+			while ((line = dr.read()) != null) {
+				if (line.length < 5)
+					continue;
+				String label = line[0];
+				String arg1 = line[1];
+				String arg2 = line[2];
+				String relation = line[3];
+				String[] arg1enid = line[4].split(";");
+				String[] arg2enid = line[5].split(";");
+				for (String a1 : arg1enid) {
+					if (doit(dw, a1, arg1, arg2, relation, label, "arg1")) {
+						break;
+					}
+				}
+				for (String a2 : arg2enid) {
+					if (doit(dw, a2, arg2, arg1, relation, label, "arg2")) {
+						break;
+					}
+				}
+				// D.p(arg1enid.length,arg2enid.length);
+				// break;
+			}
+			dr.close();
+			dw.close();
+			{
+				Sort.sort(Main.fout_fbsearchresult_cleanno1 + ".temp", Main.fout_fbsearchresult_cleanno1, Main.dir,
+						new Comparator<String[]>() {
+
+							@Override
+							public int compare(String[] o1, String[] o2) {
+								// TODO Auto-generated method stub
+								int widindex = 2;
+								// look at function doit() dw.write(....);
+								int wid1 = Integer.parseInt(o1[widindex]);
+								int wid2 = Integer.parseInt(o2[widindex]);
+								return wid1 - wid2;
+							}
+
+						});
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
 	public static void getClean() {
 		try {
 			DelimitedReader dr = new DelimitedReader(Main.fin_mid_enurl);
@@ -127,6 +197,9 @@ public class S1_variable_nellent_fbmid {
 					continue;
 				String label = line[0];
 				String arg1 = line[1];
+				if (arg1.equals("Harvey Araton")) {
+					D.p(arg1);
+				}
 				String arg2 = line[2];
 				String relation = line[3];
 				String[] arg1enid = line[4].split(";");
@@ -163,19 +236,19 @@ public class S1_variable_nellent_fbmid {
 		}
 	}
 
-	private static void doit(DelimitedWriter dw, String a, String arg1, String arg2, String relation, String label,
+	private static boolean doit(DelimitedWriter dw, String a, String arg1, String arg2, String relation, String label,
 			String arg1OrArg2) throws IOException {
 		if (!a.startsWith("/en")) {
-			return;
+			return false;
 		}
 		a = a.replace("/en/", "");
 		String mid = enurl2mid.get(a);
 		if (mid == null) {
-			return;
+			return false;
 		}
 		List<Integer> list_artid = mid2artid.get(mid);
 		if (list_artid == null) {
-			return;
+			return false;
 		}
 
 		String enid = a;
@@ -184,6 +257,7 @@ public class S1_variable_nellent_fbmid {
 		for (int artid : list_artid) {
 			dw.write(enid, mid, artid, argname, otherarg, relation, label, arg1OrArg2);
 		}
+		return true;
 
 	}
 
@@ -272,7 +346,7 @@ public class S1_variable_nellent_fbmid {
 				DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_nellstring_mid_cosine);
 				for (String[] c : candidates) {
 					String mid = c[0];
-					if (mid.equals("/m/058b6")) {
+					if (mid.equals("/m/071_lf")) {
 						D.p("a");
 					}
 					String nellstring = c[1];
@@ -287,7 +361,8 @@ public class S1_variable_nellent_fbmid {
 						if (s > similarity)
 							similarity = s;
 					}
-					dw.write(mid, nellstring, similarity);
+
+					dw.write(mid, nellstring, similarity + Main.smooth);
 				}
 				dw.close();
 			}
@@ -474,28 +549,29 @@ public class S1_variable_nellent_fbmid {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		getraw();
+		// getraw();
 
 		/**
 		 * Using a lot of files to get good looking, nellstring 2 mid &
 		 * wikipedia id
 		 */
-		getClean();
-
+		// getClean();
+		/**Only consider the number 1 fbsearch result*/
+		getCleanNo1Only();
 		/** filter stanford wikipedia to get subset stanford */
-		filter_wp_stanford();
+		// filter_wp_stanford();
 
 		/** get all candidate <nellstring, mid> */
-		getCandidateNellstringMid();
+		//getCandidateNellstringMid();
 
 		/** for every pair of <nellstring, mid>, get a similarity score for it */
-		getWeightEntitynameCosine();
+		//getWeightEntitynameCosine();
 
 		/**
 		 * Get a subset of fbtype infomation, the whole set is in
 		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
 		 * */
-		subsetfin_freebase_type_sortMid();
+		//subsetfin_freebase_type_sortMid();
 	}
 
 }
