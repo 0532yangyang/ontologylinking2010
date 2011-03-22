@@ -1,12 +1,12 @@
 package freebase.candidate;
 
 public class OneBf {
-	int nid;
-	int edge;
-	int prev;
-	int depth;
+	public int nid;
+	public int edge;
+	public int prev;
+	public int depth;
 
-	OneBf(int nid, int edge, int prev, int depth) {
+	public OneBf(int nid, int edge, int prev, int depth) {
 		this.nid = nid;
 		this.prev = prev;
 		this.depth = depth;

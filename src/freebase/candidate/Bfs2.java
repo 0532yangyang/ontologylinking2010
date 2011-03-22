@@ -280,7 +280,6 @@ public class Bfs2 {
 		loadEdges();
 		calc();
 		//test();
-
 	}
 
 }

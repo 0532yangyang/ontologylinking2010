@@ -91,6 +91,8 @@ public class StringUtil {
 	}
 
 	public static int numOfShareWords(String str1, String str2, int[] par_return) {
+		str1 = str1.toLowerCase();
+		str2 = str2.toLowerCase();
 		List<String> l1 = tokenize(str1, new char[] { ' ', '_' });
 		List<String> l2 = tokenize(str2, new char[] { ' ', '_' });
 		List<String> sorted_l1 = new ArrayList<String>();

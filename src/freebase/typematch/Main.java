@@ -31,7 +31,7 @@ public class Main {
 	static final int CANDIDATE_NUM = 10;
 	static String fout_candidatemapping_nelltype_fbtype = dir + "/candidatemapping_nelltype_fbtype";
 	static String fout_weight_type_shareentity = dir + "/weight_typeshareentity";
-	static String fout_weight_type_shareentity_tfidf = dir + "/weight_typeshareentity_tfidf";
+	//static String fout_weight_type_shareentity_tfidf = dir + "/weight_typeshareentity_tfidf";
 	// static String fout_candidatemapping_nelltype_fbtype_count =
 	// dir+"/candidatemapping_nelltype_fbtype_count";
 	// static String fout_candidatemapping_nelltype_fbtype_argname_mid =
@@ -43,12 +43,15 @@ public class Main {
 	 */
 	static String fout_fbsearchresult_raw = dir + "/fbsearch_label_arg1_arg2_relation_mid1list_mid2list";
 	public static String fout_fbsearchresult_clean = dir + "/enid_mid_wid_argname_otherarg_relation_label.sbwid";
-
+	public static String fout_fbsearchresult_cleanno1 = dir + "/enid_mid_wid_argname_otherarg_relation_label.no1.sbwid";
+	static String file_myfbsearch = dir+"/myfbsearch";
 	/** Mid 2 Wikipedia Id */
 	static String fin_wex_category = "/projects/pardosa/s5/clzhang/tmp/wex/a/wex-category.tsv";
 	static String fin_freebasedump_wikipedia_enid = pdir + "/fbdump_wikipedia_enid.temp";
-	public static String fout_mid_artid = pdir + "/mid_wid_title.sbwid";
-	static String fout_mid_artid_sbmid = pdir + "/mid_wid_title.sbmid";
+	public static String fout_mid_artid = pdir + "/mid_wid.sbwid";
+	static String fout_mid_artid_sbmid = pdir + "/mid_wid.sbmid";
+	public static String fout_mid_wid_title = pdir+"/mid_wid_title.sbmid";
+	public static String fout_mid_wid_title_sbwid = pdir+"/mid_wid_title.sbwid";
 	// static String fout_mid_mainwid = pdir+"/mid_mainwid.sbwid";
 	// static String fout_mid_mainwid_sbmid = pdir+"/mid_mainwid.sbmid";
 	static String fout_wid_categorywiki = pdir + "/wid_catwiki.sbwid";
@@ -63,6 +66,7 @@ public class Main {
 	/** candidate nell string 2 mid & score */
 	public static String fout_candidatemapping_nellstring_mid = dir + "/candidatemapping_nellstring_mid";
 	static String fout_weight_nellstring_mid_cosine = dir + "/weight_entityname_cosine";
+	static final double smooth = 0.01;
 	static String fout_temp_mid_wid_argA_argB_appearInWiki = dir + "/temp_mid_wid_argA_argB_appearInWiki";
 
 	/** fbname and alias */
@@ -81,13 +85,13 @@ public class Main {
 	// static String fout_nelltype_binary = dir_nellclassifier+"/binary";
 	static String fout_wid_categorywiki_subset = dir + "/wid_wikicat_subset";
 	static final int TOPKSentenceInWkarticle = 5;
-	static final double NATakeRatio = 0.3;
+	static final double NATakeRatio = 0.0;
 	static final int MIN_TRAINING_INSTANCE = 0;
-	static final int SAMPLPE_SIZE_PER_FBTYPE = 100;
+	static final int SAMPLPE_SIZE_PER_FBTYPE = 500;
 
 	/** weighted disjunctive clauses */
 	static String fout_clauses = dir + "/clauses";
-	static String fout_predict1 = dir + "/predict1";
+	public static String fout_predict1 = dir + "/predict1";
 
 	/** canonical rule weight */
 	static final int WEIGHT_CANONICAL = 1000;
@@ -117,10 +121,10 @@ public class Main {
 		/**
 		 * Generate candidate nell entity vs fb entity (VERY BIG java file)
 		 */
-		S1_variable_nellent_fbmid.main(null);
+		//S1_variable_nellent_fbmid.main(null);
 
 		/** Generate candidate Nell type vs FB Type */
-		S2_variable_nelltype_fbtype_count.main(null);
+		//S2_variable_nelltype_fbtype_count.main(null);
 
 		/** Train the classifier for fb entity */
 		S4_nellclass_classifier.main(null);

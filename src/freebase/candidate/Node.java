@@ -2,7 +2,7 @@ package freebase.candidate;
 
 import java.util.List;
 
-class Node {
+public class Node {
 	int id;
 	NodeLs head;
 	NodeLs tail;
