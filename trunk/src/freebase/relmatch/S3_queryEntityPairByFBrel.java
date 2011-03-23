@@ -111,7 +111,8 @@ public class S3_queryEntityPairByFBrel {
 	public static void queryAllNellWithWholePath() throws Exception {
 		loadgraph(Main.file_fbgraph_clean);
 		System.out.println("Start querying all concate fbrelations");
-		DelimitedReader dr = new DelimitedReader(Main.file_seedbfspath_show + ".group");
+		DelimitedReader dr = new DelimitedReader(Main.file_seedbfspath_show
+				+ ".group");
 		DelimitedWriter dw = new DelimitedWriter(Main.file_queryresult);
 		String[] line;
 		while ((line = dr.read()) != null) {
@@ -137,7 +138,8 @@ public class S3_queryEntityPairByFBrel {
 		dw.close();
 	}
 
-	public static List<int[]> queryEntityWithWholePath(int[] query) throws Exception {
+	public static List<int[]> queryEntityWithWholePath(int[] query)
+			throws Exception {
 		List<int[]> result = new ArrayList<int[]>();
 		if (query.length == 0)
 			return result;
@@ -252,28 +254,31 @@ public class S3_queryEntityPairByFBrel {
 
 	//
 	public static void sortResult_fake1() throws IOException {
-		Sort.sort(Main.file_queryresult, Main.file_queryresult + ".sort", Main.dir, new Comparator<String[]>() {
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				// TODO Auto-generated method stub
-				StringBuilder sb1 = new StringBuilder();
-				StringBuilder sb2 = new StringBuilder();
-				for (String a : o1)
-					sb1.append(a).append("\t");
-				for (String a : o2)
-					sb2.append(a).append("\t");
-				return sb1.toString().compareTo(sb2.toString());
-			}
-		});
+		Sort.sort(Main.file_queryresult, Main.file_queryresult + ".sort",
+				Main.dir, new Comparator<String[]>() {
+					@Override
+					public int compare(String[] o1, String[] o2) {
+						// TODO Auto-generated method stub
+						StringBuilder sb1 = new StringBuilder();
+						StringBuilder sb2 = new StringBuilder();
+						for (String a : o1)
+							sb1.append(a).append("\t");
+						for (String a : o2)
+							sb2.append(a).append("\t");
+						return sb1.toString().compareTo(sb2.toString());
+					}
+				});
 	}
 
 	//
-	static HashMap<Integer, String> entity_name = new HashMap<Integer, String>(30000000);
+	static HashMap<Integer, String> entity_name = new HashMap<Integer, String>(
+			30000000);
 
 	//
 	public static void giveEntityName_nellrel2fbpairs() throws IOException {
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+			DelimitedReader dr = new DelimitedReader(
+					Main.file_gnid_mid_wid_title);
 			String[] line;
 			while ((line = dr.read()) != null) {
 				// entity_name.put(Integer.parseInt(line[0]),line[2].replace("\\s","_"));
@@ -284,8 +289,10 @@ public class S3_queryEntityPairByFBrel {
 			dr.close();
 		}
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_queryresult + ".sort");
-			DelimitedWriter dw = new DelimitedWriter(Main.file_queryresult + ".sort.name");
+			DelimitedReader dr = new DelimitedReader(Main.file_queryresult
+					+ ".sort");
+			DelimitedWriter dw = new DelimitedWriter(Main.file_queryresult
+					+ ".sort.name");
 			String[] line;
 			while ((line = dr.read()) != null) {
 				int arg1 = Integer.parseInt(line[2]);
@@ -297,7 +304,8 @@ public class S3_queryEntityPairByFBrel {
 				if (arg2Name == null)
 					arg2Name = "NA";
 				if (arg1Name != null && arg2Name != null) {
-					dw.write(line[0], line[1], line[2], line[3], arg1Name, arg2Name);
+					dw.write(line[0], line[1], line[2], line[3], arg1Name,
+							arg2Name);
 				}
 			}
 			dr.close();
@@ -308,7 +316,8 @@ public class S3_queryEntityPairByFBrel {
 
 	public static void giveEntityName() throws IOException {
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+			DelimitedReader dr = new DelimitedReader(
+					Main.file_gnid_mid_wid_title);
 			String[] line;
 			while ((line = dr.read()) != null) {
 				// entity_name.put(Integer.parseInt(line[0]),line[2].replace("\\s","_"));
@@ -322,7 +331,8 @@ public class S3_queryEntityPairByFBrel {
 		}
 		{
 			DelimitedReader dr = new DelimitedReader(Main.file_queryresult);
-			DelimitedWriter dw = new DelimitedWriter(Main.file_queryresult + ".name");
+			DelimitedWriter dw = new DelimitedWriter(Main.file_queryresult
+					+ ".name");
 			String[] line;
 
 			while ((line = dr.read()) != null) {
@@ -356,17 +366,31 @@ public class S3_queryEntityPairByFBrel {
 
 	public static void sortQueryResultByArg1() throws IOException {
 		try {
-			Sort.sort(Main.file_queryresult, Main.file_queryresult + ".name.sortByArg1", Main.dir,
-					new Comparator<String[]>() {
+			Sort.sort(Main.file_queryresult, Main.file_queryresult
+					+ ".name.sortByArg1", Main.dir, new Comparator<String[]>() {
 
-						@Override
-						public int compare(String[] o1, String[] o2) {
-							// TODO Auto-generated method stub
-							int id1 = Integer.parseInt(o1[2].split(" ")[0]);
-							int id2 = Integer.parseInt(o2[2].split(" ")[0]);
-							return id1 - id2;
-						}
-					});
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					// TODO Auto-generated method stub
+					int id1 = Integer.parseInt(o1[2].split(" ")[0]);
+					int id2 = Integer.parseInt(o2[2].split(" ")[0]);
+					return id1 - id2;
+				}
+			});
+
+			Sort.sort(Main.file_queryresult, Main.file_queryresult
+					+ ".name.sortByArg2", Main.dir, new Comparator<String[]>() {
+
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					// TODO Auto-generated method stub
+					String[] os1 = o1[2].split(" ");
+					String[] os2 = o2[2].split(" ");
+					int id1 = Integer.parseInt(os1[os1.length - 1]);
+					int id2 = Integer.parseInt(os2[os2.length - 1]);
+					return id1 - id2;
+				}
+			});
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -374,34 +398,13 @@ public class S3_queryEntityPairByFBrel {
 		}
 	}
 
-	public static void sortQueryResultByArg2() {
-		try {
-			Sort.sort(Main.file_queryresult, Main.file_queryresult + ".name.sortByArg2", Main.dir,
-					new Comparator<String[]>() {
 
-						@Override
-						public int compare(String[] o1, String[] o2) {
-							// TODO Auto-generated method stub
-							String []os1 = o1[2].split(" ");
-							String []os2 = o2[2].split(" ");
-							int id1 = Integer.parseInt(os1[os1.length-1]);
-							int id2 = Integer.parseInt(os2[os2.length-1]);
-							return id1 - id2;
-						}
-					});
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-//		queryAllNellWithWholePath();
-//		giveEntityName();
+		// queryAllNellWithWholePath();
+		// giveEntityName();
 		sortQueryResultByArg1();
-		sortQueryResultByArg2();
-
 	}
 
 }
