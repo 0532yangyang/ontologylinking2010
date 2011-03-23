@@ -68,6 +68,7 @@ public class QueryFBPairByConcatRelation {
 	static GraphEdge edges[] = new GraphEdge[MaxRel];
 	static int MaxNodeSize = 0;
 	static List<int[]>all = new ArrayList<int[]>();
+
 	static void load2(String fbgraph) {
 		try {
 			
@@ -360,6 +361,8 @@ public class QueryFBPairByConcatRelation {
 		}
 		
 	}
+	
+	
 	public static void main(String[] args)throws Exception {
 		// TODO Auto-generated method stub
 	//	System.setOut(new PrintStream("sb.out"));
@@ -372,11 +375,11 @@ public class QueryFBPairByConcatRelation {
 		//dwlog.close();
 		
 		
-		/***
+	
 		load2(Setting.graph2);
 		queryAllNellWithWholePath();
 		sortResult();
-		**/
+	
 		giveEntityName();
 		
 	}

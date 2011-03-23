@@ -1,5 +1,9 @@
 package freebase.relmatch;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class Main {
 	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/relationmatch";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
@@ -20,4 +24,7 @@ public class Main {
 	static final String file_arg2gnid = dir+"/arg2gnid_arg12_mid12_gnid12";
 	static final String file_seedbfspath_raw = dir+"/seedbfspathes_raw";
 	static final String file_seedbfspath_show = dir+"/seedbfspathes_show";
+	
+	/**query graph by FB relation*/
+	static final String file_queryresult = dir+"/queryresult";
 }
