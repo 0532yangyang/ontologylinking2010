@@ -161,37 +161,37 @@ public class StringTable {
 	}
 
 	public static void print(List<String[]> table, String file, final int MaxColumnWidth) throws IOException {
-DelimitedWriter dw = new DelimitedWriter(file);
+		DelimitedWriter dw = new DelimitedWriter(file);
 		int numColumns = table.get(0).length;
 		int[] size = new int[numColumns];
-		for(int i=0;i<numColumns;i++){
+		for (int i = 0; i < numColumns; i++) {
 			List<Integer> len = new ArrayList<Integer>();
-			for(String []a: table){
+			for (String[] a : table) {
 				len.add(a[i].length());
 			}
 			Collections.sort(len);
-			int sp = Math.min((int) (len.size()*0.8),len.size()-1);
+			int sp = Math.min((int) (len.size() * 0.8), len.size() - 1);
 			size[i] = Math.min(MaxColumnWidth, len.get(sp));
 		}
-//		for (String[] a : table) {
-//			for (int i = 0; i < numColumns; i++) {
-//				size[i] += a[i].length();
-//			}
-//		}
-//		for(int i=0;i<numColumns;i++){
-//			size[i] = (int) (size[i]*2.0/table.size());
-//		}
+		// for (String[] a : table) {
+		// for (int i = 0; i < numColumns; i++) {
+		// size[i] += a[i].length();
+		// }
+		// }
+		// for(int i=0;i<numColumns;i++){
+		// size[i] = (int) (size[i]*2.0/table.size());
+		// }
 		StringBuilder sb = new StringBuilder();
 		for (String[] a : table) {
-			for(int i=0;i<numColumns;i++){
+			for (int i = 0; i < numColumns; i++) {
 				int l0 = a[i].length();
 				String x = "";
-				if(l0 > size[i]){
-					x = a[i].substring(0,size[i]);
-				}else{
+				if (l0 > size[i]) {
+					x = a[i].substring(0, size[i]);
+				} else {
 					x = a[i];
 				}
-				for(int k=0;k<size[i]-x.length();k++){
+				for (int k = 0; k < size[i] - x.length(); k++) {
 					sb.append(" ");
 				}
 				sb.append(x).append(" | ");
@@ -200,5 +200,26 @@ DelimitedWriter dw = new DelimitedWriter(file);
 			sb = new StringBuilder();
 		}
 		dw.close();
+	}
+
+	public static List<String[]> selectTopKofBlock(List<String[]>table, int index, int topk)throws IOException{
+		List<String[]>result = new ArrayList<String[]>();
+		String last = "";
+		int lastcount = 0;
+		for(String []a:table){
+			String key = a[index];
+			if(key.equals(last)){
+				if(lastcount <topk){
+					result.add(a);
+					lastcount++;
+				}
+			}else{
+				//new one!
+				last = key;
+				lastcount = 1;
+				result.add(a);
+			}
+		}
+		return result;
 	}
 }
