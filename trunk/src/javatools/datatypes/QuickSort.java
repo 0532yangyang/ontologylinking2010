@@ -1,5 +1,6 @@
 package javatools.datatypes;
 
+/**Written by Xiao*/
 public class QuickSort {
 	public static int[] quicksort(double[] main) {
 		int[] index = new int[main.length];
