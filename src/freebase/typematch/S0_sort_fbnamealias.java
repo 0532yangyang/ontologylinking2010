@@ -2,7 +2,8 @@ package freebase.typematch;
 
 import java.util.Comparator;
 
-import multir.util.delimited.Sort;
+import javatools.mydb.Sort;
+
 
 public class S0_sort_fbnamealias {
 	public static void main(String []args){

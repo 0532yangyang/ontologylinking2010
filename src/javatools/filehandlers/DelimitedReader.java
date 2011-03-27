@@ -88,6 +88,14 @@ public class DelimitedReader {
 		}
 		return all;
 	}
+	public List<String[]> readAll(int MAX) throws IOException {
+		List<String[]> all = new ArrayList<String[]>(MAX);
+		String[] line;
+		while ((line = read()) != null) {
+			all.add(line);
+		}
+		return all;
+	}
 	public HashMap<String,String> readAll2Hash(int keyId, int valueId) throws IOException{
 		HashMap<String,String>all = new HashMap<String,String>();
 		String []l;

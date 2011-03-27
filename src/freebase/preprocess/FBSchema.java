@@ -9,8 +9,8 @@ import java.util.HashSet;
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
-import multir.util.delimited.Sort;
 
 public class FBSchema {
 

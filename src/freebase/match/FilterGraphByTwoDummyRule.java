@@ -7,8 +7,8 @@ import java.util.List;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
-import multir.util.delimited.Sort;
 
 /**Let us assume at most two dummies between Two objects*/
 public class FilterGraphByTwoDummyRule {

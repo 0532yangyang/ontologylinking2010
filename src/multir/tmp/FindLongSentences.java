@@ -3,7 +3,8 @@ package multir.tmp;
 import java.io.IOException;
 import java.util.Comparator;
 
-import multir.util.delimited.Sort;
+import javatools.mydb.Sort;
+
 
 public class FindLongSentences {
 

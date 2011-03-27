@@ -13,9 +13,9 @@ import java.util.zip.GZIPOutputStream;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 import multir.preprocess.RelationECML;
-import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.Builder;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;

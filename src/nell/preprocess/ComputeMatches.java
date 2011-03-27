@@ -12,8 +12,8 @@ import java.util.List;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
-import multir.util.delimited.Sort;
 
 public class ComputeMatches {
 

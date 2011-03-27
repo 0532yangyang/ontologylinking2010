@@ -11,10 +11,10 @@ import java.util.List;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 import freebase.match.Setting;
 
-import multir.util.delimited.Sort;
 
 public class BfsShowSeedLinks {
 

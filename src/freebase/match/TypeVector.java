@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 import multir.util.HashList;
-import multir.util.delimited.Sort;
 
 public class TypeVector {
 

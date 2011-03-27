@@ -16,8 +16,8 @@ import javatools.filehandlers.MergeRead;
 import javatools.filehandlers.MergeReadRes;
 import javatools.filehandlers.MergeReadResStr;
 import javatools.filehandlers.MergeReadStr;
+import javatools.mydb.Sort;
 
-import multir.util.delimited.Sort;
 
 public class FBlength0Relation {
 

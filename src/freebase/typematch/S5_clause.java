@@ -18,7 +18,7 @@ public class S5_clause {
 	static private String getVariableNameEntity(String nellstring, String mid) {
 		String n = convertNellstring(nellstring);
 		String m = mid;
-		return n + "::" + m;
+		return "VE::"+n + "::" + m;
 	}
 
 	static private String convertNellstring(String nellstring) {
@@ -27,7 +27,7 @@ public class S5_clause {
 
 	static private String getVariableNameType(String nelltype, String fbtype) {
 
-		return nelltype + "::" + fbtype;
+		return "VT::"+nelltype + "::" + fbtype;
 	}
 
 	/**

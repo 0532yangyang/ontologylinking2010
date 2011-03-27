@@ -28,5 +28,31 @@ public class Main {
 	
 	/**query graph by FB relation*/
 	static final String file_queryresult = dir+"/queryresult";
-	static final String file_queryresult_name = dir+"/queryresult_startid_endid_nellrel_fbrid_fbrstr_entities_entitienames";
+	static final String file_queryresult_name = dir+"/queryresult_name";
+	
+	/**S4 similarity weight file*/
+	static final String file_weight_similarity_nellrel_fbrel = dir+"/weight_similarity_nellrel_fbrel";
+	static final String file_weight_sharepair_nellrel_fbrel = dir+"/weight_sharepair_nellrel_fbrel";
+	static final String file_weight_seednegativepair_nellrel_fbrel = dir+"/weight_seednegativepair_nellrel_fbrel";
+	static final String file_weight_defaultnegativepair_nellrel_fbrel = dir+"/weight_defaultnegativepair_nellrel_fbrel";
+	static final String file_weight_typesatifying = dir+"/weight_typesatisfying_nellrel_fbrel";
+	/**S5 instance and type constraint*/
+	static final int PRM_sampledinstance = 100;
+	static final String file_queryresult_sample = file_queryresult+".sample";
+	static final String file_gnid2fbtype = dir+"/gnid_fbtype";
+	static final String file_queryresult_typesatisfy= dir+"/queryresult_typesatisfy";
+	/**S6 clauses and inference*/
+	static final String file_candidate = dir+"/candidate";
+	static final String file_clause = dir+"/clause";
+	static final String file_predict = dir+"/predict";
+	static int PAR_NUM_CANDIDATE = 10;
+	static int PAR_WEIGHT_CANONICAL=1000;
+	static double PAR_WEIGHT_SEED_NEG = 10;
+	static double PAR_WEIGHT_Default_NEG = 10;
+	
+	
+	public static void main(String []args){
+		S6_clause.main(null);
+		S7_weightedmaxsat.main(null);
+	}
 }

@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import multir.util.delimited.Sort;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 /**
  * Store the freebase dump as a linked graph; Id and edge are encoded in numbers

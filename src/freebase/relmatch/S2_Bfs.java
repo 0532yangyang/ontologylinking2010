@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import multir.util.delimited.Sort;
 import nell.preprocess.NellOntology;
 import nell.preprocess.NellRelation;
 
@@ -17,6 +16,7 @@ import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 import freebase.candidate.*;
 
@@ -345,7 +345,7 @@ public class S2_Bfs {
 		}
 	}
 
-	public static void getPath() {
+	public static void getPath_notusenow() {
 		try {
 			D.p("get path!");
 			NellOntology no = new NellOntology();
@@ -355,8 +355,8 @@ public class S2_Bfs {
 			List<String[]> nellstrMidPred = (new DelimitedReader(freebase.typematch.Main.fout_predict1)).readAll();
 			for (String[] a : nellstrMidPred) {
 				String[] s = a[0].split("::");
-				if (s.length == 2 && s[1].startsWith("/m/")) {
-					nellstr2mid.put(s[0], s[1]);
+				if (s[0].equals("VE")) {
+					nellstr2mid.put(s[1], s[2]);
 				}
 			}
 			D.p(nellstr2mid.size());

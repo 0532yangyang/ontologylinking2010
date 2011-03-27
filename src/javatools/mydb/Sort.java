@@ -1,4 +1,4 @@
-package multir.util.delimited;
+package javatools.mydb;
 
 import java.io.File;
 import java.io.FileInputStream;
