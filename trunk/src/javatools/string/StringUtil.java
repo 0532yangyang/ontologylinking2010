@@ -90,6 +90,65 @@ public class StringUtil {
 		return num;
 	}
 
+	/**
+	 * Config: 0: toLowerCase; 1: removeStop; 2: stem
+	 * */
+	public static int numOfShareWords(List<String> wordlist1, List<String> wordlist2, boolean[] config) {
+		List<String> temp1 = new ArrayList<String>();
+		List<String> temp2 = new ArrayList<String>();
+
+		listconvert(wordlist1, temp1, config);
+		listconvert(wordlist2, temp2, config);
+
+//		Collections.sort(temp1);
+//		Collections.sort(temp2);
+
+		int i = 0, j = 0, num = 0;
+		while (i < temp1.size() && j < temp2.size()) {
+			String a = temp1.get(i);
+			String b = temp2.get(j);
+			/** 0: to lower case */
+			if (config[0]) {
+				a = a.toLowerCase();
+				b = b.toLowerCase();
+			}
+			int c = a.compareTo(b);
+			if (c == 0) {
+				num++;
+				i++;
+				j++;
+			} else if (c < 0) {
+				i++;
+			} else {
+				j++;
+			}
+		}
+		return num;
+	}
+
+	private static void listconvert(List<String> original, List<String> converted, boolean[] config) {
+		HashSet<String>temp = new HashSet();
+		for (String w : original) {
+			// remove stop words
+			if (config[1]) {
+				if (RemoveStopwords.isStop(w)) {
+					continue;
+				}
+			}
+			// convert to lower case
+			if (config[0]) {
+				w = w.toLowerCase();
+			}
+			//stem
+			if(config[2]){
+				w = Stemmer.stem(w);
+			}
+			temp.add(w);
+		}
+		converted.addAll(temp);
+		Collections.sort(converted);
+	}
+
 	public static int numOfShareWords(String str1, String str2, int[] par_return) {
 		str1 = str1.toLowerCase();
 		str2 = str2.toLowerCase();

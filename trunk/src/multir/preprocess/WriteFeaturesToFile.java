@@ -9,8 +9,8 @@ import java.util.zip.GZIPInputStream;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
-import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
@@ -13,7 +14,7 @@ class NameCount<T> {
 	int count;
 }
 
-public class HashCount<T> {
+public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<T,Integer>>{
 
 	/**
 	 * @param args
@@ -91,6 +92,33 @@ public class HashCount<T> {
 			hc.add(r.nextInt(10));
 		}
 		hc.printAll();
+	}
+
+	Iterator<Entry<T,Integer>>it;
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return it.hasNext();
+	}
+
+	@Override
+	public Entry<T,Integer> next() {
+		// TODO Auto-generated method stub
+		
+		return it.next();
+	}
+
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Iterator<Entry<T,Integer>> iterator() {
+		// TODO Auto-generated method stub
+		it = this.count.entrySet().iterator();
+		return it;
 	}
 
 }

@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import multir.util.delimited.Sort;
 
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 import javatools.mydb.StringTable;
 import javatools.string.StringUtil;
 

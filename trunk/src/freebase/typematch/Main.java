@@ -21,7 +21,7 @@ public class Main {
 
 	/** Input: freebase entity 2 type */
 	static String fin_freebase_type_sortMid = pdir + "/mid_type_argname.sbmid";
-	static String fin_freebase_type_clean_sortMid = pdir + "/mid_type_argname.clean.sbmid";
+	public static String fin_freebase_type_clean_sortMid = pdir + "/mid_type_argname.clean.sbmid";
 	static String fin_freebase_type_clean_sample = dir + "/mid_type_argname.clean.sample";
 	static String fin_freebase_type_sortType = pdir + "/mid_type_argname.sbtype";
 	static String fout_freebase_type_sortMid_subset = dir + "/mid_type_argname.subset";
@@ -127,7 +127,7 @@ public class Main {
 		//S2_variable_nelltype_fbtype_count.main(null);
 
 		/** Train the classifier for fb entity */
-		S4_nellclass_classifier.main(null);
+		//S4_nellclass_classifier.main(null);
 
 		/** Generate clauses */
 		S5_clause.main(null);

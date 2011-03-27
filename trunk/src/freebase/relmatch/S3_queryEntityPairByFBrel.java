@@ -8,10 +8,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import multir.util.delimited.Sort;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 class GraphEdge {
 	int relationId;

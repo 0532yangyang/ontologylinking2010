@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import multir.util.delimited.Sort;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.Sort;
 
 import freebase.match.Setting;
 class GraphEdge {

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
-import multir.util.delimited.Sort;
+import javatools.mydb.Sort;
 
 public class DataMid2WikiId {
 

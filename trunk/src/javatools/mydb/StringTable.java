@@ -10,8 +10,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+
+import percept.util.delimited.DelimitedReader;
+
 import javatools.administrative.D;
 import javatools.datatypes.HashCount;
+import javatools.datatypes.HashId;
 import javatools.filehandlers.DelimitedWriter;
 
 public class StringTable {
@@ -222,4 +226,22 @@ public class StringTable {
 		}
 		return result;
 	}
+
+//	/**
+//	 * Shuffle a file, taking at most K lines for each value of the index column c
+//	 * */
+//	public static void shuffleLargeFileByColumn(String file, int indexColumn, int K)throws IOException{
+//		HashId<String>hi = new HashId<String>();
+//		List<int[]>table = new ArrayList<int[]>(10000000);
+//		DelimitedReader dr =new DelimitedReader(file);
+//		String []l;
+//		int lineId = 0;
+//		while((l = dr.read())!=null){
+//			int keyId = hi.getId(l[indexColumn], true);
+//			table.add(new int[]{lineId,keyId});
+//			lineId++;
+//		}
+//		Collections.shuffle(table);
+//		Sort.sort(args)
+//	}
 }
