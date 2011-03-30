@@ -239,6 +239,7 @@ public class S6_clause {
 			getShareInstanceClause();
 			getNegInstanceClause();
 			getTypeSatisfyClause();
+			
 			dwclause.close();
 		} catch (Exception e) {
 			e.printStackTrace();

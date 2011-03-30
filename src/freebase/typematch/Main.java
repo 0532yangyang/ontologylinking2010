@@ -16,8 +16,8 @@ public class Main {
 	/**
 	 * This file is created by freebase.preprocess.NellSeedSearchInFBEngineClean
 	 */
-//	static String fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid = dir
-//			+ "/enid_mid_wid_argname_otherarg_relation_label.sbwid";
+	//	static String fin_enid_mid_wid_argname_otherarg_relation_label_sortbywid = dir
+	//			+ "/enid_mid_wid_argname_otherarg_relation_label.sbwid";
 
 	/** Input: freebase entity 2 type */
 	static String fin_freebase_type_sortMid = pdir + "/mid_type_argname.sbmid";
@@ -44,14 +44,14 @@ public class Main {
 	static String fout_fbsearchresult_raw = dir + "/fbsearch_label_arg1_arg2_relation_mid1list_mid2list";
 	public static String fout_fbsearchresult_clean = dir + "/enid_mid_wid_argname_otherarg_relation_label.sbwid";
 	public static String fout_fbsearchresult_cleanno1 = dir + "/enid_mid_wid_argname_otherarg_relation_label.no1.sbwid";
-	static String file_myfbsearch = dir+"/myfbsearch";
+	static String file_myfbsearch = dir + "/myfbsearch";
 	/** Mid 2 Wikipedia Id */
 	static String fin_wex_category = "/projects/pardosa/s5/clzhang/tmp/wex/a/wex-category.tsv";
 	static String fin_freebasedump_wikipedia_enid = pdir + "/fbdump_wikipedia_enid.temp";
 	public static String fout_mid_artid = pdir + "/mid_wid.sbwid";
 	static String fout_mid_artid_sbmid = pdir + "/mid_wid.sbmid";
-	public static String fout_mid_wid_title = pdir+"/mid_wid_title.sbmid";
-	public static String fout_mid_wid_title_sbwid = pdir+"/mid_wid_title.sbwid";
+	public static String fout_mid_wid_title = pdir + "/mid_wid_title.sbmid";
+	public static String fout_mid_wid_title_sbwid = pdir + "/mid_wid_title.sbwid";
 	// static String fout_mid_mainwid = pdir+"/mid_mainwid.sbwid";
 	// static String fout_mid_mainwid_sbmid = pdir+"/mid_mainwid.sbmid";
 	static String fout_wid_categorywiki = pdir + "/wid_catwiki.sbwid";
@@ -59,7 +59,7 @@ public class Main {
 	static String fin_mid_enurl = pdir + "/mid2enurl";
 
 	/** wikipedia stanford parsed result */
-	static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
+	public static String fin_wp_stanford = "/projects/pardosa/s5/clzhang/tmp/wp/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
 	static String fout_wp_mainidlist = dir + "/mainwidlist";
 	static String fout_wp_stanford_subset = dir + "/stanfordwiki_senid_artid_secid_token_pos_ner.subset.sbaid";
 	static String fout_wp_stanford_s4subset = dir + "/stanfordwiki_senid_artid_secid_token_pos_ner.s4subset.sbwid";
@@ -99,10 +99,10 @@ public class Main {
 	static boolean s0_fb_cleanFBType = false;
 	static boolean s0_sample1000EveryType = false;
 	static boolean s0_sortByType = false;
+
 	//static boolean s0_fb_cleanFBType = true;
 	// static boolean s0_sample1000EveryType = true;
 	// static boolean s0_sortByType =true;
-	
 
 	public static void main(String[] args) throws Exception {
 

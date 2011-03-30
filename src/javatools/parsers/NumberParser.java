@@ -708,6 +708,9 @@ public class NumberParser {
 	public static void main(String[] argv) throws Exception {
 		System.out
 				.println("Enter a string that contains a number and hit ENTER. Press CTRL+C to abort");
+		String a = "He can earn 100 dollars every 8 hours.";
+		String b = normalize(a);
+		D.p(b);
 		while (true) {
 			String in = D.r();
 			System.out.println(normalize(in));
