@@ -10,13 +10,13 @@ import javatools.filehandlers.DelimitedReader;
 
 public class RecordWpSenToken {
 
-	int sentenceId;
-	int sectionId;
-	int articleId;
-	String text;
-	String[] token;
-	String[] pos;
-	String[] ner;
+public 	int sentenceId;
+	public int sectionId;
+	public int articleId;
+	public String text;
+	public String[] token;
+	public String[] pos;
+	public String[] ner;
 
 	public static RecordWpSenToken read(DelimitedReader dr) throws IOException {
 		RecordWpSenToken rwst = new RecordWpSenToken();

@@ -1,5 +1,6 @@
 package freebase.relmatch;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,11 @@ import java.util.List;
 public class Main {
 	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/relationmatch";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
+//	static {
+//		if((new File(dir)).exists()){
+//			dir = "";
+//		}
+//	}
 	static String reportdir = "/projects/pardosa/s5/clzhang/ontologylink/relationmatch/report";
 	static String file_fbdump = pdir + "/freebasedump.sort";
 	static String file_fbdumpclean = dir+"/fbdump.clean.sort";

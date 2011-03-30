@@ -414,10 +414,10 @@ public class DateParser {
 		while (m.find()) {
 			result.add(m.group());
 		}
-		if(result.size()==0) {
+		if (result.size() == 0) {
 			m = SIMPLEYEARPATTERN.matcher(d);
 			while (m.find()) {
-				result.add(newDate(m.group(),"##","##"));
+				result.add(newDate(m.group(), "##", "##"));
 			}
 		}
 		return (result);
@@ -594,6 +594,10 @@ public class DateParser {
 				.asCalendar(DateParser.normalize("November 24th 1998"))));
 		System.out
 				.println("Enter a string containing a date expression and hit ENTER. Press CTRL+C to abort");
+		String a = "Sergei Vasilievich Rachmaninoff[1] (Russian pronunciation: [sʲɪrˈɡʲej rɐxˈmanʲɪnəf]; 1 April 1873 – 28 March 1943) was a Russian[2] composer";
+		String b = normalize(a);
+
+		System.out.println(b);
 		while (true) {
 			String in = D.r();
 			System.out.println(normalize(in));
