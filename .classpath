@@ -22,5 +22,7 @@
 	<classpathentry kind="lib" path="/projects/pardosa/s1/clzhang/workspace/testsai/lib/stanford-corenlp-src-2010-11-12.jar"/>
 	<classpathentry kind="lib" path="/projects/pardosa/s1/clzhang/workspace/testsai/lib/stanford-ner.jar"/>
 	<classpathentry kind="lib" path="/projects/pardosa/s1/clzhang/workspace/testsai/lib/stanford-postagger-2010-05-26.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.15-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

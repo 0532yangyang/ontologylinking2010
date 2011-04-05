@@ -669,9 +669,9 @@ public class S2_Bfs {
 	public static void main(String[] args) throws Exception {
 
 		/** Consider the whole graph, with typematch result as nell-->mid */
-		// getPath();
+		//getPath();
 		/** with fbsearch result's top 1 as best mid, consider the subgraph */
-		// getPath_fbsearchresultonly();
+		getPath_fbsearchresultonly();
 		
 		showPath();
 		// calc();
