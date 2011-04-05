@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-
 import percept.main.LogLinear;
 
 import javatools.administrative.D;
@@ -251,7 +250,7 @@ public class S4_nellclass_classifier {
 				}
 				StringBuilder sb = new StringBuilder();
 				// sb.append(nelltype + " ");
- 
+
 				{
 					/** Sentence feature */
 					while (wkreader.get(0).articleId < wid
@@ -596,14 +595,13 @@ public class S4_nellclass_classifier {
 			// subset_category();
 		}
 		/** featurize */
-		featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);
-		featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid, Main.fout_testing_featurized, false);
+		//		featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);
+		//		featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid, Main.fout_testing_featurized, false);
 
 		/** self test, split the train test 1:9 and get a performance */
 		for (int i = 0; i < 10; i++) {
 			// selftest();
 		}
-
 		trainTest();
 
 	}

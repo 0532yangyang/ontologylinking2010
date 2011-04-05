@@ -1,0 +1,1 @@
+java -Xmx30g -cp ".:bin" $1

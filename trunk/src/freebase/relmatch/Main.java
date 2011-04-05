@@ -22,7 +22,7 @@ public class Main {
 	static String file_fbnode = dir+"/fbnode";
 	static String file_fbnode_sbmid = dir+"/fbnode.sbmid";
 	static String file_fbgraph_subset = dir+"/fbGraph_subset";
-	static String file_gnid_mid_wid_title = dir+"/gnid_mid_wid_title";
+	public static String file_gnid_mid_wid_title = dir+"/gnid_mid_wid_title";
 	
 	/**bfs*/
 	static final int MaxDep = 3;
@@ -34,7 +34,7 @@ public class Main {
 	
 	/**query graph by FB relation*/
 	static final String file_queryresult = dir+"/queryresult";
-	static final String file_queryresult_name = dir+"/queryresult_name";
+	static final String file_queryresult_name = dir+"/queryresult_name_guid";
 	
 	/**S4 similarity weight file*/
 	static final String file_weight_similarity_nellrel_fbrel = dir+"/weight_similarity_nellrel_fbrel";
@@ -44,13 +44,13 @@ public class Main {
 	static final String file_weight_typesatifying = dir+"/weight_typesatisfying_nellrel_fbrel";
 	/**S5 instance and type constraint*/
 	static final int PRM_sampledinstance = 100;
-	static final String file_queryresult_sample = file_queryresult+".sample";
+	public static final String file_queryresult_sample = file_queryresult+".sample";
 	static final String file_gnid2fbtype = dir+"/gnid_fbtype";
 	static final String file_queryresult_typesatisfy= dir+"/queryresult_typesatisfy";
 	/**S6 clauses and inference*/
 	static final String file_candidate = dir+"/candidate";
 	static final String file_clause = dir+"/clause";
-	static final String file_predict = dir+"/predict";
+	public static final String file_predict = dir+"/predict";
 	static int PAR_NUM_CANDIDATE = 10;
 	static int PAR_WEIGHT_CANONICAL=1000;
 	static double PAR_WEIGHT_SEED_NEG = 10;

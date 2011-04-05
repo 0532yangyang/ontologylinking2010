@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-
 import percept.util.delimited.DelimitedReader;
 
 import javatools.administrative.D;
@@ -206,18 +205,18 @@ public class StringTable {
 		dw.close();
 	}
 
-	public static List<String[]> selectTopKofBlock(List<String[]>table, int index, int topk)throws IOException{
-		List<String[]>result = new ArrayList<String[]>();
+	public static List<String[]> selectTopKofBlock(List<String[]> table, int index, int topk) throws IOException {
+		List<String[]> result = new ArrayList<String[]>();
 		String last = "";
 		int lastcount = 0;
-		for(String []a:table){
+		for (String[] a : table) {
 			String key = a[index];
-			if(key.equals(last)){
-				if(lastcount <topk){
+			if (key.equals(last)) {
+				if (lastcount < topk) {
 					result.add(a);
 					lastcount++;
 				}
-			}else{
+			} else {
 				//new one!
 				last = key;
 				lastcount = 1;
@@ -227,21 +226,36 @@ public class StringTable {
 		return result;
 	}
 
-//	/**
-//	 * Shuffle a file, taking at most K lines for each value of the index column c
-//	 * */
-//	public static void shuffleLargeFileByColumn(String file, int indexColumn, int K)throws IOException{
-//		HashId<String>hi = new HashId<String>();
-//		List<int[]>table = new ArrayList<int[]>(10000000);
-//		DelimitedReader dr =new DelimitedReader(file);
-//		String []l;
-//		int lineId = 0;
-//		while((l = dr.read())!=null){
-//			int keyId = hi.getId(l[indexColumn], true);
-//			table.add(new int[]{lineId,keyId});
-//			lineId++;
-//		}
-//		Collections.shuffle(table);
-//		Sort.sort(args)
-//	}
+	public static List<List<String[]>> toblock(List<String[]> table, int index) {
+		List<List<String[]>> result = new ArrayList<List<String[]>>();
+		List<String[]> b = new ArrayList<String[]>();
+		b.add(table.get(0));
+		for (int i = 1; i < table.size(); i++) {
+			if (!table.get(i)[index].equals(b.get(0)[index])) {
+				result.add(b);
+				b = new ArrayList<String[]>();
+			}
+			b.add(table.get(i));
+		}
+		if (b.size() > 0)
+			result.add(b);
+		return result;
+	}
+	//	/**
+	//	 * Shuffle a file, taking at most K lines for each value of the index column c
+	//	 * */
+	//	public static void shuffleLargeFileByColumn(String file, int indexColumn, int K)throws IOException{
+	//		HashId<String>hi = new HashId<String>();
+	//		List<int[]>table = new ArrayList<int[]>(10000000);
+	//		DelimitedReader dr =new DelimitedReader(file);
+	//		String []l;
+	//		int lineId = 0;
+	//		while((l = dr.read())!=null){
+	//			int keyId = hi.getId(l[indexColumn], true);
+	//			table.add(new int[]{lineId,keyId});
+	//			lineId++;
+	//		}
+	//		Collections.shuffle(table);
+	//		Sort.sort(args)
+	//	}
 }
