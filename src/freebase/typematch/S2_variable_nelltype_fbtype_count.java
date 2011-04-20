@@ -90,86 +90,86 @@ public class S2_variable_nelltype_fbtype_count {
 		}
 	}
 
-//	public static void getWeight_typesharingentity_tfidf() throws Exception {
-//		DelimitedWriter dwtemp = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf + ".temp");
-//		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf);
-//
-//		List<String[]> list_intresting = new ArrayList<String[]>();
-//		List<String[]> nt_ft_tfidf = new ArrayList<String[]>();
-//		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
-//		loadTypeCount(Main.fout_fbtype_count);
-//
-//		DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
-//		String[] line;
-//
-//		HashSet<String> intresting = new HashSet<String>();
-//		int fbtypenull = 0, fbtypeNotnull = 0, nellclasstypenull = 0;
-//		while ((line = dr.read()) != null) {
-//			String mid = line[1];
-//			List<String> fbtypes = mid2ftype.get(mid);
-//
-//			String argname = line[3];
-//			String label = line[6];
-//			if (label.equals("-1"))
-//				continue;
-//			HashSet<String> nellclass = Main.nellontology.entity2class.get(argname);
-//			{
-//				if (fbtypes == null) {
-//					fbtypenull++;
-//					// D.p("fb type is null:", mid, line[0]);
-//					continue;
-//				}
-//				if (nellclass == null) {
-//					nellclasstypenull++;
-//					// D.p("nell class type is null:", argname);
-//					continue;
-//				}
-//			}
-//			fbtypeNotnull++;
-//			for (String ft : fbtypes) {
-//				for (String nt : nellclass) {
-//					// if (nt.equals("sportsTeam") &&
-//					// ft.equals("/business/employer")) {
-//					// D.p("sportsteam");
-//					// }
-//					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
-//				}
-//			}
-//		}
-//		D.p("fb type null & not null:", fbtypenull, fbtypeNotnull);
-//		D.p("nell class type null", nellclasstypenull);
-//		{
-//			/** interesting to list*/
-//			for (String a : intresting) {
-//				list_intresting.add(a.split("\t"));
-//			}
-//		}
-//		{
-//			/**uniq -c*/
-//			List<String[]> temp = StringTable.squeeze(list_intresting, new int[] { 0, 1 });
-//			for (String[] a : temp) {
-//				int v = Integer.parseInt(a[0]);
-//				int idf = map_typecount.get(a[2]);
-//				double u = v * 1.0 / Math.log(idf + 1);
-//				dwtemp.write(a[1], a[2], u, v, idf);
-//				nt_ft_tfidf.add(new String[] { a[1], a[2], u + "" });
-//			}
-//			dwtemp.close();
-//		}
-//		{
-//			/**sort columns by tfidf*/
-//			StringTable.sortByColumn(nt_ft_tfidf, new int[] { 0, 2 }, new boolean[] { false, true });
-//			for (String[] a : nt_ft_tfidf) {
-//				dw.write(a);
-//			}
-//			dw.close();
-//		}
-//	}
+	//	public static void getWeight_typesharingentity_tfidf() throws Exception {
+	//		DelimitedWriter dwtemp = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf + ".temp");
+	//		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity_tfidf);
+	//
+	//		List<String[]> list_intresting = new ArrayList<String[]>();
+	//		List<String[]> nt_ft_tfidf = new ArrayList<String[]>();
+	//		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
+	//		loadTypeCount(Main.fout_fbtype_count);
+	//
+	//		DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
+	//		String[] line;
+	//
+	//		HashSet<String> intresting = new HashSet<String>();
+	//		int fbtypenull = 0, fbtypeNotnull = 0, nellclasstypenull = 0;
+	//		while ((line = dr.read()) != null) {
+	//			String mid = line[1];
+	//			List<String> fbtypes = mid2ftype.get(mid);
+	//
+	//			String argname = line[3];
+	//			String label = line[6];
+	//			if (label.equals("-1"))
+	//				continue;
+	//			HashSet<String> nellclass = Main.nellontology.entity2class.get(argname);
+	//			{
+	//				if (fbtypes == null) {
+	//					fbtypenull++;
+	//					// D.p("fb type is null:", mid, line[0]);
+	//					continue;
+	//				}
+	//				if (nellclass == null) {
+	//					nellclasstypenull++;
+	//					// D.p("nell class type is null:", argname);
+	//					continue;
+	//				}
+	//			}
+	//			fbtypeNotnull++;
+	//			for (String ft : fbtypes) {
+	//				for (String nt : nellclass) {
+	//					// if (nt.equals("sportsTeam") &&
+	//					// ft.equals("/business/employer")) {
+	//					// D.p("sportsteam");
+	//					// }
+	//					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
+	//				}
+	//			}
+	//		}
+	//		D.p("fb type null & not null:", fbtypenull, fbtypeNotnull);
+	//		D.p("nell class type null", nellclasstypenull);
+	//		{
+	//			/** interesting to list*/
+	//			for (String a : intresting) {
+	//				list_intresting.add(a.split("\t"));
+	//			}
+	//		}
+	//		{
+	//			/**uniq -c*/
+	//			List<String[]> temp = StringTable.squeeze(list_intresting, new int[] { 0, 1 });
+	//			for (String[] a : temp) {
+	//				int v = Integer.parseInt(a[0]);
+	//				int idf = map_typecount.get(a[2]);
+	//				double u = v * 1.0 / Math.log(idf + 1);
+	//				dwtemp.write(a[1], a[2], u, v, idf);
+	//				nt_ft_tfidf.add(new String[] { a[1], a[2], u + "" });
+	//			}
+	//			dwtemp.close();
+	//		}
+	//		{
+	//			/**sort columns by tfidf*/
+	//			StringTable.sortByColumn(nt_ft_tfidf, new int[] { 0, 2 }, new boolean[] { false, true });
+	//			for (String[] a : nt_ft_tfidf) {
+	//				dw.write(a);
+	//			}
+	//			dw.close();
+	//		}
+	//	}
 
 	public static void getWeight_typesharingentity() throws Exception {
 		DelimitedWriter dwtemp = new DelimitedWriter(Main.fout_weight_type_shareentity + ".temp");
 		DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_shareentity);
-		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
+		//loadMid2Type(Main.fout_freebase_type_sortMid_subset);
 
 		DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
 		String[] line;
@@ -272,15 +272,78 @@ public class S2_variable_nelltype_fbtype_count {
 		}
 	}
 
+	public static void getWeight_negative() {
+		//loadMid2Type(Main.fout_freebase_type_sortMid_subset);
+		try {
+			String []allnellclass = Main.nellontology.classNames;
+			List<String[]>neg_evidence = new ArrayList<String[]>();
+			DelimitedReader dr = new DelimitedReader(Main.fout_fbsearchresult_clean);
+			DelimitedWriter dw = new DelimitedWriter(Main.fout_weight_type_negative);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String label = l[6];
+				if (label.equals("-1"))
+					continue;
+				String mid = l[1];
+				List<String> fbtypes = mid2ftype.get(mid);
+				String argname = l[3];
+				HashSet<String> nellclass = Main.nellontology.entity2class.get(argname);
+				
+				/**Notice many argname will be corresponding to more than one class, for example, 
+				 * Boston will be both a stateOrProvince & city*/
+				
+				if (fbtypes == null) {
+					D.p("fb type is null:", mid, l[0]);
+					continue;
+				}
+				if (nellclass == null) {
+					D.p("nell class type is null:", argname);
+					continue;
+				}
+				for(String ft: fbtypes){
+					for(String nt: allnellclass){
+						if(!nellclass.contains(nt) && nt!=null){
+							neg_evidence.add(new String[]{nt,ft,argname,mid});
+						}
+					}
+				}
+			}
+			
+			dr.close();
+			StringTable.sortByColumn(neg_evidence, new int[]{2});
+			//normalize: every argument has at all weight 1 !!!
+			HashCount hc = new HashCount();
+			List<List<String[]>>blocks = StringTable.toblock(neg_evidence, 2);
+			for(List<String[]>b: blocks){
+				double w = 1.0 / b.size();
+				
+			}
+			List<String[]>neg_evidence_squeeze = StringTable.squeeze(neg_evidence, new int[]{0,1});
+			StringTable.sortByColumn(neg_evidence_squeeze, new int[]{1,2});
+			for(String []a:neg_evidence_squeeze){
+				dw.write(a);
+			}
+			D.p("Negative evidence ",neg_evidence.size());
+			dw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-
+		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
+		
 		//getWeight_typesharingentity_tfidf();
-		 getWeight_typesharingentity();
+		//getWeight_typesharingentity();
 
-		getCandidate_nelltype_fbtype();
+		//getCandidate_nelltype_fbtype();
+		
+		/**the negative evidence, for example, if Abraham Lincoln is an positive evidence for "people", it should also be an negative 
+		 * evidence for "actor" */
+		getWeight_negative();
 	}
 
 }

@@ -1,5 +1,7 @@
 package freebase.typematch;
 
+import java.io.File;
+
 import nell.preprocess.NellOntology;
 
 public class Main {
@@ -10,6 +12,12 @@ public class Main {
 
 	public static String pdir = "/projects/pardosa/s5/clzhang/ontologylink/";
 
+	static{
+		if(!(new File(dir)).exists()){
+			dir = "o:/unix"+dir;
+			pdir = "o:/unix"+pdir;
+		}
+	}
 	/** nice looking types, we only consider these types */
 	static String fin_fbtype_nicelooking = dir + "/fb_nice_types";
 
@@ -31,6 +39,7 @@ public class Main {
 	static final int CANDIDATE_NUM = 10;
 	static String fout_candidatemapping_nelltype_fbtype = dir + "/candidatemapping_nelltype_fbtype";
 	static String fout_weight_type_shareentity = dir + "/weight_typeshareentity";
+	static String fout_weight_type_negative = dir+"/weight_negative_shareentity";
 	//static String fout_weight_type_shareentity_tfidf = dir + "/weight_typeshareentity_tfidf";
 	// static String fout_candidatemapping_nelltype_fbtype_count =
 	// dir+"/candidatemapping_nelltype_fbtype_count";
@@ -124,16 +133,16 @@ public class Main {
 		//S1_variable_nellent_fbmid.main(null);
 
 		/** Generate candidate Nell type vs FB Type */
-		//S2_variable_nelltype_fbtype_count.main(null);
+		S2_variable_nelltype_fbtype_count.main(null);
 
 		/** Train the classifier for fb entity */
 		//S4_nellclass_classifier.main(null);
 
 		/** Generate clauses */
-		S5_clause.main(null);
+		//S5_clause.main(null);
 
 		/** Weigthed maximum sat */
-		SX_weightedmaxsat.main(null);
+		//SX_weightedmaxsat.main(null);
 	}
 
 }

@@ -94,7 +94,7 @@ public class Evaluation {
 			{
 				List<String[]> all = (new DelimitedReader(Main.reportdir + "/0326wclqueryresult")).readAll();
 				for (String[] a : all) {
-					if(used.contains(a[0])){
+					if (used.contains(a[0])) {
 						dw.write(a);
 					}
 				}

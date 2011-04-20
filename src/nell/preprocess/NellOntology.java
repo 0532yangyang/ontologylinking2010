@@ -1,5 +1,6 @@
 package nell.preprocess;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -219,6 +220,9 @@ public class NellOntology {
 	public NellOntology() {
 		try {
 			String file = "/projects/pardosa/s5/clzhang/ontologylink/nell/relations.nell.seed";
+			if(!(new File(file)).exists()){
+				file = "o:/unix"+file;
+			}
 			createNellOntology(file);
 		} catch (Exception e) {
 			e.printStackTrace();
