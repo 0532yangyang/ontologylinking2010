@@ -6,14 +6,15 @@ import java.util.List;
 
 
 public class Main {
-	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/relationmatch";
+	
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
-//	static {
-//		if((new File(dir)).exists()){
-//			dir = "";
-//		}
-//	}
-	static String reportdir = "/projects/pardosa/s5/clzhang/ontologylink/relationmatch/report";
+	static {
+		if(!(new File(pdir)).exists()){
+			pdir = "o:/unix"+pdir;
+		}
+	}
+	static String dir = pdir+"/relationmatch";
+	static String reportdir = dir+"/report";
 	static String file_fbdump = pdir + "/freebasedump.sort";
 	static String file_fbdumpclean = dir+"/fbdump.clean.sort";
 	static String file_fbgraph = dir+"/fbGraph";

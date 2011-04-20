@@ -558,6 +558,7 @@ public class S1_variable_nellent_fbmid {
 		// getClean();
 		/**Only consider the number 1 fbsearch result*/
 		getCleanNo1Only();
+		
 		/** filter stanford wikipedia to get subset stanford */
 		// filter_wp_stanford();
 
