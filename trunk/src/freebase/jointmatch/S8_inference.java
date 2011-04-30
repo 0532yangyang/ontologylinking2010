@@ -1,28 +1,84 @@
 package freebase.jointmatch;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import percept.util.delimited.Sort;
+
+import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.ml.weightedmaxsat.WeightedClauses;
+import javatools.mydb.StringTable;
 
 public class S8_inference {
 
 	public static void mergeClauses() throws Exception {
 		List<String[]> all1 = (new DelimitedReader(Main.file_typeclause)).readAll();
 		List<String[]> all2 = (new DelimitedReader(Main.file_relationrelclause)).readAll();
-		DelimitedWriter dw = new DelimitedWriter(Main.file_jointlclause);
+
+		List<String[]> towrite = new ArrayList<String[]>();
 		for (String[] a : all1) {
-			dw.write(a);
+			towrite.add(a);
+			//dw.write(a);
 		}
 		for (String[] b : all2) {
-			dw.write(b);
+			towrite.add(b);
+			//dw.write(b);
+		}
+		DelimitedWriter dw = new DelimitedWriter(Main.file_jointlclause);
+		Collections.shuffle(towrite);
+		for (String[] w : towrite) {
+			dw.write(w);
 		}
 		dw.close();
+		//		Sort.sort(Main.file_jointlclause + ".tmp", Main.file_jointlclause, Main.dir, new Comparator<String[]>() {
+		//
+		//			@Override
+		//			public int compare(String[] arg0, String[] arg1) {
+		//				// TODO Auto-generated method stub
+		//				return arg0[1].compareTo(arg1[1]);
+		//			}
+		//
+		//		});
+
+	}
+
+	public static void votepred(int COPYK) throws IOException {
+		//		if (!(new File(Main.dir_votepred)).exists()) {
+		//			(new File(Main.dir_votepred)).mkdir();
+		//		}
+		//DelimitedWriter dw = new DelimitedWriter(Main.file_votepred);
+		List<String[]> clauses = new ArrayList<String[]>();
+		{
+			List<String[]> all1 = (new DelimitedReader(Main.file_typeclause)).readAll();
+			List<String[]> all2 = (new DelimitedReader(Main.file_relationrelclause)).readAll();
+			for (String[] a : all1) {
+				clauses.add(a);
+			}
+			for (String[] b : all2) {
+				clauses.add(b);
+			}
+		}
+		HashCount<String> hc = new HashCount<String>();
+		for (int i = 0; i < COPYK; i++) {
+			D.p("iter", i);
+			Collections.shuffle(clauses);
+			WeightedClauses wc = new WeightedClauses(clauses);
+			wc.update();
+			List<String> vars = wc.printFinalResult();
+			for (String v : vars) {
+				hc.add(v);
+			}
+		}
+		hc.printAll(Main.file_votepred);
+		//dw.close();
 
 	}
 
@@ -86,6 +142,32 @@ public class S8_inference {
 		}
 	}
 
+	private static void splitIntoEntityTypeRelationPred() throws IOException {
+		{
+			List<String[]> all = (new DelimitedReader(Main.file_predict_joint)).readAll();
+			StringTable.sortByColumn(all, new int[] { 0 });
+			DelimitedWriter dw_type = new DelimitedWriter(Main.file_predict_joint + ".type");
+			DelimitedWriter dw_entity = new DelimitedWriter(Main.file_predict_joint + ".entity");
+			DelimitedWriter dw_rel = new DelimitedWriter(Main.file_predict_joint + ".relation");
+			for (String[] a : all) {
+				String[] xyz = a[0].split("::");
+				if (xyz[0].equals("VE")) {
+					dw_entity.write(xyz[1], xyz[2]);
+				}
+				if (xyz[0].equals("VT")) {
+					dw_type.write(xyz[1], xyz[2]);
+				}
+				if (xyz[0].equals("VR")) {
+					dw_rel.write(xyz[1], xyz[2]);
+				}
+			}
+			dw_type.close();
+			dw_entity.close();
+			dw_rel.close();
+
+		}
+	}
+
 	private static void showDebugInfomation() throws IOException {
 		HashMap<String, List<String[]>> data = new HashMap<String, List<String[]>>();
 		{
@@ -101,17 +183,17 @@ public class S8_inference {
 		}
 		{
 			List<String[]> all = (new DelimitedReader(Main.file_predict_joint)).readAll();
-			DelimitedWriter dw = new DelimitedWriter(Main.file_predict_joint+".debug");
+			DelimitedWriter dw = new DelimitedWriter(Main.file_predict_joint + ".debug");
 			for (String[] a : all) {
-				if(a[0].contains("VR::")){
-					String []xyz = a[0].split("::");
+				if (a[0].contains("VR::")) {
+					String[] xyz = a[0].split("::");
 					String nell = xyz[1];
 					String fb = xyz[2];
-					String key = nell+"\t"+fb;
-					List<String[]>examples = data.get(key);
+					String key = nell + "\t" + fb;
+					List<String[]> examples = data.get(key);
 					dw.write(a);
-					for(String []e: examples){
-						dw.write("     ", e[0],e[1],e[2],e[3]);
+					for (String[] e : examples) {
+						dw.write("     ", e[0], e[1], e[2], e[3]);
 					}
 				}
 			}
@@ -121,8 +203,12 @@ public class S8_inference {
 
 	public static void main(String[] args) throws Exception {
 		//sampleSql2isntance4DebugPurpose();
-		//		mergeClauses();
-		//		predjoint();
-		showDebugInfomation();
+		{
+			//			mergeClauses();
+			//			predjoint();
+			//			splitIntoEntityTypeRelationPred();
+		}
+		votepred(100);
+		//showDebugInfomation();
 	}
 }

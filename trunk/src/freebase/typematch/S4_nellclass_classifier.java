@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
 
 import percept.main.LogLinear;
 
@@ -233,6 +235,7 @@ public class S4_nellclass_classifier {
 			String[] l;
 			Random r = new Random();
 			List<String[]> towrite = new ArrayList<String[]>();
+			Set<String>patterns = new HashSet<String>();
 			while ((l = dr.read()) != null) {
 				int wid = Integer.parseInt(l[3]);
 				String nelltype = l[0];
@@ -260,11 +263,16 @@ public class S4_nellclass_classifier {
 					// if (wid == 25395149) {
 					// D.p(wid);
 					// }
+					
 					if (wkreader.get(0).articleId == wid) {
 						for (int i = 0; i < Main.TOPKSentenceInWkarticle && i < wkreader.size(); i++) {
-
-							for (String t : wkreader.get(i).token) {
-								sb.append("W_" + t + " ");
+							RecordWpSenToken temp = wkreader.get(i);
+							patterns.clear();
+							freebase.ie.S0_background.patternize( temp.token, temp.pos, temp.ner, patterns, 2);
+							for(String p:patterns){
+								if(patternsTakeintoConsider.contains(p)){
+									sb.append("W_"+p+" ");
+								}
 							}
 						}
 					} else {
@@ -581,6 +589,21 @@ public class S4_nellclass_classifier {
 
 	}
 
+	static HashSet<String> patternsTakeintoConsider = new HashSet<String>();
+
+	public static void loadPattern() {
+		try {
+			DelimitedReader dr = new DelimitedReader(freebase.ie.Main.file_background_pattern_uniqc_10);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				patternsTakeintoConsider.add(l[0]);
+			}
+			dr.close();
+		} catch (Exception e) {
+
+		}
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -595,12 +618,14 @@ public class S4_nellclass_classifier {
 			// subset_category();
 		}
 		/** featurize */
-		//		featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);
-		//		featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid, Main.fout_testing_featurized, false);
-
+		{
+			loadPattern();
+			featurize(Main.fout_training_nelltype_mid_mainwid, Main.fout_training_featurized, true);
+			featurize(Main.fout_testing_nelltype_fbtype_fbtypeinstance_mid_wid, Main.fout_testing_featurized, false);
+		}
 		/** self test, split the train test 1:9 and get a performance */
 		for (int i = 0; i < 10; i++) {
-			// selftest();
+			selftest();
 		}
 		trainTest();
 

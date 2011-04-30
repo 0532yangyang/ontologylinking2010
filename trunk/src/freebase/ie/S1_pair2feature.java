@@ -140,7 +140,6 @@ public class S1_pair2feature {
 	 * featurize the pair*/
 	static void featurize() {
 		try {
-
 			HashMap<Integer, List<String>> wid2names = new HashMap<Integer, List<String>>();
 			DelimitedWriter dw = new DelimitedWriter(Main.file_instance_featurize);
 
@@ -307,9 +306,9 @@ public class S1_pair2feature {
 
 
 	public static void main(String[] args) {
-		//step0_getIdInput();
-		//ste1_sample();
-		//featurize();
+		step0_getIdInput();
+		ste1_sample();
+		featurize();
 
 	}
 }

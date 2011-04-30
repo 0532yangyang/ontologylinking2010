@@ -18,8 +18,8 @@ public class Main {
 	static String file_fbdump = pdir + "/freebasedump.sort";
 	static String file_fbdumpclean = dir+"/fbdump.clean.sort";
 	static String file_fbgraph = dir+"/fbGraph";
-	static String file_fbgraph_clean = dir+"/fbGraph_clean";
-	static String file_fbedge = dir+"/fbedge";
+	public static String file_fbgraph_clean = dir+"/fbGraph_clean";
+	public static String file_fbedge = dir+"/fbedge";
 	static String file_fbnode = dir+"/fbnode";
 	static String file_fbnode_sbmid = dir+"/fbnode.sbmid";
 	static String file_fbgraph_subset = dir+"/fbGraph_subset";
@@ -34,8 +34,9 @@ public class Main {
 	static final String file_seedbfspath_show_group = dir+"/seedbfspathes_show_group";
 	
 	/**query graph by FB relation*/
-	static final String file_queryresult = dir+"/queryresult";
-	static final String file_queryresult_name = dir+"/queryresult_name_guid";
+	public static final String file_queryresult = dir+"/queryresult";
+	public static final String file_queryresult_wid = dir+"/queryresult_wid";
+	public static final String file_queryresult_name = dir+"/queryresult_name_gnid";
 	
 	/**S4 similarity weight file*/
 	static final String file_weight_similarity_nellrel_fbrel = dir+"/weight_similarity_nellrel_fbrel";
@@ -52,6 +53,9 @@ public class Main {
 	static final String file_candidate = dir+"/candidate";
 	static final String file_clause = dir+"/clause";
 	public static final String file_predict = dir+"/predict";
+	
+	/**S7: extended wid pairs with ontology mapping result*/
+	public static final String file_extendedwidpairs = dir+"/extendpairs_wid12_nellrel_fbrel";
 	static int PAR_NUM_CANDIDATE = 10;
 	static int PAR_WEIGHT_CANONICAL=1000;
 	static double PAR_WEIGHT_SEED_NEG = 10;

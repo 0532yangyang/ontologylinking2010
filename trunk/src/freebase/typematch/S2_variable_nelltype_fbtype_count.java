@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
 import percept.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.datatypes.Hash2Value;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
@@ -312,18 +314,28 @@ public class S2_variable_nelltype_fbtype_count {
 			dr.close();
 			StringTable.sortByColumn(neg_evidence, new int[]{2});
 			//normalize: every argument has at all weight 1 !!!
-			HashCount hc = new HashCount();
+			Hash2Value<String> hv = new Hash2Value<String>();
 			List<List<String[]>>blocks = StringTable.toblock(neg_evidence, 2);
 			for(List<String[]>b: blocks){
-				double w = 1.0 / b.size();
-				
+				double w = 2.0 / b.size();
+				for(String[]line:b){
+					//nt, ft, argname
+					hv.add(line[0]+"\t"+line[1], w);
+				}
 			}
-			List<String[]>neg_evidence_squeeze = StringTable.squeeze(neg_evidence, new int[]{0,1});
-			StringTable.sortByColumn(neg_evidence_squeeze, new int[]{1,2});
-			for(String []a:neg_evidence_squeeze){
-				dw.write(a);
+//			List<String[]>neg_evidence_squeeze = StringTable.squeeze(neg_evidence, new int[]{0,1});
+//			StringTable.sortByColumn(neg_evidence_squeeze, new int[]{1,2});
+			Iterator<Entry<String, Double>>it = hv.iterator();
+			while(it.hasNext()){
+				Entry<String,Double>e = it.next();
+				String []ab = e.getKey().split("\t");
+				double v = e.getValue();
+				dw.write(v,ab[0],ab[1]);
 			}
-			D.p("Negative evidence ",neg_evidence.size());
+//			for(String []a:neg_evidence_squeeze){
+//				dw.write(a);
+//			}
+			//D.p("Negative evidence ",neg_evidence.size());
 			dw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -336,10 +348,12 @@ public class S2_variable_nelltype_fbtype_count {
 	public static void main(String[] args) throws Exception {
 		loadMid2Type(Main.fout_freebase_type_sortMid_subset);
 		
+		/**tfidf idea is not working at all*/
 		//getWeight_typesharingentity_tfidf();
-		//getWeight_typesharingentity();
-
-		//getCandidate_nelltype_fbtype();
+		
+		
+		getWeight_typesharingentity();
+		getCandidate_nelltype_fbtype();
 		
 		/**the negative evidence, for example, if Abraham Lincoln is an positive evidence for "people", it should also be an negative 
 		 * evidence for "actor" */

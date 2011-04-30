@@ -419,6 +419,7 @@ public class S3_queryEntityPairByFBrel {
 	public static void main(String[] args) throws Exception {
 		// S3_queryEntityPairByFBrel
 		// TODO Auto-generated method stub
+		
 		// queryAllNellWithWholePath();
 		giveEntityName();
 		/**

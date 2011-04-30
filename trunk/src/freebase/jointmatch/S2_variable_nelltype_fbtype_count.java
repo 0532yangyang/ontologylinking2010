@@ -21,24 +21,38 @@ import javatools.mydb.StringTable;
 
 public class S2_variable_nelltype_fbtype_count {
 
-	static HashMap<String, List<String>> mid2ftype = new HashMap<String, List<String>>();
+	static HashMap<String, String> mid2ftype = new HashMap<String, String>();
 
 	private static void loadMid2Type(String file) {
+		//		try {
+		//			DelimitedReader dr = new DelimitedReader(file);
+		//			String[] line;
+		//			while ((line = dr.read()) != null) {
+		//
+		//				// filter the type
+		//				String type0 = line[1];
+		//				if (type0.startsWith("/m/") || type0.startsWith("/common/") || type0.startsWith("/book/book_subject")) {
+		//					continue;
+		//				}
+		//
+		//				if (!mid2ftype.containsKey(line[0])) {
+		//					mid2ftype.put(line[0], new ArrayList<String>());
+		//				}
+		//				mid2ftype.get(line[0]).add(line[1]);
+		//			}
+		//			dr.close();
+		//
+		//		} catch (Exception e) {
+		//			e.printStackTrace();
+		//		}
+	}
+
+	private static void loadMid2NotableType() {
 		try {
-			DelimitedReader dr = new DelimitedReader(file);
-			String[] line;
-			while ((line = dr.read()) != null) {
-
-				// filter the type
-				String type0 = line[1];
-				if (type0.startsWith("/m/") || type0.startsWith("/common/") || type0.startsWith("/book/book_subject")) {
-					continue;
-				}
-
-				if (!mid2ftype.containsKey(line[0])) {
-					mid2ftype.put(line[0], new ArrayList<String>());
-				}
-				mid2ftype.get(line[0]).add(line[1]);
+			DelimitedReader dr = new DelimitedReader(Main.file_notablefor_mid_wid_type);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				mid2ftype.put(l[0], l[2]);
 			}
 			dr.close();
 
@@ -60,7 +74,7 @@ public class S2_variable_nelltype_fbtype_count {
 
 		while ((line = dr.read()) != null) {
 			String mid = line[1];
-			List<String> fbtypes = mid2ftype.get(mid);
+			String fbtype = mid2ftype.get(mid);
 
 			String argname = line[3];
 			String label = line[6];
@@ -69,7 +83,7 @@ public class S2_variable_nelltype_fbtype_count {
 
 			HashSet<String> nellclass = Main.no.entity2class.get(argname);
 
-			if (fbtypes == null) {
+			if (fbtype == null) {
 				D.p("fb type is null:", mid, line[0]);
 				continue;
 			}
@@ -77,14 +91,14 @@ public class S2_variable_nelltype_fbtype_count {
 				D.p("nell class type is null:", argname);
 				continue;
 			}
-			for (String ft : fbtypes) {
-				for (String nt : nellclass) {
-					if (nt.equals("sportsTeam") && ft.equals("/business/employer")) {
-						D.p("sportsteam");
-					}
-					intresting.add(nt + "\t" + ft + "\t" + argname + "\t" + mid);
-				}
+
+			for (String nt : nellclass) {
+				//					if (nt.equals("sportsTeam") && fbtype.equals("/business/employer")) {
+				//						D.p("sportsteam");
+				//					}
+				intresting.add(nt + "\t" + fbtype + "\t" + argname + "\t" + mid);
 			}
+
 		}
 		// output
 		HashSet<String> appearedNellType = new HashSet<String>();
@@ -202,14 +216,14 @@ public class S2_variable_nelltype_fbtype_count {
 				if (label.equals("-1"))
 					continue;
 				String mid = l[1];
-				List<String> fbtypes = mid2ftype.get(mid);
+				String fbtype = mid2ftype.get(mid);
 				String argname = l[3];
 				HashSet<String> nellclass = Main.no.entity2class.get(argname);
 
 				/**Notice many argname will be corresponding to more than one class, for example, 
 				 * Boston will be both a stateOrProvince & city*/
 
-				if (fbtypes == null) {
+				if (fbtype == null) {
 					D.p("fb type is null:", mid, l[0]);
 					continue;
 				}
@@ -217,13 +231,13 @@ public class S2_variable_nelltype_fbtype_count {
 					D.p("nell class type is null:", argname);
 					continue;
 				}
-				for (String ft : fbtypes) {
-					for (String nt : allnellclass) {
-						if (!nellclass.contains(nt) && nt != null) {
-							neg_evidence.add(new String[] { nt, ft, argname, mid });
-						}
+
+				for (String nt : allnellclass) {
+					if (!nellclass.contains(nt) && nt != null) {
+						neg_evidence.add(new String[] { nt, fbtype, argname, mid });
 					}
 				}
+
 			}
 
 			dr.close();
@@ -263,7 +277,8 @@ public class S2_variable_nelltype_fbtype_count {
 	public static void main(String[] args) throws Exception {
 
 		/**These functions run almost instantly*/
-		loadMid2Type(Main.file_freebase_type_sortMid_subset);
+		//loadMid2Type(Main.file_freebase_type_sortMid_subset);
+		loadMid2NotableType();
 		getWeight_typesharingentity(Main.file_enid_mid_wid_argname_otherarg_relation_label,
 				Main.file_weight_type_shareentity);
 		getCandidate_nelltype_fbtype(Main.file_weight_type_shareentity, Main.file_candidatemapping_nelltype_fbtype,
@@ -271,7 +286,7 @@ public class S2_variable_nelltype_fbtype_count {
 
 		/**the negative evidence, for example, if Abraham Lincoln is an positive evidence for "people", it should also be an negative 
 		 * evidence for "actor" */
-		getWeight_negative(Main.file_enid_mid_wid_argname_otherarg_relation_label,Main.file_weight_type_negative);
+		getWeight_negative(Main.file_enid_mid_wid_argname_otherarg_relation_label, Main.file_weight_type_negative);
 	}
 
 }
