@@ -18,16 +18,13 @@ public class S61_typerelationjoint {
 
 	public static void getTypeSignatureOfCandidateRelations_step1() throws IOException {
 		//load types of wid entites
-		HashMap<Integer, List<String>> map_wid2type = new HashMap<Integer, List<String>>();
+		HashMap<Integer, String> map_wid2type = new HashMap<Integer, String>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_wid_type);
+			DelimitedReader dr = new DelimitedReader(Main.file_notablefor_mid_wid_type);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[0]);
-				if (!map_wid2type.containsKey(wid)) {
-					map_wid2type.put(wid, new ArrayList<String>());
-				}
-				map_wid2type.get(wid).add(l[1]);
+				int wid = Integer.parseInt(l[1]);
+				map_wid2type.put(wid, l[2]);
 			}
 			dr.close();
 		}
@@ -42,27 +39,29 @@ public class S61_typerelationjoint {
 				int wid1 = Integer.parseInt(l[0]);
 				int wid2 = Integer.parseInt(l[1]);
 				String fbr = l[3];
-				List<String> arg1types = map_wid2type.get(wid1);
-				List<String> arg2types = map_wid2type.get(wid2);
+				//				List<String> arg1types = map_wid2type.get(wid1);
+				//				List<String> arg2types = map_wid2type.get(wid2);
+				String arg1type = map_wid2type.get(wid1);
+				String arg2type = map_wid2type.get(wid2);
 				{
 					/**there are at all 616 wid missing type information*/
-					if (arg1types == null) {
+					if (arg1type == null) {
 						missing.add(wid1);
 					}
-					if (arg2types == null) {
+					if (arg2type == null) {
 						missing.add(wid2);
 					}
 				}
-				if (arg1types != null) {
-					for (String at : arg1types) {
-						hc1.add(fbr + "\t" + at);
-					}
+				if (arg1type != null) {
+
+					hc1.add(fbr + "\t" + arg1type);
+
 					hc1.add(fbr + "\tAny");
 				}
-				if (arg2types != null) {
-					for (String at : arg2types) {
-						hc2.add(fbr + "\t" + at);
-					}
+				if (arg2type != null) {
+
+					hc2.add(fbr + "\t" + arg2type);
+
 					hc2.add(fbr + "\tAny");
 				}
 			}
@@ -117,6 +116,6 @@ public class S61_typerelationjoint {
 			getTypeSignatureOfCandidateRelations_step2(Main.file_relation_typesign_arg1);
 			getTypeSignatureOfCandidateRelations_step2(Main.file_relation_typesign_arg2);
 		}
-		
+
 	}
 }

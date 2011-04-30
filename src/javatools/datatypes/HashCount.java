@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
 
+import javatools.filehandlers.DelimitedWriter;
+
 class NameCount<T> {
 	T name;
 	int count;
 }
 
-public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<T,Integer>>{
+public class HashCount<T> implements Iterable<Entry<T, Integer>>, Iterator<Entry<T, Integer>> {
 
 	/**
 	 * @param args
@@ -61,25 +63,43 @@ public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<
 		}
 	}
 
-	public void getAll(List<T>ids, List<Integer>counts){
-		if(nclist == null)sort();
-		for(NameCount<T> nc : nclist) {
+	public void printAll(String file) {
+		try {
+			DelimitedWriter dw = new DelimitedWriter(file);
+			if (nclist == null)
+				sort();
+			for (NameCount<T> nc : nclist) {
+				dw.write(nc.name, nc.count);
+			}
+			dw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void getAll(List<T> ids, List<Integer> counts) {
+		if (nclist == null)
+			sort();
+		for (NameCount<T> nc : nclist) {
 			ids.add(nc.name);
 			counts.add(nc.count);
 		}
 	}
-	public List<String[]> getAll(){
-		if(nclist == null)sort();
-		List<String[]>result = new ArrayList<String[]>();
-		
-		for(NameCount<T> nc : nclist) {
-			String []a = new String[2];
-			a[0] = (String)nc.name;
-			a[1] = ""+nc.count;
+
+	public List<String[]> getAll() {
+		if (nclist == null)
+			sort();
+		List<String[]> result = new ArrayList<String[]>();
+
+		for (NameCount<T> nc : nclist) {
+			String[] a = new String[2];
+			a[0] = (String) nc.name;
+			a[1] = "" + nc.count;
 			result.add(a);
 		}
 		return result;
 	}
+
 	public int size() {
 		return count.size();
 	}
@@ -94,7 +114,8 @@ public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<
 		hc.printAll();
 	}
 
-	Iterator<Entry<T,Integer>>it;
+	Iterator<Entry<T, Integer>> it;
+
 	@Override
 	public boolean hasNext() {
 		// TODO Auto-generated method stub
@@ -102,9 +123,9 @@ public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<
 	}
 
 	@Override
-	public Entry<T,Integer> next() {
+	public Entry<T, Integer> next() {
 		// TODO Auto-generated method stub
-		
+
 		return it.next();
 	}
 
@@ -115,7 +136,7 @@ public class HashCount<T> implements Iterable<Entry<T,Integer>>, Iterator<Entry<
 	}
 
 	@Override
-	public Iterator<Entry<T,Integer>> iterator() {
+	public Iterator<Entry<T, Integer>> iterator() {
 		// TODO Auto-generated method stub
 		it = this.count.entrySet().iterator();
 		return it;

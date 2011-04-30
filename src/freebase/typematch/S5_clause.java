@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -18,7 +19,7 @@ public class S5_clause {
 	static private String getVariableNameEntity(String nellstring, String mid) {
 		String n = convertNellstring(nellstring);
 		String m = mid;
-		return "VE::"+n + "::" + m;
+		return "VE::" + n + "::" + m;
 	}
 
 	static private String convertNellstring(String nellstring) {
@@ -27,7 +28,7 @@ public class S5_clause {
 
 	static private String getVariableNameType(String nelltype, String fbtype) {
 
-		return "VT::"+nelltype + "::" + fbtype;
+		return "VT::" + nelltype + "::" + fbtype;
 	}
 
 	/**
@@ -266,7 +267,7 @@ public class S5_clause {
 				String fbtype = c[1];
 				List<String[]> pool = classifierPred.get(fbtype);
 				int good = 0, bad = 0;
-				if (pool == null || pool.size() ==0) {
+				if (pool == null || pool.size() == 0) {
 					bad = 1;
 				} else {
 					for (String[] a : pool) {
@@ -289,6 +290,42 @@ public class S5_clause {
 
 	}
 
+	private static void getNegativeTypeClause() {
+		// TODO Auto-generated method stub
+		try {
+			HashMap<String, Double> variable_sim = new HashMap<String, Double>();
+			{
+				DelimitedReader dr = new DelimitedReader(Main.fout_candidatemapping_nelltype_fbtype);
+				List<String[]> raw = dr.readAll();
+				for (String[] l : raw) {
+					variable_sim.put(getVariableNameType(l[0], l[1]), 0.0);
+				}
+				dr.close();
+			}
+			List<String[]> all = (new DelimitedReader(Main.fout_weight_type_negative)).readAll();
+			{
+				for (String[] a : all) {
+					String nt = a[1], ft = a[2];
+					String var = getVariableNameType(nt, ft);
+					if (variable_sim.containsKey(var)) {
+						variable_sim.put(var, Double.parseDouble(a[0]));
+					}
+				}
+			}
+			{
+				Iterator<Entry<String, Double>> it = variable_sim.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<String,Double>e = it.next();
+					dwclause.write(-1*e.getValue(),e.getKey());
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	static DelimitedWriter dwclause;
 
 	public static void main(String[] args) {
@@ -303,6 +340,7 @@ public class S5_clause {
 
 			getSimilarityClause4Type();
 
+			getNegativeTypeClause();
 			/**
 			 * Every nell string can only map to one fb entity that is,
 			 * nellstr::fbA -> neg_nellstr::fbB EQUAL: neg_nellstr::fbA OR
@@ -319,7 +357,7 @@ public class S5_clause {
 			 * to one nell typ. THIS IS WRONG!!!
 			 * 
 			 * */
-			getCanonical_type();
+			//getCanonical_type();
 
 			dwclause.close();
 

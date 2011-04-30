@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
 import javatools.administrative.D;
+import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
@@ -63,6 +65,7 @@ public class S3_typeclause {
 				for (Entry<String, Double> e : variable_sim.entrySet()) {
 					num++;
 					dwclause.write(e.getValue(), e.getKey());
+					
 				}
 				D.p("Number of entity similarity clauses: " + num);
 			}
@@ -328,9 +331,82 @@ public class S3_typeclause {
 
 	}
 
-	static DelimitedWriter dwclause;
+	static void getEntityTypeJoint() throws IOException {
+		//load mid 2 fbtype
+		HashMap<String, List<String>> mid2types = new HashMap<String, List<String>>();
+		HashSet<String> set_var_type = new HashSet<String>();
+		HashCount<String> type_freq = new HashCount<String>();
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_notablefor_mid_wid_type);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String mid = l[0];
+				String fbtype = l[2];
+				if (!mid2types.containsKey(mid)) {
+					mid2types.put(mid, new ArrayList<String>());
+				}
+				mid2types.get(mid).add(fbtype);
+				type_freq.add(fbtype);
+			}
+		}
 
-	public static void main(String[] args)throws Exception {
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_candidatemapping_nelltype_fbtype);
+			List<String[]> raw = dr.readAll();
+			for (String[] l : raw) {
+				set_var_type.add(getVariableNameType(l[0], l[1]));
+			}
+			dr.close();
+		}
+		//iterator over entity match
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_candidatemapping_nellstring_mid);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String nellstr = l[1];
+				HashSet<String> nelltype = Main.no.entitylower2class.get(nellstr);
+				String mid = l[0];
+				String varent = getVariableNameEntity(nellstr, mid);
+				StringBuilder sb = new StringBuilder();
+				sb.append("$neg$").append(varent);
+				List<String> fbtypes = mid2types.get(mid);
+				if (fbtypes == null) {
+					continue;
+				}
+				//pick one fbtype
+				int min = Integer.MAX_VALUE;
+				String specific_fbt = "";
+				for (String fbt : fbtypes) {
+					int freq = type_freq.see(fbt);
+					if (freq < min) {
+						freq = min;
+						specific_fbt = fbt;
+					}
+				}
+				boolean anyInCandidate = false;
+				for (String nt : nelltype) {
+					String vartyp = getVariableNameType(nt, specific_fbt);
+					if (set_var_type.contains(vartyp)) {
+						sb.append(" ").append(vartyp);
+						anyInCandidate = true;
+					}
+				}
+				//				if (mid.equals("/m/01b8jj")) {
+				//					D.p("nelltype", nelltype);
+				//					D.p("varent", varent);
+				//					D.p("fbtypes", fbtypes);
+				//					D.p("sb", sb.toString());
+				//				}
+				//when anyInCandidate is false, the mid is completely irrelevant to types of that nell object
+				if (anyInCandidate) {
+					dwclause.write(1.0, sb.toString());
+				}
+			}
+		}
+	}
+
+	static DelimitedWriter dwclause;
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
 		dwclause = new DelimitedWriter(Main.file_typeclause);
@@ -339,8 +415,7 @@ public class S3_typeclause {
 
 		getSimilarityClause4Entity(Main.file_candidatemapping_nellstring_mid, Main.file_weight_nellstring_mid_cosine);
 
-		getSimilarityClause4Type(Main.file_candidatemapping_nelltype_fbtype,
-				Main.file_weight_type_shareentity);
+		getSimilarityClause4Type(Main.file_candidatemapping_nelltype_fbtype, Main.file_weight_type_shareentity);
 
 		getNegativeTypeClause(Main.file_candidatemapping_nelltype_fbtype, Main.file_weight_type_negative);
 		/**
@@ -361,6 +436,7 @@ public class S3_typeclause {
 		 * */
 		getCanonical_type(Main.file_candidatemapping_nelltype_fbtype);
 
+		getEntityTypeJoint();
 		dwclause.close();
 
 	}

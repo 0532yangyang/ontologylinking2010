@@ -12,7 +12,6 @@ import javatools.datatypes.MySparseVector;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 
-
 public class WeightedClauses {
 
 	Map<String, Integer> map_variables = new HashMap<String, Integer>();
@@ -46,6 +45,72 @@ public class WeightedClauses {
 	// int []clause_values;
 	//
 	double gain = 0;
+
+	public WeightedClauses(List<String[]> lines) {
+		try {
+			List<MySparseVector> tempclauses = new ArrayList<MySparseVector>();
+			List<Double> tempweight = new ArrayList<Double>();
+			// A line is a clause
+			for (String[] line : lines) {
+
+				ArrayList<Integer> dimension = new ArrayList<Integer>();
+
+				String[] lits = line[1].split(" ");
+				for (String lit : lits) {
+					boolean isPos = true;
+					int variableId = 0;
+					if (lit.startsWith("$neg$")) {
+						isPos = false;
+						lit = lit.substring(5);
+					}
+					if (map_variables.containsKey(lit)) {
+						variableId = map_variables.get(lit);
+					} else {
+						variableId = map_variables.size();
+						list_variables.add(lit);
+						map_variables.put(lit, variableId);
+					}
+					if (isPos) {
+						dimension.add(variableId * 2);
+					} else {
+						dimension.add(variableId * 2 + 1);
+					}
+				}
+				// int clauseId = clauses.size();
+				tempweight.add(Double.parseDouble(line[0]));
+				MySparseVector c = new MySparseVector(1, dimension);
+				tempclauses.add(c);
+			}
+
+			// intialize literals and clauses
+			vsize = list_variables.size();
+			lsize = vsize * 2;
+			csize = tempclauses.size();
+			literals = new MySparseVector[lsize];
+			clauses = new MySparseVector[csize];
+			{
+				/** init literals and clauses */
+				for (int i = 0; i < lsize; i++)
+					literals[i] = new MySparseVector();
+			}
+			cweights = new double[csize];
+			for (int clauseId = 0; clauseId < tempclauses.size(); clauseId++) {
+				clauses[clauseId] = tempclauses.get(clauseId);
+				cweights[clauseId] = tempweight.get(clauseId);
+				for (int lit : clauses[clauseId].getDims()) {
+					literals[lit].add(clauseId, 1);
+				}
+			}
+			literal_values = new int[lsize];
+
+			unknown_literal_num_clause = new int[csize];
+			for (int i = 0; i < csize; i++) {
+				unknown_literal_num_clause[i] = clauses[i].getDims().size();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public WeightedClauses(String file) {
 		try {
@@ -122,25 +187,41 @@ public class WeightedClauses {
 		return list_variables.get(vid) + "\t" + vv;
 	}
 
-	public void printFinalResult(String file){
-		try{
+	public void printFinalResult(String file) {
+		try {
 			DelimitedWriter dw = new DelimitedWriter(file);
-			for(int i=0;i< vsize;i++){
+			for (int i = 0; i < vsize; i++) {
 				String name = list_variables.get(i);
-				if(literal_values[2*i] == 1){
+				if (literal_values[2 * i] == 1) {
 					dw.write(name);
 				}
 			}
 			dw.close();
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	public List<String> printFinalResult() {
+		List<String> result = new ArrayList<String>();
+		try {
+			for (int i = 0; i < vsize; i++) {
+				String name = list_variables.get(i);
+				if (literal_values[2 * i] == 1) {
+					result.add(name);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public void update() {
 		for (int i = 0; i < vsize; i++) {
-//			if (i == 4600) {
-//				D.p("");
-//			}
+			//			if (i == 4600) {
+			//				D.p("");
+			//			}
 			int literaltoset = updateOneStep();
 			//D.p("Iter: "+i , literal2setToString(literaltoset));
 		}

@@ -353,32 +353,32 @@ public class S1_variable_nellent_fbmid {
 		}
 	}
 
-	public static void subsetfin_freebase_type_sortMid(String file_enid_mid_wid_argname_otherarg_relation_label,
-			String file_freebase_type_sortMid_subset) {
-		try {
-			DelimitedReader dr = new DelimitedReader(file_enid_mid_wid_argname_otherarg_relation_label);
-			DelimitedWriter dw = new DelimitedWriter(file_freebase_type_sortMid_subset);
-			String[] line;
-			HashSet<String> usedMid = new HashSet<String>();
-			while ((line = dr.read()) != null) {
-				String mid = line[1];
-				usedMid.add(mid);
-			}
-			dr.close();
-
-			dr = new DelimitedReader(Main.fin_freebase_type_sortMid);
-			while ((line = dr.read()) != null) {
-				String mid = line[0];
-				if (usedMid.contains(mid)) {
-					dw.write(line);
-				}
-			}
-			dr.close();
-			dw.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void subsetfin_freebase_type_sortMid(String file_enid_mid_wid_argname_otherarg_relation_label,
+//			String file_freebase_type_sortMid_subset) {
+////		try {
+////			DelimitedReader dr = new DelimitedReader(file_enid_mid_wid_argname_otherarg_relation_label);
+////			DelimitedWriter dw = new DelimitedWriter(file_freebase_type_sortMid_subset);
+////			String[] line;
+////			HashSet<String> usedMid = new HashSet<String>();
+////			while ((line = dr.read()) != null) {
+////				String mid = line[1];
+////				usedMid.add(mid);
+////			}
+////			dr.close();
+////
+////			dr = new DelimitedReader(Main.fin_freebase_type_sortMid);
+////			while ((line = dr.read()) != null) {
+////				String mid = line[0];
+////				if (usedMid.contains(mid)) {
+////					dw.write(line);
+////				}
+////			}
+////			dr.close();
+////			dw.close();
+////		} catch (Exception e) {
+////			e.printStackTrace();
+////		}
+//	}
 
 	public static void main(String[] args) throws Exception {
 
@@ -410,8 +410,7 @@ public class S1_variable_nellent_fbmid {
 		 * Get a subset of fbtype infomation, the whole set is in
 		 * /projects/pardosa/s5/clzhang/ontologylink/fb_mid_type_argname
 		 * */
-		subsetfin_freebase_type_sortMid(Main.file_enid_mid_wid_argname_otherarg_relation_label,
-				Main.file_freebase_type_sortMid_subset);
+
 	}
 
 }

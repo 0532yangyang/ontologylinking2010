@@ -139,10 +139,10 @@ public class Main {
 		//S4_nellclass_classifier.main(null);
 
 		/** Generate clauses */
-		//S5_clause.main(null);
+		S5_clause.main(null);
 
 		/** Weigthed maximum sat */
-		//SX_weightedmaxsat.main(null);
+		SX_weightedmaxsat.main(null);
 	}
 
 }

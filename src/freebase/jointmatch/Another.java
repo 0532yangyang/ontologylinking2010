@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -51,11 +52,13 @@ public class Another {
 	static void temp_grab_raphael_20110428() throws IOException {
 		{
 			DelimitedReader dr = new DelimitedReader(Main.file_sql2instance);
-			DelimitedWriter dw = new DelimitedWriter(Main.pdir+"/tmp1/sql2instance.subset");
+			DelimitedWriter dw = new DelimitedWriter(Main.pdir + "/tmp1/sql2instance.subset");
 			String[] l;
 			while ((l = dr.read()) != null) {
-				if(l[2].equals("acquired") && l[3].equals("/organization/organization/companies_acquired|/business/acquisition/company_acquired|")||
-						l[2].equals("actorStarredInMovie") && l[3].equals("/film/actor/film|/film/performance/film|")){
+				if (l[2].equals("acquired")
+						&& l[3].equals("/organization/organization/companies_acquired|/business/acquisition/company_acquired|")
+						|| l[2].equals("actorStarredInMovie")
+						&& l[3].equals("/film/actor/film|/film/performance/film|")) {
 					dw.write(l);
 				}
 			}
@@ -64,8 +67,26 @@ public class Another {
 		}
 	}
 
+	static void isDuplicate_notablefor() throws IOException {
+		/**great news! no duplicate*/
+		HashSet<String> set = new HashSet<String>();
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_notablefor_mid_wid_type);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String mid = l[0];
+				if (set.contains(mid)) {
+					D.p("duplicate", mid);
+				}
+				set.add(mid);
+			}
+			dr.close();
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		//step1_getnytWid();
-		temp_grab_raphael_20110428();
+		//temp_grab_raphael_20110428();
+		isDuplicate_notablefor();
 	}
 }

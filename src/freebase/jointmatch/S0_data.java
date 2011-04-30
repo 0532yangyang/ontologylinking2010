@@ -37,42 +37,75 @@ public class S0_data {
 
 	}
 
-	public static void get_wid_fbtype() throws IOException {
-		HashMap<String, Integer> map_mid2wid = new HashMap<String, Integer>();
+	/**not using type information anymore, use notable_for*/
+	public static void giveup_get_wid_fbtype() throws IOException {
+//		HashMap<String, Integer> map_mid2wid = new HashMap<String, Integer>();
+//		{
+//			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+//			String[] l;
+//			while ((l = dr.read()) != null) {
+//				String mid = l[1];
+//				if (mid.equals("/m/0dbp00")) {
+//					D.p(l);
+//				}
+//				int wid = Integer.parseInt(l[2]);
+//				map_mid2wid.put(mid, wid);
+//			}
+//			dr.close();
+//		}
+//		{
+//			DelimitedReader dr = new DelimitedReader(Main.fin_mid_type);
+//			DelimitedWriter dw = new DelimitedWriter(Main.file_wid_type_mid);
+//			String[] l;
+//			while ((l = dr.read()) != null) {
+//				String mid = l[0];
+//				if (mid.equals("/m/0dbp00")) {
+//					D.p(l);
+//				}
+//				if (map_mid2wid.containsKey(mid)) {
+//					int wid = map_mid2wid.get(mid);
+//					dw.write(wid, l[1], mid);
+//				}
+//			}
+//			dw.close();
+//			dr.close();
+//		}
+	}
+
+	public static void get_notable_type() throws IOException {
+		HashMap<String, Integer> mid2wid = new HashMap<String, Integer>();
 		{
 			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				String mid = l[1];
-				if(mid.equals("/m/0dbp00")){
-					D.p(l);
-				}
-				int wid = Integer.parseInt(l[2]);
-				map_mid2wid.put(mid, wid);
+				mid2wid.put(l[1], Integer.parseInt(l[2]));
 			}
-			dr.close();
 		}
 		{
-			DelimitedReader dr = new DelimitedReader(Main.fin_mid_type);
-			DelimitedWriter dw = new DelimitedWriter(Main.file_wid_type);
+			DelimitedReader dr = new DelimitedReader(Main.file_notable_for_raw);
+			DelimitedWriter dw = new DelimitedWriter(Main.file_notablefor_mid_wid_type);
 			String[] l;
 			while ((l = dr.read()) != null) {
 				String mid = l[0];
-				if(mid.equals("/m/0dbp00")){
-					D.p(l);
-				}
-				if (map_mid2wid.containsKey(mid)) {
-					int wid = map_mid2wid.get(mid);
-					dw.write(wid, l[1]);
+				String[] ab = l[3].split(" ");
+				try {
+					String x = ab[1].split(":")[1].replace("\"", "").replace(",", "");
+					if (mid2wid.containsKey(mid)) {
+						int wid = mid2wid.get(mid);
+						dw.write(mid, wid, x);
+					}
+				} catch (Exception e) {
+
 				}
 			}
-			dw.close();
 			dr.close();
+			dw.close();
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
 		//get_gnid_mid_wid_title_enid();
-		get_wid_fbtype();
+		//get_wid_fbtype();
+		get_notable_type();
 	}
 }

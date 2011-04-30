@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -94,6 +95,34 @@ public class FBSearchEngine {
 
 	}
 
+	public static void getType(String enid) throws Exception{
+		{
+			//"http://api.freebase.com/api/trans/notable_types_2?id=/en/dinah_washington"
+			URL yahoo = new URL("http://api.freebase.com/api/trans/notable_types_2?id=" + enid);
+			URLConnection yc = yahoo.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+			String inputLine;
+			StringBuilder sb = new StringBuilder();
+
+			while ((inputLine = in.readLine()) != null) {
+				sb.append(inputLine);
+			}
+			in.close();
+			JSONObject o = new JSONObject(sb.toString());
+			//System.out.println(o.toString());
+			JSONArray jsonarray = (JSONArray)o.getJSONObject(enid).getJSONObject("result").get("notable_for");
+			//D.p(subo.toString());
+			for (int i = 0; i < jsonarray.length(); i++) {
+				JSONObject ar = jsonarray.getJSONObject(i);
+				if(ar == null)continue;
+				String urlstuff = ar.get("types").toString();
+				//String mid = urlstuff.replace("{\"id\":\"", "").replace("\"}", "");
+				//if(mid.startsWith("/m/"))res.add(mid);
+				D.p(urlstuff);
+			}
+			
+		}
+	}
 	//
 	// public static void query(String q) throws Exception {
 	// HttpClient httpclient = new DefaultHttpClient();
@@ -123,8 +152,9 @@ public class FBSearchEngine {
 	// }
 
 	public static void main(String[] args) throws Exception {
-		List<String >x = query2("NetJets",10);
-		System.out.println(x);
+//		List<String >x = query2("Honey of the Nile",10);
+//		System.out.println(x);
+		getType("/en/dinah_washington");
 	}
 
 	private static void blah(HashMap<String, String> guid2mid, HashMap<String, List<String>> m, String input,

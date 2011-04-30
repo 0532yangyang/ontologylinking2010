@@ -259,17 +259,19 @@ public class S7_clauserelation {
 				fbr_arg_typesign[1] = map_fbrarg2typesign.get(fbr);
 				for (int i : new int[] { 0, 1 }) {
 					String nt = nellr_typesign[i];
-					StringBuilder sb = new StringBuilder();
-					sb.append("$neg$").append(var_nrfr);
-					for (String[] ft_l : fbr_arg_typesign[i]) {
-						String ft = ft_l[1];
-						double confidence = Double.parseDouble(ft_l[2]) / fbr_arg_typesign[i].size();
-						String var_ntft = S3_typeclause.getVariableNameType(nt, ft);
-						if (typematchcandidate.contains(var_ntft)) {
-							sb.append(" ").append(var_ntft);
+					if (fbr_arg_typesign[i] != null) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("$neg$").append(var_nrfr);
+						for (String[] ft_l : fbr_arg_typesign[i]) {
+							String ft = ft_l[1];
+							double confidence = Double.parseDouble(ft_l[2]) / fbr_arg_typesign[i].size();
+							String var_ntft = S3_typeclause.getVariableNameType(nt, ft);
+							if (typematchcandidate.contains(var_ntft)) {
+								sb.append(" ").append(var_ntft);
+							}
 						}
+						dwclause.write(1.0, sb.toString());
 					}
-					dwclause.write(1.0, sb.toString());
 				}
 				//candidate.add(getVariableRelation(nellr, fbr));
 			}

@@ -282,10 +282,10 @@ public class S5_weight {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		/** surface string similarity */
-		// step1_surfacestring_similarity();
+		step1_surfacestring_similarity();
 
 		/** number of instances p=<a1,a2> satisfying I(p, fr) & I(p, nr) */
-		// step2_share_instance();
+		step2_share_instance();
 
 		/**
 		 * negative evidence: seed: negative seed instances; default: pair
@@ -293,8 +293,8 @@ public class S5_weight {
 		 * p=<a1,a2>, I know NI(p,nr) AND I(p,fr) --> \neg M(fr,nr)
 		 */
 		{
-//			step3_seednegativepairs();
-//			step3_defaultnegativepairs();
+			step3_seednegativepairs();
+			step3_defaultnegativepairs();
 		}
 
 		/**

@@ -10,7 +10,7 @@ public class Main {
 	static String file_background_pattern_raw = dir + "/background_pattern.raw";
 	static String file_background_pattern_sort = dir + "/background_pattern.sort";
 	static String file_background_pattern_uniqc = dir + "/background_pattern.uniqc";
-	static String file_background_pattern_uniqc_10 = dir + "/background_pattern.uniqc.10";
+	public static String file_background_pattern_uniqc_10 = dir + "/background_pattern.uniqc.10";
 	/**S1: pair 2 feature*/
 	static String file_instance_widpair = dir + "/instance_widpair";
 	static String file_wiki_sample = dir + "/wikisample.sbwid";
