@@ -17,6 +17,7 @@ import javatools.mydb.StringTable;
 import javatools.string.StringUtil;
 
 public class S72_patternvariable {
+
 	private static void sampleSql2isntance(int SAMPLE_NUM, int throwaway_threshold) throws IOException {
 
 		HashMap<Integer, String> wid2title = new HashMap<Integer, String>();
@@ -35,7 +36,7 @@ public class S72_patternvariable {
 		HashCount<String> hc = new HashCount<String>();
 		List<String[]> towrite = new ArrayList<String[]>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_sql2instance);
+			DelimitedReader dr = new DelimitedReader(Main.file_sql2instance_shuffle);
 			DelimitedWriter dw = new DelimitedWriter(Main.file_sql2instance_patternvariable);
 			String[] l;
 			while ((l = dr.read()) != null) {
@@ -214,8 +215,9 @@ public class S72_patternvariable {
 	}
 
 	public static void main(String[] args) throws IOException {
-		//sampleSql2isntance(Main.SAMPLE_NUM, Main.throwaway_threshold);
-		//getSubsetStanford();
-		featurize();
+		//StringTable.shuffleLargeFile(Main.file_sql2instance, Main.dir, Main.file_sql2instance_shuffle);
+		sampleSql2isntance(Main.SAMPLE_NUM, Main.throwaway_threshold);
+		List<String[]> widpairs = (new DelimitedReader(Main.file_sql2instance_patternvariable)).readAll();
+		Pattern.widpair2feature(widpairs, 1, Main.file_patternize_sql2pair);
 	}
 }

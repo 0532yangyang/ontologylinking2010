@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import percept.util.delimited.Sort;
@@ -77,9 +78,120 @@ public class S8_inference {
 				hc.add(v);
 			}
 		}
-		hc.printAll(Main.file_votepred);
+		hc.printAll(Main.file_predict_vote);
 		//dw.close();
 
+	}
+
+	private static void parseVotePred() throws IOException {
+		//file_votepred is already sorted according to the weight
+		String file_predict_vote = Main.file_predict_vote;
+		String file_predict_vote_type = file_predict_vote + ".type";
+		String file_predict_vote_entity = file_predict_vote + ".entity";
+		String file_predict_vote_relation = file_predict_vote + ".relation";
+		String file_predict_vote_newontology = Main.file_predict_vote_newontology;
+		List<String[]> all = (new DelimitedReader(file_predict_vote)).readAll();
+		List<String[]> table = new ArrayList<String[]>();
+		DelimitedWriter dw_type = new DelimitedWriter(file_predict_vote_type);
+		DelimitedWriter dw_entity = new DelimitedWriter(file_predict_vote_entity);
+		DelimitedWriter dw_rel = new DelimitedWriter(file_predict_vote_relation);
+		HashSet<String> exist = new HashSet<String>();
+		for (String[] a : all) {
+			String[] xyz = a[0].split("::");
+			table.add(new String[] { xyz[0], xyz[1], xyz[2], a[1] });
+		}
+		StringTable.sortByColumn(table, new int[] { 0, 1, 3 }, new boolean[] { false, false, true });
+		//List<List<String[]>>blocks = StringTable.toblock(table, 1);
+		for (String[] t : table) {
+			if (t[0].equals("VT")) {
+				dw_type.write(t);
+			}
+			if (t[0].equals("VR")) {
+				dw_rel.write(t);
+			}
+			if (t[0].equals("VE")) {
+				dw_entity.write(t);
+			}
+		}
+		dw_type.close();
+		dw_entity.close();
+		dw_rel.close();
+		theNewOntology(file_predict_vote_type, file_predict_vote_relation, file_predict_vote_newontology);
+	}
+
+	public static void theNewOntology(String file_predict_vote_type, String file_predict_vote_relation,
+			String file_predict_vote_newontology) throws IOException {
+		DelimitedWriter dw = new DelimitedWriter(file_predict_vote_newontology);
+		List<String[]> pred_type = (new DelimitedReader(file_predict_vote_type)).readAll();
+		List<String[]> pred_relation = (new DelimitedReader(file_predict_vote_relation)).readAll();
+		StringTable.sortByColumn(pred_type, new int[] { 1, 3 }, new boolean[] { false, true });
+		StringTable.sortByColumn(pred_relation, new int[] { 1, 3 }, new boolean[] { false, true });
+		HashMap<String, List<String>> map_nelltype_fbtypes = new HashMap<String, List<String>>();
+		{
+			List<List<String[]>> blocks = StringTable.toblock(pred_type, 1);
+			for (List<String[]> b : blocks) {
+				int maxcnt = Integer.parseInt(b.get(0)[3]);
+				int threshold = (int) (0.5 * maxcnt);
+				map_nelltype_fbtypes.put(b.get(0)[1], new ArrayList<String>());
+				for (String[] b0 : b) {
+					int x = Integer.parseInt(b0[3]);
+					if (x > threshold) {
+						map_nelltype_fbtypes.get(b0[1]).add(b0[2]);
+					}
+				}
+			}
+		}
+		List<String[]> matchingresult = new ArrayList<String[]>();
+		{
+			List<List<String[]>> blocks = StringTable.toblock(pred_relation, 1);
+			for (List<String[]> b : blocks) {
+				int maxcnt = Integer.parseInt(b.get(0)[3]);
+				int threshold = (int) (0.5 * maxcnt);
+				for (String[] b0 : b) {
+					int x = Integer.parseInt(b0[3]);
+					if (x > threshold) {
+						String nellrelation = b0[1];
+						String fbrelation = b0[2];
+						List<String> arg1types, arg2types;
+						boolean arg1arg2same = false;
+						if (!nellrelation.contains("_inverse")) {
+							String[] ab = Main.no.relname2DomainRange.get(nellrelation);
+							if (ab[0].equals(ab[1])) {
+								arg1arg2same = true;
+							}
+							arg1types = map_nelltype_fbtypes.get(ab[0]);
+							arg2types = map_nelltype_fbtypes.get(ab[1]);
+						} else {
+							String[] ab = Main.no.relname2DomainRange.get(nellrelation.replace("_inverse", ""));
+							if (ab[0].equals(ab[1])) {
+								arg1arg2same = true;
+							}
+							arg1types = map_nelltype_fbtypes.get(ab[1]);
+							arg2types = map_nelltype_fbtypes.get(ab[0]);
+
+						}
+						if (arg1types != null && arg2types != null) {
+							if (arg1arg2same) {
+								for (String t1 : arg1types) {
+									matchingresult.add(new String[] { nellrelation, fbrelation, t1, t1 });
+								}
+							} else {
+								for (String t1 : arg1types) {
+									for (String t2 : arg2types) {
+										matchingresult.add(new String[] { nellrelation, fbrelation, t1, t2 });
+									}
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
+		for (String[] l : matchingresult) {
+			dw.write(l);
+		}
+		dw.close();
 	}
 
 	public static void predrelonly() {
@@ -208,7 +320,8 @@ public class S8_inference {
 			//			predjoint();
 			//			splitIntoEntityTypeRelationPred();
 		}
-		votepred(100);
+		//votepred(100);
+		parseVotePred();
 		//showDebugInfomation();
 	}
 }

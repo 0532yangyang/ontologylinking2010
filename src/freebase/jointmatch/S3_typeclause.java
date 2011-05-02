@@ -124,7 +124,7 @@ public class S3_typeclause {
 				list_nellstr_mid.add(new String[] { n, m });
 			}
 			canonialoneside_entity(0, list_nellstr_mid);
-			canonialoneside_entity(1, list_nellstr_mid);
+			//canonialoneside_entity(1, list_nellstr_mid);
 
 			D.p("abc");
 		} catch (IOException e) {
