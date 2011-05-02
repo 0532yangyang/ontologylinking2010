@@ -392,19 +392,19 @@ public class S1_variable_nellent_fbmid {
 		getClean(Main.file_gnid_mid_enurl_wid_title, Main.file_ontologyentity2fbentity_byfbsearch,
 				Main.file_enid_mid_wid_argname_otherarg_relation_label);
 
-		getCleanTop1(Main.file_gnid_mid_enurl_wid_title, Main.file_ontologyentity2fbentity_byfbsearch,
-				Main.file_enid_mid_wid_argname_otherarg_relation_label_top1);
-
-		/** filter stanford wikipedia to get subset stanford */
-		filter_wp_stanford(Main.file_enid_mid_wid_argname_otherarg_relation_label, Main.file_wp_stanford_subset);
-
-		/** get all candidate <nellstring, mid> */
-		getCandidateNellstringMid(Main.file_enid_mid_wid_argname_otherarg_relation_label,
-				Main.file_candidatemapping_nellstring_mid);
-
-		/** for every pair of <nellstring, mid>, get a similarity score for it */
-		getWeightEntitynameCosine(Main.file_gnid_mid_enurl_wid_title, Main.file_candidatemapping_nellstring_mid,
-				Main.file_weight_nellstring_mid_cosine, Main.string_sim_smooth);
+//		getCleanTop1(Main.file_gnid_mid_enurl_wid_title, Main.file_ontologyentity2fbentity_byfbsearch,
+//				Main.file_enid_mid_wid_argname_otherarg_relation_label_top1);
+//
+//		/** filter stanford wikipedia to get subset stanford */
+//		filter_wp_stanford(Main.file_enid_mid_wid_argname_otherarg_relation_label, Main.file_wp_stanford_subset);
+//
+//		/** get all candidate <nellstring, mid> */
+//		getCandidateNellstringMid(Main.file_enid_mid_wid_argname_otherarg_relation_label,
+//				Main.file_candidatemapping_nellstring_mid);
+//
+//		/** for every pair of <nellstring, mid>, get a similarity score for it */
+//		getWeightEntitynameCosine(Main.file_gnid_mid_enurl_wid_title, Main.file_candidatemapping_nellstring_mid,
+//				Main.file_weight_nellstring_mid_cosine, Main.string_sim_smooth);
 
 		/**
 		 * Get a subset of fbtype infomation, the whole set is in

@@ -66,6 +66,7 @@ public class Main {
 	static final String file_seedbfspath_show = dir + "/seedbfspathes_show";
 	static final String file_seedbfspath_show_group = dir + "/seedbfspathes_show.group";
 	static final String file_sql2instance = dir + "/sql2instance";
+	static final String file_sql2instance_shuffle = Main.file_sql2instance + ".shuffle";
 
 	/**S5*/
 	static final String file_weight_similarity_nellrel_fbrel = dir + "/weight_similarity_nellrel_fbrel";
@@ -81,7 +82,8 @@ public class Main {
 	static final String file_jointlclause = dir + "/clause_joint";
 	public static final String file_predict_relonly = dir + "/predict_relation";
 	public static final String file_predict_typeonly = dir + "/predict_type";
-	static String file_votepred = dir + "/votepred";
+	static String file_predict_vote = dir + "/predict/predict_vote";
+	static String file_predict_vote_newontology = dir + "/predict/predict_vote.newontology";
 	public static final String file_predict_joint = dir + "/predict_joint";
 	static String file_relation_typesign_arg1 = dir + "/relation_typesign_arg1";
 	static String file_relation_typesign_arg2 = dir + "/relation_typesign_arg2";
@@ -96,12 +98,15 @@ public class Main {
 	static String file_background_pattern_sort = dir + "/background_pattern.sort";
 	static String file_background_pattern_uniqc = dir + "/background_pattern.uniqc";
 	public static String file_background_pattern_uniqc_10 = dir + "/background_pattern.uniqc.10";
-	/**S72*/
+	/**S71,S72*/
+	static String file_patternize_seedpair = dir + "/patternize/seedpair";
+	static String file_patternize_sql2pair = dir + "/patternize/sql2pair";
+	//static String file_patternize_seedpair_train = dir + "/patternize/seedpair_train";
 	static String file_sql2instance_patternvariable = Main.file_sql2instance + ".sample4pattern";
 	static String file_stanford_subsetforpattern = dir + "/stanford_subsetforpattern";
 	static int SAMPLE_NUM = 100;
 	static int throwaway_threshold = 10;
-	static String file_widpair_patterns = dir+"/widpair_patterns";
+	static String file_widpair_patterns = dir + "/widpair_patterns";
 	/**S9 */
 	public static final String file_extendedwidpairs = dir + "/extendpairs_wid12_nellrel_fbrel";
 
