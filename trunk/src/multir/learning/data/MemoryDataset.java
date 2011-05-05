@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +36,14 @@ public class MemoryDataset implements Dataset {
 	
 	public int numDocs() { return docs.length; }
 
-	public void shuffle() {
+	public void shuffle(Random random) {
+		/*
+		List<MILDocument> l =new ArrayList<MILDocument>();
+		for (int i=0; i < docs.length; i++) l.add(docs[i]);
+		Collections.shuffle(l, random);
+		for (int i=0; i < docs.length; i++) docs[i] = l.get(i);
+
+		*/
 		for (int i=0; i < docs.length; i++) {
 			// pick element that we want to swap with
 			int e = i + random.nextInt(docs.length - i);

@@ -16,13 +16,15 @@ public class FullInferenceTest {
 		Viterbi viterbi = new Viterbi(params.model, parseScorer);
 		
 		double[] scores = new double[params.model.numRelations];
+		double[][] allScores = new double[doc.numMentions][params.model.numRelations];
 		//int[] scoresC = new int[scores.length];
 		for (int i=0; i < scores.length; i++) scores[i] = Double.NEGATIVE_INFINITY;
-		boolean[] binaryYs = new boolean[params.model.numRelations];
+		boolean[] binaryYs = new boolean[params.model.numRelations];		
 		int numYs = 0;
 		for (int m = 0; m < doc.numMentions; m++) {
 			Viterbi.Parse p = viterbi.parse(doc, m);
 			
+			/*
 			// find highest scoring relation which is not NA
 			// new score is its score minus the score of NA
 			int max = 1;
@@ -30,7 +32,7 @@ public class FullInferenceTest {
 				if (p.scores[j] > p.scores[max]) max = j;
 			p.state = max;
 			p.score = scores[max] - scores[0];
-			
+			*/
 			parse.Z[m] = p.state;
 			if (p.state > 0 && !binaryYs[p.state]) {
 				binaryYs[p.state] = true;
@@ -42,6 +44,9 @@ public class FullInferenceTest {
 			//scoresC[parse.Z[m]] ++;
 			if (p.score > scores[parse.Z[m]])
 				scores[parse.Z[m]] = p.score;
+			
+			for (int i=0; i < params.model.numRelations; i++)
+				allScores[m][i] = p.scores[i];
 		}
 
 		parse.Y = new int[numYs];
@@ -53,6 +58,7 @@ public class FullInferenceTest {
 			}
 		
 		parse.scores = scores;
+		parse.allScores = allScores;
 		
 		//for (int i=0; i < scores.length; i++)
 		//	if (scoresC[i] > 0) scores[i] /= scoresC[i];

@@ -13,8 +13,8 @@ import multir.util.SparseBinaryVector;
 
 public class CollinsTraining {
 
-	public int maxIterations = 30; //30;
-	public float avgIterationsProportion = .8f; //.8f;
+	public int maxIterations = 50; //30; //25;
+	public float avgIterationsProportion = 1f;//.8f;//1f;//1f;//.8f;//1f; //.8f; //1f;
 	public boolean computeAvgParameters = true;
 		
 	private Scorer scorer;
@@ -35,6 +35,8 @@ public class CollinsTraining {
 	
 	private CRFParameters avgParameters;
 	private CRFParameters iterParameters;
+	
+	public TopFalse topFalse;
 	
 	public CRFParameters train(Dataset trainingData) {
 		
@@ -66,14 +68,22 @@ public class CollinsTraining {
 		//	evaluator = new Evaluator(Evaluator.Level.COARSE, avgParameters.model.numStates);
 		
 		try {
-			TopFalse topFalse = new TopFalse("/projects/pardosa/s5/clzhang/ontologylink/tmp1/topFalse");
+			//TopFalse topFalse = new TopFalse("/projects/pardosa/data14/raphaelh/t/expTrain1/topFalse");
 			
 			for (int i = 0; i < maxIterations; i++) {
-				float delta = 1;
+				//float delta = 1;
+				double delta = 1.0 / (maxIterations * trainingData.numDocs());
 				boolean useIterAverage = computeAvgParameters && (i >= maxIterations - avgIterations);
-	
-				
-				topFalse.add(i, scorer, iterParameters, model, trainingData);
+
+				trainingData.shuffle();
+
+				//if (topFalse != null) {
+					//if (computeAvgParameters) {
+					//	finalizeRel();
+					//}
+					//topFalse.add(i, scorer, avgParameters, model, trainingData);
+				//	topFalse.add(i, scorer, iterParameters, model, trainingData);
+				//}
 				
 				trainingIteration(trainingData, delta, useIterAverage);
 				
@@ -82,7 +92,8 @@ public class CollinsTraining {
 				//trainingIteration2(trainingData, delta, useIterAverage);
 				
 			}
-			topFalse.close();
+			if (topFalse != null)
+				topFalse.close();
 		} catch (IOException e) {e.printStackTrace();}
 		
 		// required for dense parameters
@@ -109,106 +120,61 @@ public class CollinsTraining {
 	int avgIteration = 0;
 	
 	public void trainingIteration(Dataset trainingData, 
-			float delta, boolean useIterAverage) {
+			double delta, boolean useIterAverage) {
 		System.out.println("iter");
 		
-		//topFalsePredictions(trainingData);
-		
-		trainingData.shuffle();
 
 		MILDocument doc = new MILDocument();
 		
 		trainingData.reset();
 		int j=0;
 		while (trainingData.next(doc)) {
+			
+			// if this is the first avgIteration, then we need to initialize
+			// the lastUpdate vector
+			if (useIterAverage && avgIteration == 0)
+				avgParamsLastUpdates.sum(iterParameters, 1.0f);
+
+			
 			//if (++j % 100 == 0) System.out.println(j);
 			
 			// compute most likely label under current parameters
 			Parse predictedParse = FullInference.infer(doc, scorer, iterParameters);
+			//Parse trueParse = ConditionalInference.infer(doc, scorer, iterParameters);
 			
 			//System.out.println(doc.numMentions);
 			//print(doc.Y);
 			//print(predictedParse.Y);
 			
+			//if (1==1) {
 			if (!YsAgree(predictedParse.Y, doc.Y)) {
+				
 				//System.out.println("  disagree");
 				Parse trueParse = ConditionalInference.infer(doc, scorer, iterParameters);
 				//System.out.println(trueParse.Z.length + " " + doc.numMentions);
 
-				/*
-				if (!YsAgree(doc.Y, YsFromZs(trueParse.Z))) {
-					if (doc.Y.length <= doc.numMentions) {
-						//print("Y", doc.Y);
-						//print("Z", YsFromZs(trueParse.Z));
-					}
-				}*/
 				
-				update2(predictedParse, trueParse, delta, useIterAverage);
+				update2(j, predictedParse, trueParse, delta, useIterAverage);
 //				update5(predictedParse, trueParse, delta, useIterAverage);
+//			update6(predictedParse, trueParse, delta, useIterAverage);
+//				update7(j, predictedParse, trueParse, delta, useIterAverage);
 
 			}
+			
+			// debug
+			if (useIterAverage) { avgIteration++; }
+
+			
+			// compute most likely label under current parameters
+//			Parse predictedParse = FullInference.infer(doc, scorer, iterParameters); 
+//			Parse trueParse = ConditionalInference.infer(doc, scorer, iterParameters);
+			
+//			update2(j, predictedParse, trueParse, delta, useIterAverage);
+
+			
+			j++;			
 		}
 	}
-	
-	public void topFalsePredictions(Dataset trainingData) {
-		
-		class PQE {
-			double score;
-			int mentionID;
-			int predicted;
-			String arg1;
-			String arg2;
-			PQE(double score, int mentionID, int predicted, String arg1, String arg2) {
-				this.score = score;
-				this.mentionID = mentionID;
-				this.predicted = predicted;
-				this.arg1 = arg1;
-				this.arg2 = arg2;
-			}
-		}
-		
-		PriorityQueue<PQE> pq = new PriorityQueue<PQE>(10, new Comparator<PQE>() {
-			public int compare(PQE e1, PQE e2) {
-				if (e1.score > e2.score) return -1; else return 1;
-			}
-		});
-		
-		MILDocument doc = new MILDocument();
-		
-		scorer.setParameters(iterParameters);
-		Viterbi v = new Viterbi(model, scorer);
-
-		
-		trainingData.reset();
-		while (trainingData.next(doc)) {
-			
-			// identify mentions with high(est) score for which
-			// we predict some relation, but ground truth says
-			// no relation/different relation
-			
-			for (int m=0; m < doc.numMentions; m++) {
-
-				Viterbi.Parse p = v.parse(doc, m);
-				if (p.state == 0) continue;
-				
-				boolean isGroundTruth = false;
-				for (int i=0; i < doc.Y.length; i++)
-					if (doc.Y[i] == p.state) isGroundTruth = true;
-				
-				if (!isGroundTruth) {
-					pq.add(new PQE(p.score, doc.mentionIDs[m], p.state, doc.arg1, doc.arg2));
-				}
-			}
-		}
-		
-		// print top5
-		for (int j=0; j < 5 && !pq.isEmpty(); j++) {
-			PQE pqe = pq.poll();
-			System.out.println(pqe.arg1 + " " + pqe.arg2 + " " + pqe.mentionID + " " + pqe.predicted);
-		}
-	}
-	
-	
 	
 	/*
 	private static void print(String prefix, int[] y) {
@@ -258,15 +224,11 @@ public class CollinsTraining {
 	}
 	
 	// TODO: a bit dangereous, since scorer.setDocument is called only inside inference
-	public void update2(Parse pred, Parse tru, float delta, boolean useIterAverage) {
+	public void update2(int pair, Parse pred, Parse tru, double delta, boolean useIterAverage) {
 		int numMentions = tru.Z.length;
 		//float myDelta = delta/numMentions;
 		MILDocument doc = tru.doc;
 		
-		// if this is the first avgIteration, then we need to initialize
-		// the lastUpdate vector
-		if (useIterAverage && avgIteration == 0)
-			avgParamsLastUpdates.sum(iterParameters, 1.0f);
 
 		// iterate over mentions
 		for (int m = 0; m < numMentions; m++) {
@@ -275,18 +237,29 @@ public class CollinsTraining {
 			int truRel = tru.Z[m];
 			int predRel = pred.Z[m];
 			
-			// normal updates on everything
-			SparseBinaryVector v1a = scorer.getMentionRelationFeatures(doc, m, truRel);
-			updateRel(truRel, v1a, delta, useIterAverage);
+			
+			// don't update, if among topFalse
+			//if (topFalse != null && topFalse.ignoreTopK &&
+			//		topFalse.topK.contains(doc.arg1 + "\t" + doc.arg2 + "\t" + doc.mentionIDs[m]))
+			//			continue;
 
-			SparseBinaryVector v2a = scorer.getMentionRelationFeatures(doc, m, predRel);
-			updateRel(predRel, v2a, -delta, useIterAverage);
+			//if (topFalse != null && topFalse.ignoreTopK &&
+			//		topFalse.topK.contains(pair + "\t" + m))
+			//			continue;
+
+			if (truRel != predRel) {
+			
+				// normal updates on everything
+				SparseBinaryVector v1a = scorer.getMentionRelationFeatures(doc, m, truRel);
+				updateRel(truRel, v1a, delta, useIterAverage);
+	
+				SparseBinaryVector v2a = scorer.getMentionRelationFeatures(doc, m, predRel);
+				updateRel(predRel, v2a, -delta, useIterAverage);
+			}
 		}
 		
 		//printParams(iterParameters, model);
 		
-		// debug
-		if (useIterAverage) { avgIteration++; }
 	}
 	
 	
@@ -331,6 +304,115 @@ public class CollinsTraining {
 			avgIteration++;
 		}
 	}
+	
+	
+	
+	// do only one update per entity pair: broken mention with highest score
+	public void update6(Parse pred, Parse tru, float delta, boolean useIterAverage) {
+		int numMentions = tru.Z.length;
+		MILDocument doc = tru.doc;
+		
+		// if this is the first avgIteration, then we need to initialize
+		// the lastUpdate vector
+		if (useIterAverage && avgIteration == 0)
+			avgParamsLastUpdates.sum(iterParameters, 1.0f);
+
+		int numBroken = 0;
+		for (int m = 0; m < numMentions; m++)
+		if (tru.Z[m] != pred.Z[m]) numBroken++;
+		
+		if (numBroken != 0) { 
+			// scorer.setParameters has already been called
+			Viterbi viterbi = new Viterbi(model, scorer);
+			
+			int[] broken = new int[numBroken];
+			int bp = 0;
+			for (int m = 0; m < numMentions; m++)
+				if (tru.Z[m] != pred.Z[m]) broken[bp++] = m;
+			
+			// sample random broken mention
+			//int rm = random.nextInt(numBroken);
+			// identify broken mention with highest score
+			int rm = 0;
+			double rmScore = viterbi.parse(doc, broken[0]).score;
+			for (int i=1; i < broken.length; i++) {
+				double score = viterbi.parse(doc, broken[i]).score;
+				if (score > rmScore) { rm = i; rmScore = score; }
+			}
+			
+			int truRel = tru.Z[rm];
+			int predRel = pred.Z[rm];
+			
+			// do update
+			SparseBinaryVector v1a = scorer.getMentionRelationFeatures(doc, rm, truRel);
+			updateRel(truRel, v1a, delta, useIterAverage);
+
+			SparseBinaryVector v2a = scorer.getMentionRelationFeatures(doc, rm, predRel);
+			updateRel(predRel, v2a, -delta, useIterAverage);
+		}
+		
+		//printParams(iterParameters, model);
+		
+		// debug
+		if (useIterAverage) {
+			avgIteration++;
+		}
+	}
+	
+	
+	// fractional updates
+	public void update7(int pair, Parse pred, Parse tru,float delta, boolean useIterAverage) {
+		int numMentions = tru.Z.length;
+		MILDocument doc = tru.doc;
+		
+		// if this is the first avgIteration, then we need to initialize
+		// the lastUpdate vector
+		if (useIterAverage && avgIteration == 0)
+			avgParamsLastUpdates.sum(iterParameters, 1.0f);
+
+		int numBroken = 0;
+		for (int m = 0; m < numMentions; m++)
+		//if (tru.Z[m] != pred.Z[m]) numBroken++;
+			if (tru.Z[m] != pred.Z[m] && (topFalse == null ||
+					topFalse.ignoreTopK && !topFalse.topK.contains(pair + "\t" + m))) numBroken++;
+			// don't update, if among topFalse
+
+		if (numBroken != 0) { 
+			// we do an update on each broken mention, but only using weight delta*1/numBroken
+			
+			float newDelta = delta / numBroken;
+			
+			// test: larger updates for 
+			//if (numMentions >=2) newDelta *=2;
+			
+			int[] broken = new int[numBroken];
+			int bp = 0;
+			for (int m = 0; m < numMentions; m++)
+				if (tru.Z[m] != pred.Z[m] && (topFalse == null ||
+						topFalse.ignoreTopK && !topFalse.topK.contains(pair + "\t" + m))) 
+					broken[bp++] = m;
+
+			for (int b : broken) {
+				int truRel = tru.Z[b];
+				int predRel = pred.Z[b];
+				
+				// do update
+				SparseBinaryVector v1a = scorer.getMentionRelationFeatures(doc, b, truRel);
+				updateRel(truRel, v1a, newDelta, useIterAverage);
+
+				SparseBinaryVector v2a = scorer.getMentionRelationFeatures(doc, b, predRel);
+				updateRel(predRel, v2a, -newDelta, useIterAverage);
+			}
+		}
+		
+		//printParams(iterParameters, model);
+		
+		// debug
+		if (useIterAverage) {
+			avgIteration++;
+		}
+	}
+	
 	
 	
 	public void trainingIteration2(Dataset trainingData, 
@@ -583,7 +665,7 @@ public class CollinsTraining {
 		}
 	}
 	*/
-	private void updateRel(int toState, SparseBinaryVector features, float delta, boolean useIterAverage) {
+	private void updateRel(int toState, SparseBinaryVector features, double delta, boolean useIterAverage) {
 		iterParameters.relParameters[toState].addSparse(features, delta);
 		
 		if (useIterAverage) {

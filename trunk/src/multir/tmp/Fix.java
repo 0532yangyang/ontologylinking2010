@@ -3,8 +3,7 @@ package multir.tmp;
 import java.io.IOException;
 import java.util.Comparator;
 
-import javatools.mydb.Sort;
-
+import multir.util.delimited.Sort;
 
 public class Fix {
 

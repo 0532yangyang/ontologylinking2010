@@ -1,10 +1,12 @@
 package multir.learning.data;
 
+import java.util.Random;
+
 public interface Dataset {
 	
 	public int numDocs();
 	
-	public void shuffle();
+	public void shuffle(Random random);
 	
 	public MILDocument next();
 	

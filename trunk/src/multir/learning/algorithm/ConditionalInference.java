@@ -38,6 +38,8 @@ public class ConditionalInference {
 					new Edge(m, y, vp[m].scores[doc.Y[y-1]]);
 		}
 
+		// BUGG????? y above is not relation but index in relevantRelations???
+		
 		// NOTE: strictly speaking, no sorting is necessary
 		// in the following steps; however, we do sorting
 		// for easier code maintainability
@@ -86,6 +88,9 @@ public class ConditionalInference {
 				// find highest weight edge to y, from a
 				// mention m which does not yet have an
 				// outgoing edge
+				
+				//BUG????? BELOW: es array is not indexed correctly
+				
 				for (int j=0; j < numMentions; j++) {
 					Edge e = es[numMentions*y + j];
 					if (z[e.m] < 0) {

@@ -13,11 +13,11 @@ import multir.learning.data.Dataset;
 import multir.learning.data.MILDocument;
 import multir.util.delimited.DelimitedWriter;
 
-public class TopFalse {
+public class TopFalseOld2 {
 
 	DelimitedWriter w;
 	
-	public TopFalse(String file) throws IOException {
+	public TopFalseOld2(String file) throws IOException {
 		w = new DelimitedWriter(file);
 	}
 	
@@ -31,12 +31,14 @@ public class TopFalse {
 			double score;
 			int mentionID;
 			int predicted;
-			int pairID;
-			PQE(double score, int mentionID, int predicted, int pairID) {
+			String arg1;
+			String arg2;
+			PQE(double score, int mentionID, int predicted, String arg1, String arg2) {
 				this.score = score;
 				this.mentionID = mentionID;
 				this.predicted = predicted;
-				this.pairID = pairID;
+				this.arg1 = arg1;
+				this.arg2 = arg2;
 			}
 		}
 		
@@ -53,7 +55,6 @@ public class TopFalse {
 
 		
 		trainingData.reset();
-		int pair=0;
 		while (trainingData.next(doc)) {
 			
 			// identify mentions with high(est) score for which
@@ -70,11 +71,10 @@ public class TopFalse {
 					if (doc.Y[i] == p.state) isGroundTruth = true;
 				
 				if (!isGroundTruth) {
-					pq.add(new PQE(p.score, m, p.state, pair));
+					pq.add(new PQE(p.score, doc.mentionIDs[m], p.state, doc.arg1, doc.arg2));
 				}
 				
 			}
-			pair++;
 		}
 		
 		topK.clear();
@@ -87,10 +87,10 @@ public class TopFalse {
 		for (int j=0; j < K && !pq.isEmpty(); j++) {
 			PQE pqe = pq.poll();
 			
-			topK.add(pqe.pairID + "\t" + pqe.mentionID);
+			topK.add(pqe.arg1 + "\t" + pqe.arg2 + "\t" + pqe.mentionID);
 			
 			//System.out.println(pqe.arg1 + " " + pqe.arg2 + " " + pqe.mentionID + " " + pqe.predicted);
-			//w.write("" + iteration, pqe.arg1, pqe.arg2, "" + pqe.mentionID, "" + pqe.predicted);
+			w.write("" + iteration, pqe.arg1, pqe.arg2, "" + pqe.mentionID, "" + pqe.predicted);
 			
 			
 		}

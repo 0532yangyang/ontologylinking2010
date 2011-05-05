@@ -58,7 +58,7 @@ public class MILDocument {
 		try {
 			random = dis.readInt();
 			arg1 = dis.readUTF();
-			arg2 = dis.readUTF();
+			arg2 = dis.readUTF();			
 			int lenY = dis.readInt();
 			Y = new int[lenY];
 			for (int i=0; i < lenY; i++) Y[i] = dis.readInt();
@@ -71,6 +71,10 @@ public class MILDocument {
 				if (features[i] == null) features[i] = new SparseBinaryVector();
 				features[i].deserialize(dis);
 			}
+			
+			//arg1 = arg2 = null;
+			//mentionIDs = null;
+			
 			return true;
 		} catch (EOFException e) { return false; }
 	}

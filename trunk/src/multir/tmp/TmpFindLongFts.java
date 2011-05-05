@@ -2,9 +2,8 @@ package multir.tmp;
 
 import java.io.IOException;
 
-import javatools.filehandlers.DelimitedReader;
-import javatools.filehandlers.DelimitedWriter;
-
+import multir.util.delimited.DelimitedReader;
+import multir.util.delimited.DelimitedWriter;
 
 public class TmpFindLongFts {
 

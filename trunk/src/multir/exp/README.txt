@@ -1,3 +1,12 @@
+1. Step0, 
+2. Step1,
+3. WriteFeaturesToFile
+4. WordCount
+5. Step2b
+6. Step3
+
+////
+
 
 MUST MANUALLY COPY edu.stanford.nlp.parser.ensemble.appdata stuff to bin dir during build!!
 otherwise Maltparser will fail with
