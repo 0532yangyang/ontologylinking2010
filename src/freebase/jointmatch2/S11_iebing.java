@@ -25,7 +25,10 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import multir.preprocess.RelationECML;
+
 import stanfordCoreWrapper.CoreNlpPipeline;
+import stanfordCoreWrapper.MaltiDep;
 
 import cc.factorie.protobuf.DocumentProtos.Document.RelationMention;
 import cc.factorie.protobuf.DocumentProtos.Relation;
@@ -146,9 +149,9 @@ public class S11_iebing {
 					//					String[] towrite = new String[5];
 					//					towrite[0] = arg1PlusArg2;
 					//					towrite[1] = relation;
-					sb1.append(sen[0] + " ");
-					sb2.append(sen[1] + " ");
-					sb3.append(sen[2] + " ");
+					sb1.append(sen[0]);
+					sb2.append(sen[1]);
+					sb3.append(sen[2]);
 					//dw.write(towrite);
 				}
 				dw.write(arg1PlusArg2, relation, sb1.toString(), sb2.toString(), sb3.toString());
@@ -179,9 +182,9 @@ public class S11_iebing {
 					Set<String> patterns = new HashSet<String>();
 					//mntBuilder.setFilename(l[2] + " " + l[3]);
 					mntBuilder.setSentence(l[2]);
-					l[2] = l[2].replace("  ", " ");
-					l[3] = l[3].replace("  ", " ");
-					l[4] = l[4].replace("  ", " ");
+					//					l[2] = l[2].replace("  ", " ");
+					//					l[3] = l[3].replace("  ", " ");
+					//					l[4] = l[4].replace("  ", " ");
 					Pattern.patternize(l[2].split(" "), l[3].split(" "), l[4].split(" "), patterns, 5);
 					for (String p : patterns) {
 						mntBuilder.addFeature(p);
@@ -197,6 +200,65 @@ public class S11_iebing {
 		}
 		os.close();
 
+	}
+
+	public static void convert2Pb_Rph(String file, String output) throws Exception {
+		OutputStream os = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
+		RelationECML ecml = new RelationECML();
+		DelimitedReader dr = new DelimitedReader(file + ".stanford.withdeps");
+		List<String[]> b = new ArrayList<String[]>();
+		Builder relBuilder = null;
+		int nomatch = 0, hasmatch = 0;
+		while ((b = dr.readBlock(0)) != null) {
+			String arg1PlusArg2 = b.get(0)[0];
+			String relationname = b.get(0)[1];
+			String arg12[] = arg1PlusArg2.split("::");
+			String[] arg1split = arg12[0].split(" ");
+			String[] arg2split = arg12[1].split(" ");
+			relBuilder = Relation.newBuilder();
+			relBuilder.setRelType(relationname);
+			relBuilder.setSourceGuid(arg12[0]);
+			relBuilder.setDestGuid(arg12[1]);
+			for (String[] l : b) {
+				String[] tokens = l[2].split(" ");
+				String[] pos = l[3].split(" ");
+				String[] ner = l[4].split(" ");
+				String[] depTypes = l[5].split(" ");
+				String[] depParentsStr = l[6].split(" ");
+				int[] depParents = new int[depParentsStr.length];
+				for (int i = 0; i < depParents.length; i++)
+					depParents[i] = Integer.parseInt(depParentsStr[i]);
+				List<Integer> arg1StartPos = StringUtil.locateArgInTokens(tokens, arg1split);
+				List<Integer> arg2StartPos = StringUtil.locateArgInTokens(tokens, arg2split);
+				for (int p1 : arg1StartPos) {
+					for (int p2 : arg2StartPos) {
+						RelationMentionRef.Builder mntBuilder = RelationMentionRef.newBuilder();
+						mntBuilder.setFilename(arg1PlusArg2);
+						mntBuilder.setSourceId(0);
+						mntBuilder.setDestId(0);
+						mntBuilder.setSentence(l[2]);
+						//						int p1 = arg1StartPos.get(0);
+						//						int p2 = arg2StartPos.get(0);
+						List<String> fts = ecml.getFeatures(0, tokens, pos, depParents, depTypes, new int[] { p1,
+								p1 + 1 }, new int[] { p2, p2 + 1 }, ner[p1], ner[p2]);
+						for (String p : fts) {
+							mntBuilder.addFeature(p);
+						}
+						//mntBuilder.build();
+						relBuilder.addMention(mntBuilder.build());
+					}
+				}
+				if (arg1StartPos.size() > 0 && arg2StartPos.size() > 0) {
+					//dw.write(arg1PlusArg2, l[2], arg1StartPos, arg2StartPos);
+
+				}
+			}
+			if (relBuilder.getMentionList() != null && relBuilder.getMentionCount() > 0) {
+				relBuilder.build().writeDelimitedTo(os);
+			}
+		}
+		os.close();
+		dr.close();
 	}
 
 	public static void CreateTestSetsByRelation(String filepb) throws IOException {
@@ -240,7 +302,7 @@ public class S11_iebing {
 			Collections.shuffle(ids);
 
 			// take up to 100 sentences for each relation
-			for (int i = 0; i < Math.min(ids.size(), 1000); i++) {
+			for (int i = 0; i < Math.min(ids.size(), 100); i++) {
 				int id = ids.get(i);
 				RelationMentionRef rmf = e.getValue().get(ids.get(i));
 				r = map.get(rmf);
@@ -251,7 +313,8 @@ public class S11_iebing {
 					name1 = "";
 				if (name2 == null)
 					name2 = "";
-
+				//				String name1_first = name1.split(",| ")[0];
+				//				String name2_first = name2.split(",| ")[0];
 				String snt = rmf.getSentence();
 
 				StringBuilder sb = new StringBuilder();
@@ -394,10 +457,10 @@ public class S11_iebing {
 
 	static void eval_baseline_seedtrain_extendtest() throws IOException {
 		String expdir = Main.dir_bing + "/exp_seed_vs_extend";
-		RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_seed2bing_pbgz, Main.file_extendedpair2bing_pbgz,
-				expdir);
-		rew.learningThenTesting();
-		//manualevalresult(Main.file_extendedpair2bing_pbgz + ".byrelationraw", expdir);
+		//		RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_seed2bing_pbgz, Main.file_extendedpair2bing_pbgz,
+		//				expdir);
+		//		rew.learningThenTesting();
+		manualevalresult(Main.file_extendedpair2bing_pbgz + ".byrelationraw", expdir);
 	}
 
 	static void eval_baseline_extendtrain_seedtest() throws IOException {
@@ -463,7 +526,7 @@ public class S11_iebing {
 		rew.learningThenTesting();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		{
 			//getSeedBingResult();
 			//getExtendedPairBingResult(Main.PAR_NUM_PAIRS_PER_RELATION);
@@ -471,14 +534,20 @@ public class S11_iebing {
 		{
 			//			getStanfordParsedResult(Main.file_extendedpair2bing, 2, 4, 6);
 			//			getStanfordParsedResult(Main.file_seed2bing, 1, 0, 3);
+
+			//MaltiDep.getDep(Main.file_extendedpair2bing+".stanford", 2);
+			//MaltiDep.getDep(Main.file_seed2bing+".stanford", 2);
 			//			convert2Pb(Main.file_extendedpair2bing, Main.file_extendedpair2bing_pbgz);
 			//			convert2Pb(Main.file_seed2bing, Main.file_seed2bing_pbgz);
+			//						convert2Pb_Rph(Main.file_extendedpair2bing, Main.file_extendedpair2bing_pbgz);
+			//						convert2Pb_Rph(Main.file_seed2bing, Main.file_seed2bing_pbgz);
 			//			CreateTestSetsByRelation(Main.file_extendedpair2bing_pbgz);
 		}
+		D.p("hello, world!");
 		{
-			//eval_baseline_seedtrain_extendtest();
-			//eval_baseline_extendtrain_seedtest();
-			eval_seedextend80train_extend20test();
+			eval_baseline_seedtrain_extendtest();
+			//			eval_baseline_extendtrain_seedtest();
+			//			eval_seedextend80train_extend20test();
 		}
 		{
 			//			RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_extendedpair2bing_pbgz,

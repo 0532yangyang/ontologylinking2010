@@ -218,6 +218,24 @@ public class StringUtil {
 		return false;
 	}
 
+	public static List<Integer> locateArgInTokens(String[] tokens, String[] argsplit) {
+		List<Integer> position = new ArrayList<Integer>();
+		//List<String> argsplit = StringUtil.tokenize(arg);
+		for (int i = 0; i < tokens.length; i++) {
+			boolean isStart = true;
+			for (int j = 0; j < argsplit.length; j++) {
+				if (i + j >= tokens.length || !tokens[i + j].equals(argsplit[j])) {
+					isStart = false;
+					break;
+				}
+			}
+			if (isStart) {
+				position.add(i);
+			}
+		}
+		return position;
+	}
+
 	public static void main(String[] args) {
 		D.p(tokenize("/business/business_operation/industry|/business/industry/companies|",
 				new char[] { '|', '/', '_' }));

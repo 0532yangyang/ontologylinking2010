@@ -53,17 +53,17 @@ public class DenseVector {
 			vals[i] *= factor;
 	}
 	
-	public void addSparse(SparseVector v, float factor) {
+	public void addSparse(SparseVector v, double factor) {
 		for (int i=0; i < v.num; i++)
 			vals[v.ids[i]] += v.vals[i]*factor;
 	}
 	
-	public void addSparse(SparseBinaryVector v, float factor) {
+	public void addSparse(SparseBinaryVector v, double factor) {
 		for (int i=0; i < v.num; i++)
 			vals[v.ids[i]] += factor;
 	}
 	
-	public static DenseVector sum(DenseVector v1, DenseVector v2, float factor) {
+	public static DenseVector sum(DenseVector v1, DenseVector v2, double factor) {
 		DenseVector n = new DenseVector(v1.vals.length);
 		for (int i=0; i < v1.vals.length; i++)
 			n.vals[i] = v1.vals[i] + factor * v2.vals[i];
