@@ -3,18 +3,19 @@ package javatools.mydb;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.File;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
-import percept.util.delimited.DelimitedReader;
+import java.util.Random;
 
 import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.datatypes.HashId;
+import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 
 public class StringTable {
@@ -240,22 +241,65 @@ public class StringTable {
 		if (b.size() > 0)
 			result.add(b);
 		return result;
+
 	}
-	//	/**
-	//	 * Shuffle a file, taking at most K lines for each value of the index column c
-	//	 * */
-	//	public static void shuffleLargeFileByColumn(String file, int indexColumn, int K)throws IOException{
-	//		HashId<String>hi = new HashId<String>();
-	//		List<int[]>table = new ArrayList<int[]>(10000000);
-	//		DelimitedReader dr =new DelimitedReader(file);
-	//		String []l;
-	//		int lineId = 0;
-	//		while((l = dr.read())!=null){
-	//			int keyId = hi.getId(l[indexColumn], true);
-	//			table.add(new int[]{lineId,keyId});
-	//			lineId++;
-	//		}
-	//		Collections.shuffle(table);
-	//		Sort.sort(args)
-	//	}
+
+	public static void shuffleLargeFile(String file, String dir, String output) throws IOException {
+		String tempfile = file + ".shuffletemp";
+		String tempsortfile = file + ".shuffletempsort";
+		{
+			DelimitedReader dr = new DelimitedReader(file);
+			DelimitedWriter dw = new DelimitedWriter(tempfile);
+			String[] l;
+			Random r = new Random();
+			while ((l = dr.read()) != null) {
+				String[] w = new String[l.length + 1];
+				w[0] = r.nextInt() + "";
+				System.arraycopy(l, 0, w, 1, l.length);
+				dw.write(w);
+			}
+			dr.close();
+			dw.close();
+		}
+		{
+			Sort.sort(tempfile, tempsortfile, dir, new Comparator<String[]>() {
+				@Override
+				public int compare(String[] arg0, String[] arg1) {
+					// TODO Auto-generated method stub
+					int a = Integer.parseInt(arg0[0]);
+					int b = Integer.parseInt(arg1[0]);
+					return a - b;
+				}
+
+			});
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(tempsortfile);
+			DelimitedWriter dw = new DelimitedWriter(output);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String[] w = new String[l.length - 1];
+				System.arraycopy(l, 1, w, 0, w.length);
+				dw.write(w);
+
+			}
+			dr.close();
+			dw.close();
+		}
+		{
+			(new File(tempfile)).deleteOnExit();
+			(new File(tempsortfile)).deleteOnExit();
+		}
+	}
+
+	public static long intPair2Long(int a, int b) {
+		return ((long) a) * 1000000000 + b;
+	}
+	public static long intPair2Long(String a, String b) {
+		int a0 = Integer.parseInt(a);
+		int b0 = Integer.parseInt(b);
+		return ((long) a0) * 1000000000 + b0;
+	}
+	public static void main(String[] args) {
+	}
 }
