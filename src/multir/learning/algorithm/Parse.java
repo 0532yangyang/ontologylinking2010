@@ -9,6 +9,7 @@ public class Parse {
 	public double score;
 	public MILDocument doc;
 	public double[] scores; // for each relation
+	public double[][] allScores;
 	
 	public Parse() {}
 }

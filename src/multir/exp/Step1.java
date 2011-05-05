@@ -2,7 +2,6 @@ package multir.exp;
 
 import java.io.IOException;
 
-import multir.preprocess.CreateProtobufDatasets;
 import multir.preprocess.freebase.ComputeMatches;
 
 public class Step1 {
@@ -24,6 +23,6 @@ public class Step1 {
 
 		ComputeMatches.main(args);
 	
-		CreateProtobufDatasets.main(args);
+		//CreateProtobufDatasets
 	}
 }

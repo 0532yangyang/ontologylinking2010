@@ -13,8 +13,8 @@ public class PairsOverlap {
 
 	static String dir = "/projects/pardosa/data14/raphaelh/t/data";
 
-	//static String input = dir + "/subsetSpan5.100.pb.gz";
-	static String input = dir + "/subset05-2.100.pb.gz";
+	static String input = dir + "/subsetSpan1.100.pb.gz";
+	//static String input = dir + "/subset05-2.100.pb.gz";
 	static String input2 = dir + "/subset06.100.pb.gz";
 	
 	public static void main(String[] args) throws IOException {
@@ -27,8 +27,10 @@ public class PairsOverlap {
 		    InputStream is = new GZIPInputStream
 		    	(new BufferedInputStream(new FileInputStream(input2)));
 		    Relation r = null;
-		    while ((r = Relation.parseDelimitedFrom(is))!=null) 
+		    while ((r = Relation.parseDelimitedFrom(is))!=null) {		    	
+		    	if (r.getRelType().equals("NA")) continue;
 		    	hsTest.add(r.getSourceGuid() + "\t" + r.getDestGuid());
+		    }
 		    is.close();
 		}
 		
@@ -40,7 +42,7 @@ public class PairsOverlap {
 		    	(new BufferedInputStream(new FileInputStream(input)));
 		    Relation r = null;
 		    while ((r = Relation.parseDelimitedFrom(is))!=null) {
-		    	
+		    	if (r.getRelType().equals("NA")) continue;
 		    	String key = r.getSourceGuid() + "\t" + r.getDestGuid();
 		    	if (hsTest.contains(key)) contained++;
 		    }

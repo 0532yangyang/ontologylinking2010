@@ -2,8 +2,7 @@ package multir.tmp;
 
 import java.io.IOException;
 
-import javatools.filehandlers.DelimitedReader;
-
+import multir.util.delimited.DelimitedReader;
 
 public class Ambiguous {
 

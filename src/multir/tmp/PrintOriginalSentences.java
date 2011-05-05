@@ -12,9 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javatools.filehandlers.DelimitedReader;
-
 import multir.preprocess.Mappings;
+import multir.util.delimited.DelimitedReader;
 
 public class PrintOriginalSentences {
 	
@@ -22,10 +21,10 @@ public class PrintOriginalSentences {
 
 	//static String input1 = dir + "/data/subset05-2.100.pb.gz";
 	static String input1 = dir + "/raw/sentences";
-	static String input2 = dir + "/expTrain1/topFalse";
+	static String input2 = dir + "/ftexp/topFalse";
 	//static String input3 = "/projects/pardosa/data16/raphaelh/tmp/ecmlOrigRelationsFull";
-	static String input3 = dir + "/expTrain1/mapping"; 
-	static String output = dir + "/expTrain1/topFalseDetails";
+	static String input3 = dir + "/ftexp/mapping"; 
+	static String output = dir + "/ftexp/topFalseDetails";
 	
 	public static void main(String[] args) throws IOException {
 		
