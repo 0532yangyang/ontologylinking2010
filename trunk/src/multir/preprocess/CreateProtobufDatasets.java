@@ -9,10 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import javatools.filehandlers.DelimitedReader;
-import javatools.filehandlers.DelimitedWriter;
-import javatools.mydb.Sort;
-
+import multir.util.delimited.DelimitedReader;
+import multir.util.delimited.DelimitedWriter;
+import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.Builder;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;
@@ -53,7 +52,7 @@ public class CreateProtobufDatasets {
 		{
 			RelationECML ecml = new RelationECML();
 			
-			javatools.filehandlers.DelimitedReader isTokens = new DelimitedReader(input5);
+			multir.util.delimited.DelimitedReader isTokens = new DelimitedReader(input5);
 			DelimitedReader isPos = new DelimitedReader(input6); 
 			DelimitedReader isDeps = new DelimitedReader(input7);
 			DelimitedReader isNer = new DelimitedReader(input8);
@@ -138,7 +137,7 @@ public class CreateProtobufDatasets {
 					continue;
 				}
 				
-				List<String> fts = ecml.getMintzFeatures(sentenceId, 
+				List<String> fts = ecml.getFeatures(sentenceId, 
 						tokens, pos,
 						depParents, depTypes,
 						arg1Pos, arg2Pos, 

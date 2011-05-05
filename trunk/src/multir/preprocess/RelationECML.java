@@ -14,7 +14,7 @@ public class RelationECML {
 		//		.getClassifierNoExceptions(serializedClassifier);
 	}
 
-	public List<String> getMintzFeatures(int sentenceId, String[] tokens, 
+	public List<String> getFeatures(int sentenceId, String[] tokens, 
 			String[] postags,
 			int[] depParents, String[] depTypes,
 			int[] arg1Pos, int[] arg2Pos, String arg1ner, String arg2ner) {

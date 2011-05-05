@@ -3,8 +3,7 @@ package multir.preprocess.freebase;
 import java.io.IOException;
 import java.util.Comparator;
 
-import javatools.mydb.Sort;
-
+import multir.util.delimited.Sort;
 
 public class MatchEntitiesFromFreebaseAndText {
 

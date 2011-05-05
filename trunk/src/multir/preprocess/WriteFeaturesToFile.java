@@ -7,10 +7,9 @@ import java.io.InputStream;
 import java.util.Comparator;
 import java.util.zip.GZIPInputStream;
 
-import javatools.filehandlers.DelimitedReader;
-import javatools.filehandlers.DelimitedWriter;
-import javatools.mydb.Sort;
-
+import multir.util.delimited.DelimitedReader;
+import multir.util.delimited.DelimitedWriter;
+import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;
 
@@ -19,10 +18,25 @@ public class WriteFeaturesToFile {
 	static String dir = "/projects/pardosa/data14/raphaelh/t";
 
 	//static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subsetSpan5.100.pb.gz";
-	static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subsetSpan1.10.pb.gz";
+	//static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subsetSpan1.10.pb.gz";
+	//static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subset87-06.5.pb.gz";
+	//static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subset05-06.5.pb.gz";
+	static String input1 = "/projects/pardosa/data14/raphaelh/t/data/subset87-06.1.pb.gz";
+	
+	//ftsSubset05-06.10.gz.counts
 	
 	//static String output = dir + "/fts/ftsSpan5.100.gz";
-	static String output = dir + "/fts/ftsSpan1.10.gz";
+	//static String output = dir + "/fts/ftsSpan1.10.gz";
+	//static String output = "/projects/pardosa/data14/raphaelh/t/fts/ftsSubset87-06.5.gz";
+	//static String output = "/projects/pardosa/data14/raphaelh/t/fts/ftsSubset05-06.5.gz";
+	static String output = "/projects/pardosa/data14/raphaelh/t/fts/ftsSubset87-06.1.gz";
+	
+	public static void run(String data) throws Exception {
+		input1 = "/projects/pardosa/data14/raphaelh/t/data/subset" + data + ".pb.gz";
+		output = "/projects/pardosa/data14/raphaelh/t/fts/ftsSubset" + data + ".gz";
+		main(new String[0]);
+	}
+	
 	
 	public static void main(String[] args) throws IOException {
 		
