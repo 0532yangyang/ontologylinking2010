@@ -303,8 +303,6 @@ public class S1_pair2feature {
 		dr.close();
 	}
 
-
-
 	public static void main(String[] args) {
 		step0_getIdInput();
 		ste1_sample();
