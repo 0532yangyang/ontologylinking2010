@@ -9,6 +9,21 @@ import java.util.List;
 import javatools.administrative.D;
 
 public class StringUtil {
+	public static String removeParentheses(String a) {
+		char[] ach = a.toCharArray();
+		StringBuilder sb = new StringBuilder();
+		int stackdepth = 0;
+		for (int i = 0; i < ach.length; i++) {
+			if (ach[i] == '(') {
+				stackdepth++;
+			} else if (ach[i] == ')' && stackdepth > 0) {
+				stackdepth--;
+			} else if (stackdepth == 0) {
+				sb.append(ach[i]);
+			}
+		}
+		return sb.toString();
+	}
 
 	public static List<String> sortAndRemoveDuplicate(List<String> list) {
 		HashSet<String> temp = new HashSet<String>();
@@ -100,8 +115,8 @@ public class StringUtil {
 		listconvert(wordlist1, temp1, config);
 		listconvert(wordlist2, temp2, config);
 
-//		Collections.sort(temp1);
-//		Collections.sort(temp2);
+		//		Collections.sort(temp1);
+		//		Collections.sort(temp2);
 
 		int i = 0, j = 0, num = 0;
 		while (i < temp1.size() && j < temp2.size()) {
@@ -127,7 +142,7 @@ public class StringUtil {
 	}
 
 	private static void listconvert(List<String> original, List<String> converted, boolean[] config) {
-		HashSet<String>temp = new HashSet();
+		HashSet<String> temp = new HashSet();
 		for (String w : original) {
 			// remove stop words
 			if (config[1]) {
@@ -140,7 +155,7 @@ public class StringUtil {
 				w = w.toLowerCase();
 			}
 			//stem
-			if(config[2]){
+			if (config[2]) {
 				w = Stemmer.stem(w);
 			}
 			temp.add(w);
