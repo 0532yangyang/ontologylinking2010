@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import multir.learning.algorithm.CRFParameters;
-import multir.learning.algorithm.FullInference;
+import multir.learning.algorithm.FullInferenceTest;
 import multir.learning.algorithm.Parse;
 import multir.learning.algorithm.Scorer;
 import multir.learning.data.Dataset;
@@ -33,6 +33,7 @@ public class PrecisionRecallCurve {
 		System.out.println("eval");
 		Scorer scorer = new Scorer();
 
+		
 		// this could also be a file
 		List<Prediction> predictions = new ArrayList<Prediction>();
 		MILDocument doc = new MILDocument();
@@ -40,7 +41,7 @@ public class PrecisionRecallCurve {
 		test.reset();
 		while (test.next(doc)) {
 			numRelationInst += doc.Y.length;
-			Parse parse = FullInference.infer(doc, scorer, params);
+			Parse parse = FullInferenceTest.infer(doc, scorer, params);
 			int[] Yt = doc.Y;
 			int[] Yp = parse.Y;
 			

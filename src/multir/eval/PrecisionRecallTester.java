@@ -38,4 +38,5 @@ public class PrecisionRecallTester {
 	public double recall() { 
 		return numCorrect / numRelations; 
 	}
+	
 }
