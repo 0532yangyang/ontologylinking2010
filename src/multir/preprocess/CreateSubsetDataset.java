@@ -17,14 +17,21 @@ import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;
 
 public class CreateSubsetDataset {
 
-	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/tmp1/data";
+	static String dir = "/projects/pardosa/data14/raphaelh/t/data";
 
-	static String input = dir + "/featurizedData.pb";
+	static String input = dir + "/featurizedData.pb.gz";
 	//static String input = dir + "/subsetSpan5.100.pb.gz";
 	//static String output = dir + "/subset87-05.100.pb";
 	//static String output = dir + "/subset05.100.pb.gz";
-	//static String output = dir + "/subsetTrain.pb.gz";
-	static String output = dir+"/subsetTest.pb.gz";
+	//static String output = dir + "/subsetSpan5.10.pb.gz";
+	//static String output = dir + "/subset87-06.10.pb";
+	//static String output = dir + "/subset87-06.1.pb.gz";
+	static String output = dir + "/subset05-06.10.pb.gz";
+	//static String output = dir + "/subset05-06.25.pb.gz";
+	//static String output = dir + "/subset87-06.5.pb.gz";
+	//static String output = dir + "/subsetN87-06.1.pb.gz";
+	//static String output = dir + "/subset05_1.1.pb.gz";
+	
 	// 2005: start articleID 1638661.xml
 	static int start2005 = 40962186;
 	// 2006: start articleID 1728666.xml
@@ -85,13 +92,22 @@ public class CreateSubsetDataset {
 	*/
 	
 	public static void main(String[] args) throws IOException {
+		
+		//createSubset(input, output, startSpan5, start2006);
+		createSubset(input, output, start2005, start2007);
+		
+	}
+	
+	public static void createSubset(String in, String out, int fromID, int toID) 
+		throws IOException {
+
 		Random random = new Random();
 		
 		OutputStream os = new GZIPOutputStream(new BufferedOutputStream(
-				new FileOutputStream(output)));		
+				new FileOutputStream(out)));
 	    InputStream is = new GZIPInputStream
 	    	(new BufferedInputStream(
-	    		new FileInputStream(input)));
+	    		new FileInputStream(in)));
 	    Relation r = null;
 	    
 	    int count = 0;
@@ -111,9 +127,16 @@ public class CreateSubsetDataset {
 	    	relBuilder.setDestGuid(r.getDestGuid());
 	    	if (r.getRelType().equals("NA")) neg++; else pos++;
 
-	    	//if (r.getRelType().equals("NA"))
-	    	//	if (random.nextDouble() < .9) continue;
+	    	if (r.getRelType().equals("NA"))
+	    		if (random.nextDouble() < .9) continue;
 	    	//	if (random.nextDouble() < .5) continue;
+	    	
+	    	//if (r.getRelType().indexOf("/location/location/contains") == -1 ||
+	    	//	r.getRelType().indexOf("/people/person/nationality") == -1 ||
+	    	//	r.getRelType().indexOf("/location/neighborhood/neighborhood_of") == -1 ||
+	    	//	r.getRelType().indexOf("/people/person/children") == -1)
+            //if (!r.getRelType().contains("/business/company_advisor/companies_advised"))	    		
+	    	//	if (random.nextDouble() < .99) continue;
 	    	
 	    	for (int i=0; i < r.getMentionCount(); i++) {
 	    		RelationMentionRef rmf = r.getMention(i);
@@ -129,14 +152,12 @@ public class CreateSubsetDataset {
 	    		//if (sentenceID >= startSentenceID2005_2 && 
 	    		//		sentenceID < startSentenceID2006)
 	    			
-	    		//if (sentenceID >= startSpan5 && sentenceID < start2006)
-	    		//if (sentenceID >= start2006 && sentenceID < start2007)
+	    		if (sentenceID >= fromID && sentenceID < toID)
 	    		//if (sentenceID >= start2005 && sentenceID < start2006)
+	    		//if (sentenceID >= start2006 && sentenceID < start2007)
 	    		//if (sentenceID >= start2007)
 	    		//if (sentenceID >= start2005-2 && sentenceID < start2006)
-	    		if(sentenceID>start2006){
 	    			relBuilder.addMention(rmf);
-	    		}
 	    	}
     		if (relBuilder.getMentionList() != null && relBuilder.getMentionCount() > 0)
     			relBuilder.build().writeDelimitedTo(os);
@@ -147,5 +168,6 @@ public class CreateSubsetDataset {
 		System.out.println("max " + max);
 		System.out.println("pos " + pos);
 		System.out.println("neg " + neg);
+
 	}
 }

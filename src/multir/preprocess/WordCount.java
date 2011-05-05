@@ -9,21 +9,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javatools.filehandlers.DelimitedReader;
-import javatools.filehandlers.DelimitedWriter;
-
 import multir.util.FileOperations;
+import multir.util.delimited.DelimitedReader;
+import multir.util.delimited.DelimitedWriter;
 
 public class WordCount {
 
 	static String dir = "/projects/pardosa/data14/raphaelh/t";
 
-	static String input = dir + "/fts/ftsSpan1.10.gz";
+	//static String input = dir + "/fts/ftsSpan1.10.gz";
+	//static String input = dir + "/fts/ftsSubset87-06.5.gz";
+	//static String input = dir + "/fts/ftsSubset05-06.5.gz";
+	static String input = dir + "/fts/ftsSubset87-06.1.gz";
 	static String output = input + ".counts";
 	
 	static int MAP_SIZE = 2000000;
 	
+	public static void run(String data) throws Exception {
+		input = dir + "/fts/ftsSubset" + data + ".gz";
+		output = input + ".counts";
+		main(new String[0]);
+	}
+	
 	public static void main(String[] args) throws IOException {
+		count(input, output);
+	}
+	
+	public static void count(String input, String output) throws IOException {
 		
 		// initial runs
 		int runs = 0;

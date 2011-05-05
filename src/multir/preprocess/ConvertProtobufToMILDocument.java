@@ -56,13 +56,14 @@ public class ConvertProtobufToMILDocument {
 		DataOutputStream os = new DataOutputStream
 			(new BufferedOutputStream(new FileOutputStream(output)));
 	
-	    InputStream is = new GZIPInputStream(new BufferedInputStream
+	    InputStream is = new GZIPInputStream(
+	    		new BufferedInputStream
 	    		(new FileInputStream(input)));
 	    Relation r = null;
 	    MILDocument doc = new MILDocument();
 	    
 	    int count = 0;
-    
+    	    
 	    while ((r = Relation.parseDelimitedFrom(is))!=null) {
 	    	if (++count % 10000 == 0) System.out.println(count);
 
@@ -95,10 +96,10 @@ public class ConvertProtobufToMILDocument {
 	    	doc.numMentions = r.getMentionCount();
 	    	
 	    	for (int j=0; j < r.getMentionCount(); j++) {
-	    		RelationMentionRef rmf = r.getMention(j);	    		
+	    		RelationMentionRef rmf = r.getMention(j);
 		    	doc.Z[j] = -1;
-	    		//doc.mentionIDs[j] = j;
-	    		doc.mentionIDs[j] = Integer.parseInt(rmf.getFilename()); // is actually sentenceID
+	    		doc.mentionIDs[j] = j;
+	    		//doc.mentionIDs[j] = Integer.parseInt(rmf.getFilename()); // is actually sentenceID
 	    		SparseBinaryVector sv = doc.features[j] = new SparseBinaryVector();
 	    		
 	    		int[] fts = new int[rmf.getFeatureCount()];
