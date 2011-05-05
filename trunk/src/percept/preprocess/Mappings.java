@@ -17,8 +17,8 @@ public class Mappings {
 	private Map<String, Integer> state2stateID = new HashMap<String, Integer>();
 	private Map<String, Integer> ft2ftID = new HashMap<String, Integer>();
 
-	private List<String> list_states = new ArrayList<String>();
-	private List<String> list_fts = new ArrayList<String>();
+	public List<String> list_states = new ArrayList<String>();
+	public List<String> list_fts = new ArrayList<String>();
 
 	public int getStateID(String state, boolean addNew) {
 		Integer i = state2stateID.get(state);
@@ -39,7 +39,7 @@ public class Mappings {
 			return null;
 		}
 	}
-	
+
 	public List<String> getStateName() {
 		return list_states;
 	}

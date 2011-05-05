@@ -24,7 +24,7 @@ public class LogLinear {
 	String trainfile = "";
 
 	Model model;
-	CRFParameters params;
+	public CRFParameters params;
 	CollinsTraining ct;
 	Random random;
 	Mappings mappings;
@@ -222,12 +222,53 @@ public class LogLinear {
 			}
 			double prec = pp0 * 1.0 / (pp0 + pn0);
 			double recall = pp0 * 1.0 / (pp0 + np0);
-			D.p("OVERALL", prec,recall);
-			dw.write("OVERALL", prec,recall);
+			D.p("OVERALL", prec, recall);
+			dw.write("OVERALL", prec, recall);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void printDebug(String outputfile) throws IOException {
+		DelimitedWriter dw = new DelimitedWriter(outputfile);
+		dw.write("mapping file");
+		dw.write(this.mappings.list_states.size());
+		dw.write(this.mappings.list_fts.size());
+		double[][] v = new double[this.mappings.list_states.size()][this.mappings.list_fts.size()];
+		for (int i = 0; i < mappings.list_states.size(); i++) {
+			for (int j = 0; j < mappings.list_fts.size(); j++) {
+				if (i < params.stateParameters.length && j < params.stateParameters[i].vals.length) {
+					v[i][j] = params.stateParameters[i].vals[j];
+				}
+			}
+		}
+		for (int j = 0; j < this.mappings.list_fts.size(); j++) {
+			try {
+				if (this.mappings.list_fts.get(j) == null)
+					break;
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < this.mappings.list_states.size(); i++) {
+					if (v[i][j] > 0) {
+						sb.append(mappings.list_states.get(i)).append(":").append(v[i][j]).append(" ");
+					}
+				}
+				dw.write(this.mappings.list_fts.get(j), sb.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		//		for (int j = 0; j < mappings.list_fts.size(); j++) {
+		//			StringBuilder sb = new StringBuilder();
+		//			for (int i = 0; i < params.stateParameters.length; i++) {
+		//				double v[] = params.stateParameters[i].vals;
+		//				if (v != null && v.length > j && v[j] > 0) {
+		//					sb.append(mappings.list_states.get(i)).append(":").append(v[j]).append(" ");
+		//				}
+		//			}
+		//			dw.write(mappings.list_fts.get(j), sb.toString());
+		//		}
+		dw.close();
 	}
 
 	public static void main(String[] args) {
