@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 
 
-public class NellOntology {
+public class NellOntology_fake {
 	public List<NellRelation> nellRelationList = new ArrayList<NellRelation>();
 
 	/** Relation names and their Ids */
@@ -24,7 +25,7 @@ public class NellOntology {
 
 	/** Entity 2 class */
 	public HashMap<String,HashSet<String>> entity2class = new HashMap<String,HashSet<String>>();
-	
+	public HashMap<String,HashSet<String>> entitylower2class = new HashMap<String,HashSet<String>>();
 	/** Entity 2 class */
 	public HashMap<String, Integer> entity2classId;
 
@@ -98,6 +99,12 @@ public class NellOntology {
 		getEntity2classId();
 		// Get entity pair to relationId
 		getEntitypair2eidrid();
+		
+		for(Entry<String,HashSet<String>>e: this.entity2class.entrySet()){
+			String entity = e.getKey();
+			String entitylower = entity.toLowerCase();
+			this.entitylower2class.put(entitylower, e.getValue());
+		}
 	}
 	
 	private void createNellOntology3(String file) throws IOException {
@@ -217,17 +224,17 @@ public class NellOntology {
 		}
 	}
 
-	public NellOntology() {
-		try {
-			String file = "/projects/pardosa/s5/clzhang/ontologylink/nell/relations.nell.seed";
-			if(!(new File(file)).exists()){
-				file = "o:/unix"+file;
-			}
-			createNellOntology(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public NellOntology() {
+//		try {
+//			String file = "/projects/pardosa/s5/clzhang/ontologylink/nell/relations.nell.seed";
+//			if(!(new File(file)).exists()){
+//				file = "o:/unix"+file;
+//			}
+//			createNellOntology(file);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public static void main(String[] args) {
 		try {
