@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch4;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -112,9 +112,9 @@ public class S9_extend2newinstances {
 
 	/**Sample 10 of each 
 	 * @throws IOException */
-	public static void sampleForLabel() throws IOException {
-		String tempfile = Main.file_extendedwidpairs_filter + ".shuffle";
-		StringTable.shuffleLargeFile(Main.file_extendedwidpairs_filter, Main.dir, tempfile);
+	public static void sampleForLabel(String file_extendedpair) throws IOException {
+		String tempfile = file_extendedpair + ".shuffle";
+		StringTable.shuffleLargeFile(file_extendedpair, Main.dir, tempfile);
 		HashMap<Integer, String> wid2name = new HashMap<Integer, String>();
 		{
 			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
@@ -146,7 +146,7 @@ public class S9_extend2newinstances {
 			dr.close();
 		}
 		{
-			String writefile = Main.file_extendedwidpairs_filter + ".forManualLabel";
+			String writefile = file_extendedpair + ".forManualLabel";
 			DelimitedWriter dw = new DelimitedWriter(writefile);
 			StringTable.sortByColumn(towrite, new int[] { 4 });
 			List<List<String[]>> blocks = StringTable.toblock(towrite, 4);
@@ -159,22 +159,52 @@ public class S9_extend2newinstances {
 			dw.close();
 		}
 	}
-	static void getSeedPairs() throws IOException{
+
+	static void getSeedPairs() throws IOException {
 		DelimitedWriter dw = new DelimitedWriter(Main.file_seedwidpairs);
 		for (NellRelation nr : Main.no.nellRelationList) {
 			for (String[] s : nr.seedInstances) {
-				dw.write(s[0],s[1],nr.relation_name);
+				dw.write(s[0], s[1], nr.relation_name);
 			}
 		}
 		dw.close();
 	}
+
+	public static void collectInstanceForGoldMapping() throws Exception {
+
+		List<String[]> mapping = new ArrayList<String[]>();
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_goldmapping);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				mapping.add(new String[] { l[0], l[1] });
+			}
+			dr.close();
+		}
+		{
+			QueryFBGraph qfb = new QueryFBGraph();
+			qfb.getNewEntitiesWithOntologyMapping(mapping, Main.file_sql2instance_gold);
+			extendWithTypeConstrain(Main.file_goldmapping, Main.file_sql2instance_gold, Main.file_extendwidpairs_gold);
+			filterByWikiLink(Main.file_extendwidpairs_gold, Main.file_extendwidpairs_gold_filter);
+			sampleForLabel(Main.file_extendwidpairs_gold_filter);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		{
+			/**Get seed pairs, easy*/
 			getSeedPairs();
+		}
+		{
+			/**collect instances for my predictions, slow*/
 			extendWithTypeConstrain(Main.file_predict_vote_newontology, Main.file_sql2instance_shuffle,
 					Main.file_extendedwidpairs);
 			filterByWikiLink(Main.file_extendedwidpairs, Main.file_extendedwidpairs_filter);
-			sampleForLabel();
+			sampleForLabel(Main.file_extendedwidpairs_filter);
+		}
+		{
+			/**Collect instances for gold, slow*/
+			collectInstanceForGoldMapping();
 		}
 	}
 }

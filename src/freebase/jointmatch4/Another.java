@@ -1,12 +1,9 @@
-package freebase.jointmatch2;
+package freebase.jointmatch4;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,13 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
-import javatools.webapi.LuceneSearch;
 import multir.util.delimited.Sort;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.Builder;
@@ -123,34 +118,11 @@ public class Another {
 		}
 	}
 
-	static void howmanyuniqs() throws IOException {
-		{
-			String file = "o:/unix/projects/pardosa/s5/clzhang/ontologylink/wikidump/featurizedData.sorted";
-			DelimitedReader r = new DelimitedReader(file);
-			Builder relBuilder = null;
-			String[] t = null;
-			while ((t = r.read()) != null) {
-				D.p(t);
-			}
-			r.close();
-		}
-
-	}
-
-	static void testSearch() throws IOException {
-		LuceneSearch ls = new LuceneSearch(Main.file_wexwiki_luceneindex);
-		List<String[]> result = ls.search("Alina Smith", 50);
-		for (String[] r : result) {
-			D.p(r);
-		}
-	}
-
 	public static void main(String[] args) throws Exception {
 		//step1_getnytWid();
 		//temp_grab_raphael_20110428();
 		//isDuplicate_notablefor();
-		//analyzeWidpairPatterns();
-		//testSearch();
-		howmanyuniqs();
+		analyzeWidpairPatterns();
+
 	}
 }

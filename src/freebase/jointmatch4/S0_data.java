@@ -1,14 +1,21 @@
-package freebase.jointmatch2;
+package freebase.jointmatch4;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+
+import cc.factorie.protobuf.DocumentProtos.Relation;
 
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.filehandlers.PbReader;
+import javatools.mydb.StringTable;
 
 public class S0_data {
 
@@ -194,41 +201,87 @@ public class S0_data {
 		}
 	}
 
-	public static void clean_guid2wid() throws IOException {
-
-		HashSet<Integer> usedwid = new HashSet<Integer>();
+	static void convertSeb2Nell() throws IOException {
+		HashMap<String, String> guid2name = new HashMap<String, String>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+			DelimitedReader dr = new DelimitedReader(Main.file_seb_guid2name);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[2]);
-				usedwid.add(wid);
+				guid2name.put(l[0], l[1]);
+			}
+			dr.close();
+		}
+		DelimitedWriter dw = new DelimitedWriter(Main.file_ontology + ".raw");
+		List<String[]> towrite = new ArrayList<String[]>();
+		PbReader pr = new PbReader(Main.file_sebtrain);
+		Relation r = null;
+		while ((r = pr.read()) != null) {
+			String rels = r.getRelType();
+			if (!rels.equals("NA")) {
+				String[] rel = rels.split(",");
+				String sguid = r.getSourceGuid();
+				String dguid = r.getDestGuid();
+				String sname = guid2name.get(sguid);
+				String dname = guid2name.get(dguid);
+				if (sname != null && dname != null) {
+					for (String r0 : rel) {
+						towrite.add(new String[] { r0, sname, dname });
+					}
+				}
+			}
+		}
+		StringTable.sortByColumn(towrite, new int[] { 0 });
+		List<List<String[]>> blocks = StringTable.toblock(towrite, 0);
+		for (List<String[]> b : blocks) {
+			String relationname = b.get(0)[0];
+			StringBuilder sb = new StringBuilder();
+			int k = 0;
+			for (String[] l : b) {
+				sb.append("{\"" + l[1] + "\",\"" + l[2] + "\"} ");
+				if (k++ > 10)
+					break;
+
+			}
+			dw.write(relationname, sb.toString());
+		}
+		dw.close();
+
+	}
+
+	static void convertInfobox2Nell() throws IOException {
+		HashMap<String, String[]> relation2everything = new HashMap<String, String[]>();
+		{
+			List<String[]> all1 = (new DelimitedReader(Main.file_raw_ontology_class)).readAll();
+			List<String[]> all2 = (new DelimitedReader(Main.file_raw_ontology_seedinstance)).readAll();
+			for (String[] a : all1) {
+				relation2everything.put(a[0], new String[] { a[0], a[1], a[2], "" });
+			}
+			List<List<String[]>> blocks = StringTable.toblock(all2, 0);
+			for (List<String[]> b : blocks) {
+				String relname = b.get(0)[0];
+				StringBuilder sb = new StringBuilder();
+				for (String[] l : b) {
+					sb.append("{\"" + l[1] + "\",\"" + l[2] + "\"} ");
+				}
+				relation2everything.get(relname)[3] = sb.toString();
 			}
 		}
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_guid_wikiid);
-			DelimitedWriter dw = new DelimitedWriter(Main.file_guid_wikiid_clean);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				String guid = l[0];
-				int wid = Integer.parseInt(l[1]);
-				if (usedwid.contains(wid)) {
-					dw.write(l);
-				}
+			DelimitedWriter dw = new DelimitedWriter(Main.file_ontology);
+			for (Entry<String, String[]> e : relation2everything.entrySet()) {
+				dw.write(e.getValue());
 			}
 			dw.close();
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
-
 		//get_gnid_mid_wid_title_enid();
 		//get_wid_fbtype();
 		//get_notable_type();
-		{
-			//get_wiki_pagelink();
-			//get_wiki_pagelink_step2();
-		}
-		clean_guid2wid();
+		//get_wiki_pagelink();
+		//get_wiki_pagelink_step2();
+		//convertSeb2Nell();
+		convertInfobox2Nell();
 	}
 }

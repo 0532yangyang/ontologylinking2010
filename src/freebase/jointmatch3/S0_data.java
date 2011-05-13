@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch3;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -194,41 +194,12 @@ public class S0_data {
 		}
 	}
 
-	public static void clean_guid2wid() throws IOException {
-
-		HashSet<Integer> usedwid = new HashSet<Integer>();
-		{
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[2]);
-				usedwid.add(wid);
-			}
-		}
-		{
-			DelimitedReader dr = new DelimitedReader(Main.file_guid_wikiid);
-			DelimitedWriter dw = new DelimitedWriter(Main.file_guid_wikiid_clean);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				String guid = l[0];
-				int wid = Integer.parseInt(l[1]);
-				if (usedwid.contains(wid)) {
-					dw.write(l);
-				}
-			}
-			dw.close();
-		}
-	}
-
 	public static void main(String[] args) throws IOException {
-
 		//get_gnid_mid_wid_title_enid();
 		//get_wid_fbtype();
 		//get_notable_type();
-		{
-			//get_wiki_pagelink();
-			//get_wiki_pagelink_step2();
+		{//get_wiki_pagelink();
+			get_wiki_pagelink_step2();
 		}
-		clean_guid2wid();
 	}
 }

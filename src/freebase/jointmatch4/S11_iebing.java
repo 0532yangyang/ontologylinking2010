@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch4;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -542,8 +542,8 @@ public class S11_iebing {
 
 	public static void main(String[] args) throws Exception {
 		{
-			getSeedBingResult();
-			getExtendedPairBingResult(Main.PAR_NUM_PAIRS_PER_RELATION);
+			//getSeedBingResult();
+			//getExtendedPairBingResult(Main.PAR_NUM_PAIRS_PER_RELATION);
 		}
 		{
 			//			getStanfordParsedResult(Main.file_extendedpair2bing, 2, 4, 6);
@@ -559,8 +559,8 @@ public class S11_iebing {
 		D.p("hello, world!");
 		{
 			eval_baseline_seedtrain_extendtest();
-			eval_baseline_extendtrain_seedtest();
-			eval_seedextend80train_extend20test();
+			//			eval_baseline_extendtrain_seedtest();
+			//			eval_seedextend80train_extend20test();
 		}
 		{
 			//			RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_extendedpair2bing_pbgz,

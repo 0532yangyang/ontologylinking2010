@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch3;
 
 import java.io.File;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 import javatools.administrative.D;
 
 public class Main {
-	public static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2";
+	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
 
 	static {
@@ -17,9 +17,9 @@ public class Main {
 	}
 	/**outside input*/
 	static String file_ontology = dir + "/nellontology";
-	public static NellOntology no = new NellOntology(Main.file_ontology);
+	static NellOntology no = new NellOntology(Main.file_ontology);
 	public static String file_wp_stanford = pdir + "/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
-	public static String file_gnid_mid_wid_title = pdir + "/gnid_mid_wid_title";
+	static String file_gnid_mid_wid_title = pdir + "/gnid_mid_wid_title";
 	//static String fin_freebase_type_sortMid = pdir + "/mid_type_argname.sbmid";
 	//static String fin_mid_type = pdir + "/mid_type_argname.clean.sbmid";
 	//static String file_wid_type_mid = pdir + "/wid_type_mid";
@@ -37,14 +37,12 @@ public class Main {
 	static String file_notablefor_mid_wid_type = pdir + "/fb_notablefor_mid_wid_type";
 	static String file_wikipediapagelink = pdir + "/wikipedia_pagelink";
 	static String file_wex_title = pdir + "/wex_title";
-	public static String file_guid_wikiid = pdir + "/freebase-wex-2011-04-30-freebase_wpid.tsv";
-	public static String file_guid_wikiid_clean = pdir + "/guid2wikiid";
 	/**S1*/
 	static String file_ontologyentity2fbentity_byfbsearch = dir
 			+ "/fbsearch_label_arg1_arg2_relation_mid1list_mid2list";
 	static String file_enid_mid_wid_argname_otherarg_relation_label = dir
 			+ "/enid_mid_wid_argname_otherarg_relation_label";
-	public static String file_enid_mid_wid_argname_otherarg_relation_label_top1 = dir
+	static String file_enid_mid_wid_argname_otherarg_relation_label_top1 = dir
 			+ "/enid_mid_wid_argname_otherarg_relation_label_top1";
 	static String file_wp_stanford_subset = dir + "/stanfordwiki_senid_artid_secid_token_pos_ner.subset.sbaid";
 	static String file_candidatemapping_nellstring_mid = dir + "/candidatemapping_nellstring_mid";
@@ -86,6 +84,7 @@ public class Main {
 	static final String file_jointlclause = dir + "/clause_joint";
 	public static final String file_predict_relonly = dir + "/predict_relation";
 	public static final String file_predict_typeonly = dir + "/predict_type";
+	static String dir_predict = dir + "/predict";
 	static String file_predict_vote = dir + "/predict/predict_vote";
 	static String file_predict_vote_newontology = dir + "/predict/predict_vote.newontology";
 	public static final String file_predict_joint = dir + "/predict_joint";
@@ -116,23 +115,21 @@ public class Main {
 	public static final String file_seedwidpairs = dir + "/seedpairs_name_nellrel";
 	public static final String file_extendedwidpairs = dir + "/extendpairs_wid12_nellrel_fbrel";
 	public static final String file_extendedwidpairs_filter = dir + "/extendpairsfilter_wid12_nellrel_fbrel";
+	public static final String file_sql2instance_gold = dir + "/gold_sql2instance";
+	public static final String file_extendwidpairs_gold = dir + "/gold_extendpairs";
+	public static final String file_extendwidpairs_gold_filter = dir + "/gold_extendpairs_filter";
+	static String file_goldmapping = dir + "/mycreateontology/gold_mapping";
 	/**S10*/
-	public static String file_sebtrain = pdir + "/sebtrain.pb";
-	public static String file_sebtest = pdir + "/sebtest.pb";
-	public static String file_nyt05pb = dir + "/nyt/subset05.100.pb.gz";
-	static String file_nyt05pbrelabelseed = dir + "/nyt/subset05.100.pb.gz.seed";
-	static String file_nyt05pbrelabelseed_negativereduce = dir + "/nyt/subset05.100.pb.gz.seed.negativereduce";
-	public static String file_nyt07pb = dir + "/nyt/subset07.100.pb.gz";
+	static String file_nyt05pb = dir + "/nyt/subset05.100.pb.gz";
+	static String file_nyt07pb = dir + "/nyt/subset07.100.pb.gz";
 	static String file_nyt07pbrelabel = dir + "/nyt/relabel.subset07.100.pb.gz";
 	static String file_nyt05pbrelabel = dir + "/nyt/relabel.subset05.100.pb.gz";
 	static String file_nyt05pbrelabelreduceneg = dir + "/nyt/relabel.reduceneg.subset05.100.pb.gz";
-	static String file_nyt07pbrelabelreduceneg = dir + "/nyt/relabel.reduceneg.subset07.100.pb.gz";
 	static String file_nyt05countfeatures = dir + "/nyt/fts.relabel.subset05.100.pb.gz";
 	static String file_nyt05countfeatures_count = file_nyt05countfeatures + ".counts";
 	static int MAP_SIZE = 2000000;
 	static int MIN_FTS = 1;
 	static String expdir0 = dir + "/nyt/exp0";
-	static String expdir_seed_vs_extend = dir + "/nyt/exp_seed_vs_extend";
 	static String file_nytsentence = "/projects/pardosa/data14/raphaelh/t/raw/sentences";
 	static String file_byrelation_raw = dir + "/nyt/byrelation_raw";
 	/**give nyt relations my id, replace "Type" with the id*/
@@ -146,10 +143,6 @@ public class Main {
 	static String exp_nellonly_relabel_nyt05pb = dir + "/exp0_nellonly_relabel_nyt05";
 	static String exp_mylabel0 = dir + "/exp_mylabel0";
 	static String exp_mylabel1 = dir + "/exp_mylabel1";
-	/**S10: my created pb with only linked entity*/
-	public static String file_allnyt_withlink_pb = pdir + "/nyt/featurizedData.pbfilter.pbgz";
-	public static String file_trainnyt_withlink_pb = pdir + "/nyt/nytwithlink.train.pbgz";
-	public static String file_testnyt_withlink_pb = pdir + "/nyt/nytwithlink.test.pbgz";
 
 	/**S11: bing api*/
 	static String dir_bing = dir + "/bing";
@@ -159,35 +152,39 @@ public class Main {
 	static String file_extendedpair2bing_pbgz = file_extendedpair2bing + ".pb.gz";
 	//static String file_extendedpair2bing_byrelationraw = file_extendedpair2bing + ".byrelationraw";
 	//static String expbingdir0 = dir_bing + "/exp0";
-	static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
-	/**S12*/
-	static String dir_wikidatadump = pdir + "/wikidump";
-	static String file_wexwikifile = dir_wikidatadump + "/wexsections_wid_sectionid_title_section";
-	static String file_wexwiki_luceneindex = file_wexwikifile + ".luceneindex";
-	static String file_wikiwholearticle_luceneindex = pdir + "/wikidump/wholewikiarticle_luceneindex";
-	static String file_seed2lucene = dir + "/wiki/seedpairs2lucene";
-	static String file_extendedpair2lucene = dir + "/wiki/extendedpair2lucene";
-	static String file_extendedpair2lucene_pbgz = dir + "/wiki/extendedpair2lucene.pbgz";
-	static String file_seed2lucene_pbgz = dir + "/wiki/seed2lucene.pbgz";
-	static String file_seed2lucene_article = dir + "/wiki/seedpairs2lucenearticle";
-	static {
-		if (!(new File(dir_wikidatadump)).exists()) {
-			(new File(dir_wikidatadump)).mkdir();
-		}
-	}
+	/**S12: ie wiki section*/
+	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
+	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
+	//	static String file_fact_pairmentions = dir_wikisection + "/factpair_mentions";
+	//	static String file_globalsentences = dirwikidump + "/sentences";
+	//	static String file_localsentences = dir_wikisection + "/sentences";
+	//	static String file_pairmentions = dir_wikisection + "/pair_mentions";
+	//	static String file_fact = dir_wikisection + "/fact";
+	//	static String file_trainraw = dir_wikisection + "/sampletrain";
+	//	static String file_testraw = dir_wikisection + "/sampletest";
+	//	static String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+
+	/**S13 ie Nyt*/
+	static String dir_nytdump = "/projects/pardosa/data14/raphaelh/t/raw";
+	static String dir_nyt = dir + "/nyt";
+
+	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	public static void main(String[] args) throws Exception {
 		//		S1_variable_nellent_fbmid.main(null);
 		//		S2_variable_nelltype_fbtype_count.main(null);
-		S3_typeclause.main(null);
-		//S4_variable_relationmatch.main(null);
-		//S6_weightrelation.main(null);
+		//		S3_typeclause.main(null);
+		//		S4_variable_relationmatch.main(null);
+		//		S6_weightrelation.main(null);
 		//		S61_typerelationjoint.main(null);
+		//		S71_seed2pairs.main(null);
+		//		S72_patternvariable.main(null);
 		//S73_getRidofNonSenseRelation.main(null);
 		S7X_clauserelation.main(null);
 		S8_inference.main(null);
-		S9_extend2newinstances.main(null);
+		//S9_extend2newinstances.main(null);
+		//		S11_iebing.main(null);
 		D.p((new Date()).toString());
 	}
 }

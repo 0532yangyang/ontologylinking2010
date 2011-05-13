@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch4;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
