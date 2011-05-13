@@ -7,7 +7,7 @@ public class RemoveStopwords {
 	/**
 	 * @param args
 	 */
-	static HashSet<String> set_stopwords = new HashSet<String>();
+	public static HashSet<String> set_stopwords = new HashSet<String>();
 
 	static {
 		String[] stopwords =
