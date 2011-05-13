@@ -16,9 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import multir.eval.PrecisionRecallCurve2;
+import multir.eval.Prediction;
 import multir.eval.ResultWriter;
 import multir.learning.algorithm.CRFParameters;
 import multir.learning.algorithm.CollinsTraining2;
@@ -243,11 +245,35 @@ public class RphExtractorWrapper {
 		//			FullInference.infer(doc, scorer, params);
 		//		long endTest = System.currentTimeMillis();
 		//		System.out.println("testing time " + (endTest-startTest)/1000.0 + " seconds");
+		{
 
-		PrintStream psc = new PrintStream(expdir + "/curve2");
-		PrecisionRecallCurve2.eval(test, params, psc);
-		psc.close();
+		}
 
+		{
+
+			DelimitedWriter dw = new DelimitedWriter(expdir + "/pairlevelpred");
+			Mappings mappings = new Mappings();
+			mappings.read(expdir + "/mapping");
+			String[] relationnames = new String[1000];
+			int na_relation_id = 0;
+			for (Entry<String, Integer> e : mappings.getRel2RelID().entrySet()) {
+				relationnames[e.getValue()] = e.getKey();
+				if (e.getKey().equals("NA")) {
+					na_relation_id = e.getValue();
+				}
+			}
+			PrintStream psc = new PrintStream(expdir + "/curve2");
+			List<Prediction> preds = PrecisionRecallCurve2.eval_na(na_relation_id, test, params, psc);
+			psc.close();
+			for (int i = 0; i < preds.size(); i++) {
+				Prediction p0 = preds.get(i);
+				String rel = relationnames[p0.rel];
+				boolean Yt = p0.trueRel;
+				boolean Yp = p0.predRel;
+				dw.write(p0.score, rel, Yt, Yp, p0.doc.arg1, p0.doc.arg2);
+			}
+			dw.close();
+		}
 		test.reset();
 		PrintStream ps = new PrintStream(expdir + "/results");
 		ResultWriter.eval(expdir + "/mapping", test, params, ps);

@@ -42,7 +42,7 @@ public class DelimitedReader {
 			System.out.flush();
 		}
 		String line = br.readLine();
-		if (line == null){
+		if (line == null) {
 			this.EOF = true;
 			return null;
 		}
@@ -88,6 +88,7 @@ public class DelimitedReader {
 		}
 		return all;
 	}
+
 	public List<String[]> readAll(int MAX) throws IOException {
 		List<String[]> all = new ArrayList<String[]>(MAX);
 		String[] line;
@@ -96,33 +97,63 @@ public class DelimitedReader {
 		}
 		return all;
 	}
-	public HashMap<String,String> readAll2Hash(int keyId, int valueId) throws IOException{
-		HashMap<String,String>all = new HashMap<String,String>();
-		String []l;
-		while((l = read())!=null){
+
+	public HashMap<String, String> readAll2Hash(int keyId, int valueId) throws IOException {
+		HashMap<String, String> all = new HashMap<String, String>();
+		String[] l;
+		while ((l = read()) != null) {
 			all.put(l[keyId], l[valueId]);
 		}
 		return all;
 	}
 
 	private String[] blockbuffer;
-	public List<String[]> readBlock(int key) throws IOException{
-		if(blockbuffer == null){
+
+	public List<String[]> readBlock(int key) throws IOException {
+		if (blockbuffer == null) {
 			blockbuffer = this.read();
 		}
-		if(this.EOF || blockbuffer == null)
+		if (this.EOF || blockbuffer == null)
 			return null;
 		List<String[]> block = new ArrayList<String[]>();
 		block.add(blockbuffer);
-		String []l;
-		while((l = this.read())!=null && l[key].equals(block.get(0)[key])){
+		String[] l;
+		while ((l = this.read()) != null && l[key].equals(block.get(0)[key])) {
 			block.add(l);
 		}
 		blockbuffer = l;
 		return block;
 	}
+
+	public List<String[]> readBlock(int[] keys) throws IOException {
+		if (blockbuffer == null) {
+			blockbuffer = this.read();
+		}
+		if (this.EOF || blockbuffer == null)
+			return null;
+		List<String[]> block = new ArrayList<String[]>();
+		block.add(blockbuffer);
+		String[] l;
+		while ((l = this.read()) != null) {
+			boolean match = true;
+			for (int k : keys) {
+				if (!l[k].equals(block.get(0)[k])) {
+					match = false;
+					break;
+				}
+			}
+			if (match){
+				block.add(l);
+			}else{
+				break;
+			}
+		}
+		blockbuffer = l;
+		return block;
+	}
+
 	public void close() throws IOException {
 		br.close();
 	}
-	
+
 }

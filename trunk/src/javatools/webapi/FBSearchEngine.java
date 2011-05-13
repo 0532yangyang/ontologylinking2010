@@ -26,7 +26,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import cc.factorie.protobuf.DocumentProtos.Entity;
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.RelationMentionRef;
@@ -46,16 +45,16 @@ public class FBSearchEngine {
 		// "http://api.freebase.com/api/service/search?query=madonna"
 		try {
 			D.p(q);
-			Thread.sleep(2000);
+			//Thread.sleep(00);
 			String queries[] = null;
 			String q2 = PlingStemmer.stem(q);
-			if(!q2.equals(q)){
-				queries = new String[]{q,q2};
-			}else{
-				queries = new String[]{q};
+			if (!q2.equals(q)) {
+				queries = new String[] { q, q2 };
+			} else {
+				queries = new String[] { q };
 			}
 			List<String> res = new ArrayList<String>();
-			for(String q0: queries){
+			for (String q0 : queries) {
 				URL yahoo = new URL("http://api.freebase.com/api/service/search?query=" + q0.replaceAll("\\s", "%20"));
 				URLConnection yc = yahoo.openConnection();
 				BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
@@ -71,10 +70,11 @@ public class FBSearchEngine {
 				System.out.println(o.toString());
 
 				JSONArray a = o.getJSONArray("result");
-				
+
 				for (int i = 0; i < a.length() && i < k; i++) {
 					JSONObject ar = a.getJSONObject(i);
-					if(ar == null)continue;
+					if (ar == null)
+						continue;
 					String urlstuff = ar.get("id").toString();
 					//String mid = urlstuff.replace("{\"id\":\"", "").replace("\"}", "");
 					//if(mid.startsWith("/m/"))res.add(mid);
@@ -95,7 +95,7 @@ public class FBSearchEngine {
 
 	}
 
-	public static void getType(String enid) throws Exception{
+	public static void getType(String enid) throws Exception {
 		{
 			//"http://api.freebase.com/api/trans/notable_types_2?id=/en/dinah_washington"
 			URL yahoo = new URL("http://api.freebase.com/api/trans/notable_types_2?id=" + enid);
@@ -110,19 +110,21 @@ public class FBSearchEngine {
 			in.close();
 			JSONObject o = new JSONObject(sb.toString());
 			//System.out.println(o.toString());
-			JSONArray jsonarray = (JSONArray)o.getJSONObject(enid).getJSONObject("result").get("notable_for");
+			JSONArray jsonarray = (JSONArray) o.getJSONObject(enid).getJSONObject("result").get("notable_for");
 			//D.p(subo.toString());
 			for (int i = 0; i < jsonarray.length(); i++) {
 				JSONObject ar = jsonarray.getJSONObject(i);
-				if(ar == null)continue;
+				if (ar == null)
+					continue;
 				String urlstuff = ar.get("types").toString();
 				//String mid = urlstuff.replace("{\"id\":\"", "").replace("\"}", "");
 				//if(mid.startsWith("/m/"))res.add(mid);
 				D.p(urlstuff);
 			}
-			
+
 		}
 	}
+
 	//
 	// public static void query(String q) throws Exception {
 	// HttpClient httpclient = new DefaultHttpClient();
@@ -152,8 +154,8 @@ public class FBSearchEngine {
 	// }
 
 	public static void main(String[] args) throws Exception {
-//		List<String >x = query2("Honey of the Nile",10);
-//		System.out.println(x);
+		//		List<String >x = query2("Honey of the Nile",10);
+		//		System.out.println(x);
 		getType("/en/dinah_washington");
 	}
 
