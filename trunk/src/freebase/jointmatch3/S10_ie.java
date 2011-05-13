@@ -1,4 +1,4 @@
-package freebase.jointmatch2;
+package freebase.jointmatch3;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,7 +24,6 @@ import java.util.Random;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javatools.administrative.D;
 import javatools.ml.rphacl2011extractor.RphExtractorWrapper;
 
 import multir.eval.PrecisionRecallCurve2;
@@ -53,7 +52,7 @@ public class S10_ie {
 
 	//static String in  = "/projects/pardosa/data14/raphaelh/t/data/subset05-06.100.pb.gz";
 	//static String out = "/projects/pardosa/data16/raphaelh/congle/subset05-06.100.pb.gz";
-	public static void fake_relabel0(String in, String out) throws NumberFormatException, IOException {
+	public static void relabel0(String in, String out) throws NumberFormatException, IOException {
 		InputStream is = new GZIPInputStream(new BufferedInputStream(new FileInputStream(in)));
 		Relation r = null;
 
@@ -87,55 +86,6 @@ public class S10_ie {
 		//os.close();
 	}
 
-	public static void relabelWithSeed(String in, String out) throws IOException {
-		DelimitedWriter dw = new DelimitedWriter(out + ".debug");
-		HashMap<String, String> seedpair2rel = new HashMap<String, String>();
-		for (NellRelation nr : Main.no.nellRelationList) {
-			for (String[] s : nr.seedInstances) {
-				seedpair2rel.put(s[0] + "\t" + s[1], nr.relation_name);
-			}
-		}
-		OutputStream os = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(out)));
-		InputStream is = new GZIPInputStream(new BufferedInputStream(new FileInputStream(in)));
-		Relation r = null;
-
-		int count = 0;
-		Builder relBuilder = null;
-		int notnacount = 0;
-		while ((r = Relation.parseDelimitedFrom(is)) != null) {
-			if (++count % 10000 == 0)
-				System.out.println(count);
-
-			relBuilder = Relation.newBuilder();
-			// need to iterate over mentions, keep only those in the range
-
-			String name1 = r.getSourceGuid();
-			String name2 = r.getDestGuid();
-			dw.write(name1, name2);
-			String look = name1 + "\t" + name2;
-			String rel = "NA";
-			if (seedpair2rel.containsKey(name1 + "\t" + name2)) {
-				rel = seedpair2rel.get(name1 + "\t" + name2);
-				notnacount++;
-			}
-
-			relBuilder.setRelType(rel);
-
-			relBuilder.setSourceGuid(r.getSourceGuid());
-			relBuilder.setDestGuid(r.getDestGuid());
-			for (int i = 0; i < r.getMentionCount(); i++) {
-				RelationMentionRef rmf = r.getMention(i);
-				relBuilder.addMention(rmf);
-			}
-			if (relBuilder.getMentionList() != null && relBuilder.getMentionCount() > 0)
-				relBuilder.build().writeDelimitedTo(os);
-		}
-		D.p("Not na count", notnacount);
-		is.close();
-		os.close();
-		dw.close();
-	}
-
 	public static void relabel(String in, String out) throws NumberFormatException, IOException {
 		HashMap<String, List<Integer>> name2id = new HashMap<String, List<Integer>>();
 		{
@@ -164,8 +114,8 @@ public class S10_ie {
 		HashMap<Integer, List<String>> arg1ToRel = new HashMap<Integer, List<String>>();
 		HashMap<Integer, List<String>> arg2ToRel = new HashMap<Integer, List<String>>();
 		{
-			BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(
-					Main.file_extendedwidpairs_filter)));
+			BufferedReader r = new BufferedReader(
+					new InputStreamReader(new FileInputStream(Main.file_extendedwidpairs)));
 			String l = null;
 			while ((l = r.readLine()) != null) {
 				String[] c = l.split("\t");
@@ -724,42 +674,29 @@ public class S10_ie {
 		}
 	}
 
-	public static void old() {
+	public static void main(String[] args) throws IOException {
+		relabel0(Main.file_nyt05pb, Main.file_nyt05pbrelabel);
+		{
+			//create training and testing
+
+			//relabel(Main.file_nyt05pb, Main.file_nyt05pbrelabel);
+			//			relabel(Main.file_nyt07pb, Main.file_nyt07pbrelabel);
+			//			reduceNegativeTraining(Main.file_nyt05pbrelabel, Main.file_nyt05pbrelabelreduceneg);
+		}
 		//		writeFeatures(Main.file_nyt05pbrelabelreduceneg, Main.file_nyt05countfeatures);
 		//		count(Main.file_nyt05countfeatures, Main.file_nyt05countfeatures_count);
 		//		step2b(Main.expdir0);
 		//		step3(Main.expdir0);
-	}
-
-	public static void main(String[] args) throws IOException {
-		//relabel0(Main.file_nyt05pb, Main.file_nyt05pbrelabel);
-		//splitFeaturizedpbToTrainTest();
-		{
-			//relabelWithSeed(Main.file_allnyt_withlink_pb, Main.file_nyt05pbrelabelseed);
-			//			reduceNegativeTraining(Main.file_nyt05pbrelabelseed, Main.file_nyt05pbrelabelseed_negativereduce);
-			//			RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_nyt05pbrelabelseed_negativereduce,
-			//					Main.file_nyt07pbrelabelreduceneg, Main.expdir_seed_vs_extend);
-			//			rew.learningThenTesting();
-			//			relabel(Main.file_nyt07pb, Main.file_nyt07pbrelabel);
-		}
-		{
-			//create training and testing
-			//			relabel(Main.file_nyt05pb, Main.file_nyt05pbrelabel);
-			//			relabel(Main.file_nyt07pb, Main.file_nyt07pbrelabel);
-			//			reduceNegativeTraining(Main.file_nyt05pbrelabel, Main.file_nyt05pbrelabelreduceneg);
-			//			reduceNegativeTraining(Main.file_nyt07pbrelabel, Main.file_nyt07pbrelabelreduceneg);
-			//			RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_nyt05pbrelabelreduceneg,
-			//					Main.file_nyt07pbrelabelreduceneg, Main.expdir0);
-			//			rew.learningThenTesting();
-		}
 		{
 			//call my wrapper
-
+			RphExtractorWrapper rew = new RphExtractorWrapper(Main.file_nyt05pbrelabelreduceneg,
+					Main.file_nyt07pbrelabel, Main.expdir0);
+			rew.learningThenTesting();
 		}
 		{
 			//for manual labeling
-			//			CreateTestSetsByRelation();
-			//			eval(Main.expdir0);
+			CreateTestSetsByRelation();
+			eval(Main.expdir0);
 		}
 	}
 

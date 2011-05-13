@@ -7,10 +7,9 @@ import java.util.List;
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 
-
 public class RecordWpSenToken {
 
-public 	int sentenceId;
+	public int sentenceId;
 	public int sectionId;
 	public int articleId;
 	public String text;
@@ -46,7 +45,8 @@ public 	int sentenceId;
 	static RecordWpSenToken buffer_rwst = null;
 
 	public static List<RecordWpSenToken> readByArticleId(DelimitedReader dr, boolean isFirst) throws IOException {
-		if(isFirst)buffer_rwst = null;
+		if (isFirst)
+			buffer_rwst = null;
 		List<RecordWpSenToken> rwstlist = new ArrayList<RecordWpSenToken>();
 
 		if (buffer_rwst == null) {
@@ -77,7 +77,7 @@ public 	int sentenceId;
 		try {
 			DelimitedReader dr = new DelimitedReader(Main.fout_wp_stanford_subset);
 			List<RecordWpSenToken> rl;
-			while ((rl = readByArticleId(dr,false)) != null ) {
+			while ((rl = readByArticleId(dr, false)) != null) {
 				D.p(rl.size());
 			}
 			dr.close();
