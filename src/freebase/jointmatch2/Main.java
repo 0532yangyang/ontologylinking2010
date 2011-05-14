@@ -116,6 +116,10 @@ public class Main {
 	public static final String file_seedwidpairs = dir + "/seedpairs_name_nellrel";
 	public static final String file_extendedwidpairs = dir + "/extendpairs_wid12_nellrel_fbrel";
 	public static final String file_extendedwidpairs_filter = dir + "/extendpairsfilter_wid12_nellrel_fbrel";
+	public static final String file_sql2instance_gold = dir + "/gold_sql2instance";
+	public static final String file_extendwidpairs_gold = dir + "/gold_extendpairs";
+	public static final String file_extendwidpairs_gold_filter = dir + "/gold_extendpairs_filter";
+	static String file_goldmapping = dir + "/mycreateontology/gold_mapping";
 	/**S10*/
 	public static String file_sebtrain = pdir + "/sebtrain.pb";
 	public static String file_sebtest = pdir + "/sebtest.pb";
@@ -162,20 +166,22 @@ public class Main {
 	static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	/**S12*/
-	static String dir_wikidatadump = pdir + "/wikidump";
-	static String file_wexwikifile = dir_wikidatadump + "/wexsections_wid_sectionid_title_section";
-	static String file_wexwiki_luceneindex = file_wexwikifile + ".luceneindex";
-	static String file_wikiwholearticle_luceneindex = pdir + "/wikidump/wholewikiarticle_luceneindex";
-	static String file_seed2lucene = dir + "/wiki/seedpairs2lucene";
-	static String file_extendedpair2lucene = dir + "/wiki/extendedpair2lucene";
-	static String file_extendedpair2lucene_pbgz = dir + "/wiki/extendedpair2lucene.pbgz";
-	static String file_seed2lucene_pbgz = dir + "/wiki/seed2lucene.pbgz";
-	static String file_seed2lucene_article = dir + "/wiki/seedpairs2lucenearticle";
-	static {
-		if (!(new File(dir_wikidatadump)).exists()) {
-			(new File(dir_wikidatadump)).mkdir();
-		}
-	}
+	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
+	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
+//	static String dir_wikidatadump = pdir + "/wikidump";
+//	static String file_wexwikifile = dir_wikidatadump + "/wexsections_wid_sectionid_title_section";
+//	static String file_wexwiki_luceneindex = file_wexwikifile + ".luceneindex";
+//	static String file_wikiwholearticle_luceneindex = pdir + "/wikidump/wholewikiarticle_luceneindex";
+//	static String file_seed2lucene = dir + "/wiki/seedpairs2lucene";
+//	static String file_extendedpair2lucene = dir + "/wiki/extendedpair2lucene";
+//	static String file_extendedpair2lucene_pbgz = dir + "/wiki/extendedpair2lucene.pbgz";
+//	static String file_seed2lucene_pbgz = dir + "/wiki/seed2lucene.pbgz";
+//	static String file_seed2lucene_article = dir + "/wiki/seedpairs2lucenearticle";
+//	static {
+//		if (!(new File(dir_wikidatadump)).exists()) {
+//			(new File(dir_wikidatadump)).mkdir();
+//		}
+//	}
 
 	public static void main(String[] args) throws Exception {
 		//		S1_variable_nellent_fbmid.main(null);

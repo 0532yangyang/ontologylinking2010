@@ -212,6 +212,13 @@ public class S12_iewikisection {
 			String output_wid_sid_contain_relation) throws IOException {
 		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
 		{
+			DelimitedReader dr = new DelimitedReader(Main.file_goldmapping);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				relationsToConsider.add(l[0]);
+			}
+		}
+		{
 			D.p("load name2wid");
 			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
 			String[] l;
@@ -231,6 +238,9 @@ public class S12_iewikisection {
 				int c1 = Integer.parseInt(l[0]);
 				int c2 = Integer.parseInt(l[1]);
 				String rel = l[2];
+				if (!relationsToConsider.contains(rel)) {
+					continue;
+				}
 				if (!rel.contains("_inverse")) {
 					facts.put(c1 + "\t" + c2, rel);
 				} else {
@@ -247,6 +257,9 @@ public class S12_iewikisection {
 				String c1 = l[0];
 				String c2 = l[1];
 				String rel = l[2];
+				if (!relationsToConsider.contains(rel)) {
+					continue;
+				}
 				seedfacts.put(c1 + "\t" + c2, rel);
 			}
 		}
@@ -776,6 +789,62 @@ public class S12_iewikisection {
 		wtest.close();
 	}
 
+	public static void relabelTestByGoldMatching(String test_pairmention_oldlabel,//test pairs with my ontology matching label
+			String test_pairmention_gold//test pairs with gold ontology matching label
+	) throws IOException {
+		HashMap<String, String> goldfacts = new HashMap<String, String>();
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_extendwidpairs_gold_filter);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				goldfacts.put(l[0] + "\t" + l[1], l[2]);
+			}
+			dr.close();
+		}
+		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
+		{
+			D.p("load name2wid");
+			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int wid = Integer.parseInt(l[2]);
+				String[] names = l[3].split(" ");
+				for (String n : names) {
+					name2wid.put(n.toLowerCase(), wid);
+				}
+			}
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(test_pairmention_oldlabel);
+			DelimitedWriter dw = new DelimitedWriter(test_pairmention_gold);
+			DelimitedWriter dwdebug = new DelimitedWriter(test_pairmention_gold + ".debug");
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String oldrel = l[2];
+				String name1 = l[3];
+				String name2 = l[4];
+				Integer id1 = name2wid.get(name1.toLowerCase().replace(" ", "_"));
+				Integer id2 = name2wid.get(name2.toLowerCase().replace(" ", "_"));
+				if (goldfacts.containsKey(id1 + "\t" + id2)) {
+					String newrel = goldfacts.get(id1 + "\t" + id2);
+					l[2] = newrel;
+				} else {
+					l[2] = "NA";
+				}
+				dw.write(l);
+				if (!l[2].equals(oldrel)) {
+					dwdebug.write("bad", oldrel, l[2], name1, name2);
+				} else if (!l[2].equals("NA")) {
+					//dwdebug.write("good", oldrel, l[2], name1, name2);
+				}
+			}
+			dr.close();
+			dw.close();
+			dwdebug.close();
+		}
+
+	}
+
 	public static void createpb(String file_sentence, String file_pairmentions, String tempdir, String output)
 			throws IOException {
 
@@ -919,38 +988,23 @@ public class S12_iewikisection {
 		return mntBuilder.build();
 	}
 
-	private static int compare(String a1, String a2, String b1, String b2) {
-		int c1 = a1.compareTo(b1);
-		if (c1 != 0)
-			return c1;
-		int c2 = a2.compareTo(b2);
-		return c2;
-	}
-
 	private static int compare(String[] a, String[] b) {
 		return compare(a[0], a[1], b[0], b[1]);
 	}
 
-	public static void main(String[] args) throws IOException {
-		(new File(Main.dir_wikisection)).mkdir();
-		(new File(Main.dir_wikisection)).mkdir();
-		String file_globalsentences = Main.dirwikidump + "/sentences";
-		String file_localsentences = Main.dir_wikisection + "/sentences";
-		String file_fact_pairmentions = Main.dir_wikisection + "/factpair_mentions";
-		String file_pairmentions = Main.dir_wikisection + "/pair_mentions";
-//		String file_fact = Main.dir_wikisection + "/fact";
-//		String file_trainraw = Main.dir_wikisection + "/sampletrain";
-//		String file_testraw = Main.dir_wikisection + "/sampletest";
-		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+	static HashSet<String> relationsToConsider = new HashSet<String>();
 
-		{
-			/**Get data done*/
-			getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
-					file_globalsentences + ".ner", file_fact_pairmentions);
-			getSectionStuff(file_fact_pairmentions, file_globalsentences, file_localsentences);
-			createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", file_fact_pairmentions, file_pairmentions);
-			getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
-		}
+	public static void main(String[] args) throws IOException {
+		//String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
+		//String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2/wikisection";
+		(new File(Main.dir_wikisection)).mkdir();
+
+//		getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
+//				Main.file_globalsentences + ".ner", Main.file_fact_pairmentions);
+//		getSectionStuff(Main.file_fact_pairmentions, Main.file_globalsentences, Main.file_localsentences);
+//		createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", Main.file_fact_pairmentions,
+//				Main.file_pairmentions);
+//		getUniqParis2CountLabel(Main.file_pairmentions, Main.file_uniqpair_label_cnt);
 		{
 			/**test on ontological smoothed*/
 			String expdir = Main.dir_wikisection + "/exp1_ontologicalsmooth";
@@ -958,12 +1012,13 @@ public class S12_iewikisection {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 100000,
-					traintestpairmention);
-			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
-			//			PbReader.analyzePbData(file_trainraw + ".pb");
-			//			PbReader.analyzePbData(file_testraw + ".pb");
+//			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, true, 0.9, 500000, 100000,
+//					traintestpairmention);
+			relabelTestByGoldMatching(traintestpairmention + ".test", traintestpairmention + ".goldtest");
+			createpb(Main.file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
+			createpb(Main.file_localsentences, traintestpairmention + ".goldtest", Main.dir, testpb);
+			//			//			PbReader.analyzePbData(file_trainraw + ".pb");
+			//			//			PbReader.analyzePbData(file_testraw + ".pb");
 			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
 			rew.learningThenTesting();
 		}
@@ -974,10 +1029,11 @@ public class S12_iewikisection {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 100000,
-					traintestpairmention);
-			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
+			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, false, 0.9, 500000,
+					100000, traintestpairmention);
+			relabelTestByGoldMatching(traintestpairmention + ".test", traintestpairmention + ".goldtest");
+			createpb(Main.file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
+			createpb(Main.file_localsentences, traintestpairmention + ".goldtest", Main.dir, testpb);
 			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
 			rew.learningThenTesting();
 		}
@@ -992,5 +1048,13 @@ public class S12_iewikisection {
 		}
 		//eval(file_pairmentions);
 
+	}
+
+	private static int compare(String a1, String a2, String b1, String b2) {
+		int c1 = a1.compareTo(b1);
+		if (c1 != 0)
+			return c1;
+		int c2 = a2.compareTo(b2);
+		return c2;
 	}
 }
