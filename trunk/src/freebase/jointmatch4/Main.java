@@ -164,7 +164,7 @@ public class Main {
 
 	/**S12: ie wiki section*/
 	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
-	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
+	static String dir_wikisection = dir+"/wikisection";
 	static String file_fact_pairmentions = dir_wikisection + "/factpair_mentions";
 	static String file_globalsentences = dirwikidump + "/sentences";
 	static String file_localsentences = dir_wikisection + "/sentences";

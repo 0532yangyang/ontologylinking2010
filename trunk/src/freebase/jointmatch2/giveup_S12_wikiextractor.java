@@ -38,7 +38,7 @@ import javatools.webapi.BingApi;
 import javatools.webapi.LuceneIndexFiles;
 import javatools.webapi.LuceneSearch;
 
-public class S122_wikiextractor {
+public class giveup_S12_wikiextractor {
 	static String getHashWord(String a) {
 		a = a.toLowerCase();
 		String[] b = a.split(",| ");
@@ -150,6 +150,30 @@ public class S122_wikiextractor {
 	//		LuceneIndexFiles.searchDelimitedFile(Main.file_wexwiki_luceneindex, queries);
 	//	}
 
+	public static void getSeedLuceneResult() throws IOException {
+		//DelimitedWriter dw = new DelimitedWriter(Main.file_seed2bing);
+		LuceneSearch ls = new LuceneSearch(Main.file_wexwiki_luceneindex);
+		DelimitedWriter dw = new DelimitedWriter(Main.file_seed2lucene);
+		for (NellRelation nr : Main.no.nellRelationList) {
+			for (String[] seed : nr.seedInstances) {
+				//D.p(seed[0] + "\t" + seed[1]);
+				String query = "\"" + seed[0] + "\" \"" + seed[1] + "\"";
+				List<String[]> searchresult = ls.search(query, 100);
+				int num = 0;
+				for (String[] r : searchresult) {
+					String[] ab = r[0].split("\t");
+					if (r[1].contains(seed[0]) && r[1].contains(seed[1])) {
+						dw.write(0, 0, seed[0], seed[1], nr.relation_name, r[1]);
+						if (num++ > 20) {
+							break;
+						}
+					}
+				}
+				D.p(query, num);
+			}
+		}
+		dw.close();
+	}
 
 	public static void getSeedLuceneResultWholeArticle() throws IOException {
 		//DelimitedWriter dw = new DelimitedWriter(Main.file_seed2bing);
@@ -191,7 +215,7 @@ public class S122_wikiextractor {
 		HashCount<String> hc = new HashCount<String>();
 		List<String[]> towrite = new ArrayList<String[]>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_extendedwidpairs + ".shuffle");
+			DelimitedReader dr = new DelimitedReader(Main.file_extendedwidpairs_filter + ".shuffle");
 			String[] l;
 			//D.p("read extendedwidpairs shuffle");
 			while ((l = dr.read()) != null) {
@@ -413,28 +437,28 @@ public class S122_wikiextractor {
 
 	public static void main(String[] args) throws IOException {
 		{
-			//freebase.preprocess2.SearchEngineWikiWholeArticle.main(null);
+			//indexWikiFileForSearch();
 		}
 		{
-			getSeedLuceneResultWholeArticle();
+			//getSeedLuceneResult();
 			//getExtendedPairLuceneResult(100);
 		}
 		{
-			//			getStanfordParsedResult(Main.file_extendedpair2lucene, 2, 4, 5);
-			//			getStanfordParsedResult(Main.file_seed2lucene, 2, 4, 5);
+			getStanfordParsedResult(Main.file_extendedpair2lucene, 2, 4, 5);
+			getStanfordParsedResult(Main.file_seed2lucene, 2, 4, 5);
 			//			MaltiDep.getDep(Main.file_extendedpair2bing + ".stanford", 2);
 			//			MaltiDep.getDep(Main.file_seed2bing + ".stanford", 2);
-			//			convert2Pb(Main.file_extendedpair2lucene, Main.file_extendedpair2lucene_pbgz);
-			//			convert2Pb(Main.file_seed2lucene, Main.file_seed2lucene_pbgz);
+			convert2Pb(Main.file_extendedpair2lucene, Main.file_extendedpair2lucene_pbgz);
+			convert2Pb(Main.file_seed2lucene, Main.file_seed2lucene_pbgz);
 			//			convert2Pb_Rph(Main.file_extendedpair2bing, Main.file_extendedpair2bing_pbgz);
 			//			convert2Pb_Rph(Main.file_seed2bing, Main.file_seed2bing_pbgz);
 			//CreateTestSetsByRelation(Main.file_extendedpair2bing_pbgz, 10);
 
 		}
 		{
-			//			eval_baseline_seedtrain_extendtest();
-			//			eval_baseline_extendtrain_seedtest();
-			//			eval_seedextend80train_extend20test();
+			eval_baseline_seedtrain_extendtest();
+			eval_baseline_extendtrain_seedtest();
+			eval_seedextend80train_extend20test();
 		}
 
 	}

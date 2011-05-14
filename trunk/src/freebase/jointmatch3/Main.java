@@ -8,11 +8,13 @@ import javatools.administrative.D;
 public class Main {
 	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
-
+	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
+	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
 	static {
 		if (!(new File(dir)).exists()) {
 			dir = "o:/unix" + dir;
 			pdir = "o:/unix" + pdir;
+			dir_wikisection = "o:/unix" + dir_wikisection;
 		}
 	}
 	/**outside input*/
@@ -55,7 +57,7 @@ public class Main {
 	static int candidate_num_nelltype_fbtype = 10;
 	static String file_candidatemapping_nelltype_fbtype = dir + "/candidatemapping_nelltype_fbtype";
 	/**S3*/
-	static final int WEIGHT_CANONICAL = 1000;
+	static final int WEIGHT_CANONICAL = 10000;
 	static final String file_typeclause = dir + "/clause_type";
 
 	/**S4*/
@@ -154,16 +156,16 @@ public class Main {
 	//static String expbingdir0 = dir_bing + "/exp0";
 
 	/**S12: ie wiki section*/
-	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
-	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
-	//	static String file_fact_pairmentions = dir_wikisection + "/factpair_mentions";
-	//	static String file_globalsentences = dirwikidump + "/sentences";
-	//	static String file_localsentences = dir_wikisection + "/sentences";
-	//	static String file_pairmentions = dir_wikisection + "/pair_mentions";
-	//	static String file_fact = dir_wikisection + "/fact";
-	//	static String file_trainraw = dir_wikisection + "/sampletrain";
-	//	static String file_testraw = dir_wikisection + "/sampletest";
-	//	static String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+	//	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
+	//	static String dir_wikisection = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch3/wikisection";
+	static String file_fact_pairmentions = dir_wikisection + "/factpair_mentions";
+	static String file_globalsentences = dirwikidump + "/sentences";
+	static String file_localsentences = dir_wikisection + "/sentences";
+	static String file_pairmentions = dir_wikisection + "/pair_mentions";
+	static String file_fact = dir_wikisection + "/fact";
+	static String file_trainraw = dir_wikisection + "/sampletrain";
+	static String file_testraw = dir_wikisection + "/sampletest";
+	static String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
 
 	/**S13 ie Nyt*/
 	static String dir_nytdump = "/projects/pardosa/data14/raphaelh/t/raw";
@@ -173,10 +175,10 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		//		S1_variable_nellent_fbmid.main(null);
-		//		S2_variable_nelltype_fbtype_count.main(null);
-		//		S3_typeclause.main(null);
-		//		S4_variable_relationmatch.main(null);
-		//		S6_weightrelation.main(null);
+		S2_variable_nelltype_fbtype_count.main(null);
+		S3_typeclause.main(null);
+		//S4_variable_relationmatch.main(null);
+		S6_weightrelation.main(null);
 		//		S61_typerelationjoint.main(null);
 		//		S71_seed2pairs.main(null);
 		//		S72_patternvariable.main(null);

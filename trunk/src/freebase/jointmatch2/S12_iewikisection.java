@@ -1,4 +1,5 @@
-package freebase.jointmatch4;
+package freebase.jointmatch2;
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,60 +38,6 @@ import multir.preprocess.RelationECML;
 import multir.util.delimited.Sort;
 
 public class S12_iewikisection {
-	//	static void s0_give_article_id() throws IOException {
-	//		{
-	//			String dir = "/projects/pardosa/s5/clzhang/ontologylink/wikidump/";
-	//			String output = "/projects/pardosa/s5/clzhang/ontologylink/wikidump/sid_wid_tokens_pos";
-	//			DelimitedReader dr = new DelimitedReader(dir + "/wexsections_wid_sectionid_title_section");
-	//
-	//			DelimitedReader rpos = new DelimitedReader(dir + "/sentences.pos");
-	//			DelimitedWriter wpos = new DelimitedWriter(dir + "/sentences.pos.wid");
-	//			DelimitedReader rner = new DelimitedReader(dir + "/sentences.ner");
-	//			DelimitedWriter wner = new DelimitedWriter(dir + "/sentences.ner.wid");
-	//			DelimitedReader rdeps = new DelimitedReader(dir + "/sentences.deps");
-	//			DelimitedWriter wdeps = new DelimitedWriter(dir + "/sentences.deps.wid");
-	//			int[] sid2wid = new int[25000000];
-	//			{
-	//				String[] l;
-	//				int largestSid = 0;
-	//				while ((l = dr.read()) != null) {
-	//					int wid = Integer.parseInt(l[0]);
-	//					int sid = Integer.parseInt(l[1]);
-	//					sid2wid[sid] = wid;
-	//					if (sid > largestSid) {
-	//						largestSid = sid;
-	//					}
-	//				}
-	//				D.p(largestSid);
-	//			}
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.tokens");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.pos");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.ner");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.deps");
-	//
-	//			wpos.close();
-	//			wner.close();
-	//			wdeps.close();
-	//		}
-	//	}
-	//
-	//	static void s0_give_article_id_help(int[] sid2wid, String in) throws IOException {
-	//		{
-	//			DelimitedReader rtoken = new DelimitedReader(in);
-	//			DelimitedWriter wtoken = new DelimitedWriter(in + ".wid");
-	//			String[] l;
-	//			while ((l = rtoken.read()) != null) {
-	//				int sid = Integer.parseInt(l[0]);
-	//				int wid = sid2wid[sid];
-	//				String[] w = new String[l.length + 1];
-	//				System.arraycopy(l, 0, w, 0, l.length);
-	//				w[l.length] = wid + "";
-	//				wtoken.write(w);
-	//			}
-	//			wtoken.close();
-	//		}
-	//	}
-
 	public static void splitFeaturizedpbToTrainTest(String in, String out) throws IOException {
 		InputStream is = new GZIPInputStream(new BufferedInputStream(new FileInputStream(in)));
 		OutputStream ostrain = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(out + ".train")));
@@ -208,6 +155,135 @@ public class S12_iewikisection {
 		dw.close();
 	}
 
+	static void getSectionsContainingSomeFact(String seedfile, //seed instances 
+			String pairfile, //ontological smoothed pairs
+			String goldfile, //pairs acquired from gold matching
+			String sentencener, String output_wid_sid_contain_relation) throws IOException {
+		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
+		{
+			D.p("load name2wid");
+			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_wid_title);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int wid = Integer.parseInt(l[2]);
+				String[] names = l[3].split(" ");
+				for (String n : names) {
+					name2wid.put(n, wid);
+				}
+			}
+		}
+		HashMap<String, String> seedfacts = new HashMap<String, String>();
+		HashMap<String, String> facts = new HashMap<String, String>();
+		HashMap<String, String> goldfacts = new HashMap<String, String>();
+		{
+			DelimitedReader dr = new DelimitedReader(pairfile);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int c1 = Integer.parseInt(l[0]);
+				int c2 = Integer.parseInt(l[1]);
+				String rel = l[2];
+				if (!rel.contains("_inverse")) {
+					facts.put(c1 + "\t" + c2, rel);
+				} else {
+					rel = rel.replace("_inverse", "");
+					facts.put(c2 + "\t" + c1, rel);
+				}
+			}
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(seedfile);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String c1 = l[0];
+				String c2 = l[1];
+				String rel = l[2];
+				seedfacts.put(c1 + "\t" + c2, rel);
+			}
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(goldfile);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int c1 = Integer.parseInt(l[0]);
+				int c2 = Integer.parseInt(l[1]);
+				String rel = l[2];
+				if (!rel.contains("_inverse")) {
+					goldfacts.put(c1 + "\t" + c2, rel);
+				} else {
+					rel = rel.replace("_inverse", "");
+					goldfacts.put(c2 + "\t" + c1, rel);
+				}
+			}
+		}
+		D.p("seedfact size", seedfacts.size());
+		D.p("goldfact size", goldfacts.size());
+		D.p("ontofact size", facts.size());
+		DelimitedReader dr = new DelimitedReader(sentencener);
+		List<String[]> b;
+		DelimitedWriter dw = new DelimitedWriter(output_wid_sid_contain_relation);
+		int count = 0;
+		int numefact = 0, numsfact = 0, numgfact = 0;
+		while ((b = dr.readBlock(0)) != null) {
+			if (count++ % 100000 == 0) {
+				D.p(count, numefact, numsfact, numgfact);
+			}
+			int sid = Integer.parseInt(b.get(0)[0]);
+			int sectionId = Integer.parseInt(b.get(0)[2]);
+			for (int i = 0; i < b.size(); i++) {
+				for (int j = i + 1; j < b.size(); j++) {
+					String arg1 = b.get(i)[5]; //is it really 4?
+					String arg2 = b.get(j)[5];
+					String arg1check = arg1.replaceAll(" ", "_");
+					String arg2check = arg2.replaceAll(" ", "_");
+					if (name2wid.containsKey(arg1check) && name2wid.containsKey(arg2check)) {
+						int c1 = name2wid.get(arg1check);
+						int c2 = name2wid.get(arg2check);
+
+						//sid, wid, arg1, arg2, arg1pos[0], arg1pos[1], arg2pos[0],arg2pos[1],arg1ner, arg2ner
+						if (facts.containsKey(c1 + "\t" + c2)) {
+							String rel = facts.get(c1 + "\t" + c2);
+							dw.write(sid, sectionId, rel, arg1, arg2, b.get(i)[3], b.get(i)[4], b.get(j)[3],
+									b.get(j)[4], b.get(i)[6], b.get(j)[6], "e");
+							numefact++;
+						}
+						if (facts.containsKey(c2 + "\t" + c1)) {
+							String rel = facts.get(c2 + "\t" + c1);
+							dw.write(sid, sectionId, rel, arg2, arg1, b.get(j)[3], b.get(j)[4], b.get(i)[3],
+									b.get(i)[4], b.get(j)[6], b.get(i)[6], "e");
+							numefact++;
+						}
+						if (goldfacts.containsKey(c1 + "\t" + c2)) {
+							String rel = goldfacts.get(c1 + "\t" + c2);
+							dw.write(sid, sectionId, rel, arg1, arg2, b.get(i)[3], b.get(i)[4], b.get(j)[3],
+									b.get(j)[4], b.get(i)[6], b.get(j)[6], "g");
+							numgfact++;
+						}
+						if (goldfacts.containsKey(c2 + "\t" + c1)) {
+							String rel = goldfacts.get(c2 + "\t" + c1);
+							dw.write(sid, sectionId, rel, arg2, arg1, b.get(j)[3], b.get(j)[4], b.get(i)[3],
+									b.get(i)[4], b.get(j)[6], b.get(i)[6], "g");
+							numgfact++;
+						}
+						if (seedfacts.containsKey(arg1 + "\t" + arg2)) {
+							String rel = seedfacts.get(arg1 + "\t" + arg2);
+							dw.write(sid, sectionId, rel, arg1, arg2, b.get(i)[3], b.get(i)[4], b.get(j)[3],
+									b.get(j)[4], b.get(i)[6], b.get(j)[6], "s");
+							numsfact++;
+						}
+						if (seedfacts.containsKey(arg2 + "\t" + arg1)) {
+							String rel = seedfacts.get(arg2 + "\t" + arg1);
+							dw.write(sid, sectionId, rel, arg2, arg1, b.get(j)[3], b.get(j)[4], b.get(i)[3],
+									b.get(i)[4], b.get(j)[6], b.get(i)[6], "s");
+							numsfact++;
+						}
+
+					}
+				}
+			}
+		}
+		dw.close();
+	}
+
 	static void getSectionsContainingSomeFact(String seedfile, String pairfile, String sentencener,
 			String output_wid_sid_contain_relation) throws IOException {
 		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
@@ -297,52 +373,6 @@ public class S12_iewikisection {
 		dw.close();
 	}
 
-	//
-	//	static void getArticlesContainingSomeFact2(String file_positive_pairs, String sentencener,
-	//			String output_sentenceid_contain_relation) throws IOException {
-	//		HashMap<String, String[]> argpair_relation = new HashMap<String, String[]>();
-	//		{
-	//			List<String[]> all = (new DelimitedReader(file_positive_pairs)).readAll();
-	//			for (String[] a : all) {
-	//				argpair_relation.put(a[0] + "\t" + a[1], a);
-	//			}
-	//		}
-	//		{
-	//			DelimitedWriter dwdebug = new DelimitedWriter(output_sentenceid_contain_relation + ".debug");
-	//			DelimitedReader dr = new DelimitedReader(sentencener);
-	//			List<String[]> b;
-	//			HashSet<Integer> worthconsiderwid = new HashSet<Integer>();
-	//			int count = 0;
-	//			while ((b = dr.readBlock(0)) != null) {
-	//				if (count++ % 100000 == 0) {
-	//					D.p(count, worthconsiderwid.size());
-	//				}
-	//				int sid = Integer.parseInt(b.get(0)[0]);
-	//				int wid = Integer.parseInt(b.get(0)[1]);
-	//				for (int i = 0; i < b.size(); i++) {
-	//					for (int j = i + 1; j < b.size(); j++) {
-	//						String arg1 = b.get(i)[4];
-	//						String arg2 = b.get(j)[4];
-	//						if (argpair_relation.containsKey(arg1 + "\t" + arg2)
-	//								|| argpair_relation.containsKey(arg2 + "\t" + arg1)) {
-	//							worthconsiderwid.add(wid);
-	//							dwdebug.write(wid, arg1, arg2);
-	//							//							if (worthconsidersid.size() > 100)
-	//							//								break;
-	//						}
-	//					}
-	//				}
-	//			}
-	//			dwdebug.close();
-	//			DelimitedWriter dw = new DelimitedWriter(output_sentenceid_contain_relation);
-	//			for (int x : worthconsiderwid) {
-	//				dw.write(x);
-	//			}
-	//			dw.close();
-	//		}
-	//
-	//	}
-
 	static void getSectionStuff(String file_sid_secid_contain_relation, String in, String out) throws IOException {
 		HashSet<Integer> usedsectionId = new HashSet<Integer>();
 		{
@@ -376,16 +406,19 @@ public class S12_iewikisection {
 
 	static void createAllPairToConsider(String nerfile, String factpair_mention, String output_pairs)
 			throws IOException {
-		HashMap<String, String> pair2fact = new HashMap<String, String>();
+		HashMap<String, String> pair2fact_onto = new HashMap<String, String>();
 		HashMap<String, String> pair2fact_seed = new HashMap<String, String>();
+		HashMap<String, String> pair2fact_gold = new HashMap<String, String>();
 		{
 			DelimitedReader dr = new DelimitedReader(factpair_mention);
 			String[] l;
 			while ((l = dr.read()) != null) {
 				if (l[11].equals("s")) {
 					pair2fact_seed.put(l[3] + "\t" + l[4], l[2]);
+				} else if (l[11].equals("g")) {
+					pair2fact_gold.put(l[3] + "\t" + l[4], l[2]);
 				} else {
-					pair2fact.put(l[3] + "\t" + l[4], l[2]);
+					pair2fact_onto.put(l[3] + "\t" + l[4], l[2]);
 				}
 			}
 			dr.close();
@@ -418,18 +451,26 @@ public class S12_iewikisection {
 							//sid, wid, rel,arg1, arg2, arg1pos[0], arg1pos[1], arg2pos[0],arg2pos[1],arg1ner, arg2ner
 							{
 								String fact12 = "NA";
-								if (pair2fact.containsKey(arg1 + "\t" + arg2)) {
-									fact12 = pair2fact.get(arg1 + "\t" + arg2);
+								if (pair2fact_onto.containsKey(arg1 + "\t" + arg2)) {
+									fact12 = pair2fact_onto.get(arg1 + "\t" + arg2);
 									dw.write(sid, wid, fact12, arg1, arg2, l1[3], l1[4], l2[3], l2[4], arg1ner,
 											arg2ner, "e");
-									possize++;
-								} else if (pair2fact_seed.containsKey(arg1 + "\t" + arg2)) {
+								}
+								if (pair2fact_seed.containsKey(arg1 + "\t" + arg2)) {
 									fact12 = pair2fact_seed.get(arg1 + "\t" + arg2);
 									dw.write(sid, wid, fact12, arg1, arg2, l1[3], l1[4], l2[3], l2[4], arg1ner,
 											arg2ner, "s");
-								} else {
+								}
+								if (pair2fact_gold.containsKey(arg1 + "\t" + arg2)) {
+									fact12 = pair2fact_gold.get(arg1 + "\t" + arg2);
+									dw.write(sid, wid, fact12, arg1, arg2, l1[3], l1[4], l2[3], l2[4], arg1ner,
+											arg2ner, "g");
+								}
+								if (fact12.equals("NA")) {
 									dw.write(sid, wid, fact12, arg1, arg2, l1[3], l1[4], l2[3], l2[4], arg1ner,
 											arg2ner, "NA");
+								} else {
+									possize++;
 								}
 								allsize++;
 							}
@@ -706,6 +747,82 @@ public class S12_iewikisection {
 		wtest.close();
 	}
 
+	public static void splitPairmention2traintest2(String file_uniqpair_label_cnt, String file_pairmentions,
+			boolean takeExtended, double train_neg_ratio, int traintotal, int testtotal, String output)
+			throws IOException {
+		HashSet<String> testpairs = new HashSet<String>();
+		HashSet<String> trainpairs = new HashSet<String>();
+		DelimitedWriter wtrain = new DelimitedWriter(output + ".train");
+		DelimitedWriter wtest = new DelimitedWriter(output + ".test");
+		{
+			List<String[]> all = new ArrayList<String[]>(10000000);
+			DelimitedReader dr = new DelimitedReader(file_uniqpair_label_cnt);
+			String[] l;
+			//Mashriqi	Oudh	NA	1
+			int allnegsize = 0;
+			while ((l = dr.read()) != null) {
+				int cnt = Integer.parseInt(l[3]);
+				if (l[4].equals("s")) {
+					trainpairs.add(l[0] + "\t" + l[1]);
+				} else if (cnt > 1) {
+					all.add(l);
+					if (l[2].equals("NA")) {
+						allnegsize++;
+					}
+				}
+			}
+			D.p("all size", all.size());
+			D.p("all neg size", allnegsize);
+			Collections.shuffle(all);
+			int s = 0;
+			/**for the training, I keep at most traintotal pairs; the negative data is at most train_neg_ratio */
+			int trainnegsize = 0;
+			for (; s < all.size() * 0.7 && trainpairs.size() < traintotal; s++) {
+				l = all.get(s);
+				String rel = l[2];
+				if (rel.equals("NA")) {
+					if (trainnegsize * 1.0 / trainpairs.size() < train_neg_ratio) {
+						trainnegsize++;
+						trainpairs.add(l[0] + "\t" + l[1]);
+					}
+				} else {
+					if (takeExtended) {
+						trainpairs.add(l[0] + "\t" + l[1]);
+					}
+				}
+			}
+			/**for testing, I keep at most testtotal pairs*/
+			int testnegsize = 0;
+			for (; s < all.size() && testpairs.size() < testtotal; s++) {
+				l = all.get(s);
+				testpairs.add(l[0] + "\t" + l[1]);
+				if (l[2].equals("NA")) {
+					testnegsize++;
+				}
+			}
+			D.p("training negative", trainnegsize);
+			D.p("training pairs", trainpairs.size());
+			D.p("test pairs", testpairs.size());
+			D.p("test negative", testnegsize);
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(file_pairmentions);
+			String[] l;
+			//223	24083124	NA	Aashirvad Cinemas	Antony Perumbavoor	0	2	9	11	LOCATION	PERSON
+			while ((l = dr.read()) != null) {
+				String pair = l[3] + "\t" + l[4];
+				if (testpairs.contains(pair)) {
+					wtest.write(l);
+				} else if (trainpairs.contains(pair)) {
+					wtrain.write(l);
+				}
+			}
+		}
+		wtrain.close();
+		wtest.close();
+	}
+
+	
 	public static void splitPairmention2traintest(String file_uniqpair_label_cnt, String file_pairmentions,
 			double train_neg_ratio, int traintotal, int testtotal) throws IOException {
 		HashSet<String> testpairs = new HashSet<String>();
@@ -932,16 +1049,25 @@ public class S12_iewikisection {
 	}
 
 	public static void main(String[] args) throws IOException {
-		//String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
-		//String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2/wikisection";
 		(new File(Main.dir_wikisection)).mkdir();
+		(new File(Main.dir_wikisection)).mkdir();
+		String file_globalsentences = Main.dirwikidump + "/sentences";
+		String file_localsentences = Main.dir_wikisection + "/sentences";
+		String file_fact_pairmentions = Main.dir_wikisection + "/factpair_mentions";
+		String file_pairmentions = Main.dir_wikisection + "/pair_mentions";
+		//		String file_fact = Main.dir_wikisection + "/fact";
+		//		String file_trainraw = Main.dir_wikisection + "/sampletrain";
+		//		String file_testraw = Main.dir_wikisection + "/sampletest";
+		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
 
-		getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
-				Main.file_globalsentences + ".ner", Main.file_fact_pairmentions);
-		getSectionStuff(Main.file_fact_pairmentions, Main.file_globalsentences, Main.file_localsentences);
-		createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", Main.file_fact_pairmentions,
-				Main.file_pairmentions);
-		getUniqParis2CountLabel(Main.file_pairmentions, Main.file_uniqpair_label_cnt);
+		{
+			/**Get data done*/
+			getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
+					Main.file_extendwidpairs_gold_filter, file_globalsentences + ".ner", file_fact_pairmentions);
+			getSectionStuff(file_fact_pairmentions, file_globalsentences, file_localsentences);
+			createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", file_fact_pairmentions, file_pairmentions);
+			getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+		}
 		{
 			/**test on ontological smoothed*/
 			String expdir = Main.dir_wikisection + "/exp1_ontologicalsmooth";
@@ -949,29 +1075,29 @@ public class S12_iewikisection {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, true, 0.9, 100000, 100000,
+			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 100000,
 					traintestpairmention);
-			createpb(Main.file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(Main.file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
+			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
+			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
 			//			PbReader.analyzePbData(file_trainraw + ".pb");
 			//			PbReader.analyzePbData(file_testraw + ".pb");
 			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
 			rew.learningThenTesting();
 		}
-		{
-			/**test on base line*/
-			String expdir = Main.dir_wikisection + "/exp2_baseline";
-			(new File(expdir)).mkdir();
-			String traintestpairmention = expdir + "/pairmention";
-			String trainpb = expdir + "/trainpb";
-			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, false, 0.9, 100000,
-					100000, traintestpairmention);
-			createpb(Main.file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(Main.file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
-		}
+		//		{
+		//			/**test on base line*/
+		//			String expdir = Main.dir_wikisection + "/exp2_baseline";
+		//			(new File(expdir)).mkdir();
+		//			String traintestpairmention = expdir + "/pairmention";
+		//			String trainpb = expdir + "/trainpb";
+		//			String testpb = expdir + "/testpb";
+		//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 100000,
+		//					traintestpairmention);
+		//			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
+		//			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
+		//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+		//			rew.learningThenTesting();
+		//		}
 		{
 			/**Test on gold data, i.e. no NA*/
 			//		createpb(file_localsentences, file_fact_pairmentions, dir, file_fact);

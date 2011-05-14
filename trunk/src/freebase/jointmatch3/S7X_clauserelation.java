@@ -175,19 +175,19 @@ public class S7X_clauserelation {
 				}
 			}
 			{
-//				DelimitedReader dr = new DelimitedReader(Main.file_weight_seednegativepair_nellrel_fbrel);
-//				String[] l;
-//				int num = 0;
-//				while ((l = dr.read()) != null) {
-//					String var = getVariableRelation(l[0], l[1]);
-//					if (candidate.contains(var)) {
-//						double val = -1 * Main.PAR_WEIGHT_SEED_NEG * Math.min(Double.parseDouble(l[2]) / 10, 1);
-//						dwclause.write(val, var, "SEED_NEG_INSTANCE");
-//						num++;
-//					}
-//				}
-//				D.p("number of sharing entity clauses", num);
-//				dr.close();
+				DelimitedReader dr = new DelimitedReader(Main.file_weight_seednegativepair_nellrel_fbrel);
+				String[] l;
+				int num = 0;
+				while ((l = dr.read()) != null) {
+					String var = getVariableRelation(l[0], l[1]);
+					if (candidate.contains(var)) {
+						double val = -1 * Main.PAR_WEIGHT_SEED_NEG * Math.min(Double.parseDouble(l[2]) / 10, 1);
+						dwclause.write(val, var, "SEED_NEG_INSTANCE");
+						num++;
+					}
+				}
+				D.p("number of sharing entity clauses", num);
+				dr.close();
 			}
 			{
 				DelimitedReader dr = new DelimitedReader(Main.file_weight_defaultnegativepair_nellrel_fbrel);

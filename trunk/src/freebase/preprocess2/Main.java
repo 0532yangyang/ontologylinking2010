@@ -25,15 +25,24 @@ public class Main {
 	//			fout_wexsplit_template = "o:/unix"+fout_wexsplit_template;
 	//		}
 	//	}
-	static String[] datas = new String[] { "01", "01", "01", "01", //p01
-			"02", "02", "02", "02", //p02
-			"08", "08", "08", "08", //p03
-			//"04", "04", "04","04", //p04
-			//"12","12","12","12", //p05
-			//"09","09","09","09", //p06
-			"13", "13", "13", "13", "13", "13", "13", //p07
-			"15", "15", "15", "15", "15", "15", "15" //p08
-	};
+//	static String[] datas = new String[] { "01", "01", "01", "01", //p01
+//			"02", "02", "02", "02", //p02
+//			"08", "08", "08", "08", //p03
+//			//"04", "04", "04","04", //p04
+//			//"12","12","12","12", //p05
+//			//"09","09","09","09", //p06
+//			"13", "13", "13", "13", "13", "13", "13", //p07
+//			"15", "15", "15", "15", "15", "15", "15" //p08
+//	};
 
 	static String file_freebasedump = pdir + "/freebase-datadump-quadruples.tsv";
+	
+	//for nyt
+	static String file_nyt_paragraph = "/projects/pardosa/data15/raphaelh/data/paragraphs";
+	static String dir_nytdump = "/projects/pardosa/s5/clzhang/ontologylink/nytdump";
+	static String file_nyt_widsecidparagraph = dir_nytdump + "/wid_sectionid_paragraph";
+	static String file_nytsplit_template = "/projects/pardosa/data$DNUM$/clzhang/tmp/wp/nyt.part";
+	static String[] datas = new String[] { "13", "13", "13", "13", "13", "13", "13", "13", //p07
+			"15", "15", "15", "15", "15", "15", "15"//p08
+	};
 }
