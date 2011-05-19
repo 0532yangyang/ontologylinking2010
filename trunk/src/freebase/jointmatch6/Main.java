@@ -47,8 +47,8 @@ public class Main {
 	/**S1*/
 	static String file_fbsearch1 = dir + "/fbsearch.raw1";
 	static String file_fbsearch2 = dir + "/fbsearch.raw2";
-	static String file_wksensubset = dir+"/wksen_subset";
-	static String file_wk = dir+"/wksen_subset";
+	static String file_wksensubset = dir + "/wksen_subset";
+	static String file_wklinksub = dir + "/wksen_subset";
 	//	static String file_ontologyentity2fbentity_byfbsearch = dir
 	//			+ "/fbsearch_label_arg1_arg2_relation_mid1list_mid2list";
 	//	static String file_ontologyentity2fbentity_bylucene = dir + "/lucene_argname_mid_wid_names_sharewords_indegree";

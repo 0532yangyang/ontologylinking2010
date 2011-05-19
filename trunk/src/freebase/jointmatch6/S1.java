@@ -21,7 +21,7 @@ import javatools.webapi.BingApi;
 import javatools.webapi.FBSearchEngine;
 import javatools.webapi.LuceneSearch;
 
-public class S1_variable_nellent_fbmid {
+public class S1 {
 
 	/**
 	 * @param args
@@ -106,7 +106,7 @@ public class S1_variable_nellent_fbmid {
 
 	}
 
-	public static void subsetSentenceWikilink(String file_wksen_subset, String file_wklink_subset) throws IOException {
+	public static void subsetWikiSenWikilink(String file_wksen_subset, String file_wklink_subset) throws IOException {
 		HashSet<Integer> usedwid = new HashSet<Integer>();
 		{
 			DelimitedReader dr = new DelimitedReader(Main.file_fbsearch2);
@@ -148,8 +148,9 @@ public class S1_variable_nellent_fbmid {
 
 		/** filter stanford wikipedia to get subset stanford */
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		getraw1();
-		getraw2();
+		//		getraw1();
+		//		getraw2();
+		subsetWikiSenWikilink(Main.file_wksensubset, Main.file_wklinksub);
 
 	}
 
