@@ -791,12 +791,50 @@ public class S7 {
 		wtest.close();
 	}
 
-	public static void relabelTestByGoldMatching(String test_pairmention_oldlabel,//test pairs with my ontology matching label
+	public static void relabelSql2InstanceUnionByGoldMatching(String file_my_relationmatch,
+			String file_gold_relationmatch, String file_sql2instance_union, String file_gold_sql2union)
+			throws IOException {
+		//first get a selected aftermatch
+		DelimitedWriter dw = new DelimitedWriter(file_gold_sql2union);
+		HashSet<String> gold = new HashSet<String>();
+		{
+			List<String[]> all = (new DelimitedReader(file_gold_relationmatch)).readAll();
+			for (String[] l : all) {
+				if (l[0].equals("1")) {
+					gold.add(l[1] + "\t" + l[2]);
+				}
+			}
+		}
+		HashMap<Integer, String> urid2nellrel = new HashMap<Integer, String>();
+		{
+			List<String[]> all = (new DelimitedReader(file_my_relationmatch)).readAll();
+			for (String[] l : all) {
+				if (gold.contains(l[0] + "\t" + l[3])) {
+					urid2nellrel.put(Integer.parseInt(l[1]), l[0]);
+				}
+			}
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(file_sql2instance_union);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				int urid = Integer.parseInt(l[4]);
+				if (urid2nellrel.containsKey(urid)) {
+					dw.write(l[0], l[1], urid2nellrel.get(urid), urid);
+				}
+			}
+			dr.close();
+		}
+		dw.close();
+	}
+
+	public static void relabelTestByGoldMatching(String file_gold_sql2instanceunion,//gold sql2instance
+			String test_pairmention_oldlabel,//test pairs with my ontology matching label
 			String test_pairmention_gold//test pairs with gold ontology matching label
 	) throws IOException {
 		HashMap<String, String> goldfacts = new HashMap<String, String>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_extendwidpairs_gold_filter);
+			DelimitedReader dr = new DelimitedReader(file_gold_sql2instanceunion);
 			String[] l;
 			while ((l = dr.read()) != null) {
 				goldfacts.put(l[0] + "\t" + l[1], l[2]);
@@ -1039,7 +1077,103 @@ public class S7 {
 		dw.close();
 	}
 
+	public static void oneFigure(String dir_globaldata, String dir_local, String name_dataset) throws IOException {
+
+		String file_relation_match = dir_local + "/afterrelmatch_relmatchres";
+		String file_sql2instance_union = dir_local + "/sql2instance_union";
+		String file_seedwidpairs = dir_local + "/seedwidpairs";
+		String file_relabel_sql2instance = dir_local + "/relabel_sql2instance";
+
+		String file_gold_relation_match = Main.dir + "/mycreateontology/gold_relmatchres";
+		String file_gold_sql2instance = dir_local + "/gold_sql2instance";
+
+		String dir_localdata = dir_local + "/" + name_dataset;
+		(new File(dir_localdata)).mkdir();
+
+		String file_fact_pairmentions = dir_localdata + "/factpair_mentions";
+		String file_localsentences = dir_localdata + "/sentences";
+		String file_pairmentions = dir_localdata + "/pair_mentions";
+		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+
+		String file_fact = dir_localdata + "/fact";
+		String file_trainraw = dir_localdata + "/sampletrain";
+		String file_testraw = dir_localdata + "/sampletest";
+
+		//		getSeedPairs(file_seedwidpairs);
+		//		get_relabel_sql2instance(file_relation_match, file_sql2instance_union, file_relabel_sql2instance);
+		//		relabelSql2InstanceUnionByGoldMatching(file_relation_match, file_gold_relation_match, file_sql2instance_union,
+		//				file_gold_sql2instance);
+		//		getSectionsContainingSomeFact(file_seedwidpairs, file_relabel_sql2instance, dir_globaldata + ".ner",
+		//				file_fact_pairmentions);
+		//		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
+		//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
+		//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+		{
+			/**test on ontological smoothed*/
+			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
+			(new File(expdir)).mkdir();
+			String traintestpairmention = expdir + "/pairmention";
+			String trainpb = expdir + "/trainpb";
+			String testpb = expdir + "/testpb";
+			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 1000000,
+					traintestpairmention);
+			relabelTestByGoldMatching(file_gold_sql2instance, traintestpairmention + ".test", traintestpairmention
+					+ ".goldtest");
+			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
+			//			PbReader.analyzePbData(file_trainraw + ".pb");
+			//			PbReader.analyzePbData(file_testraw + ".pb");
+			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			rew.learningThenTesting();
+		}
+		{
+			/**test on base line*/
+			String expdir = dir_localdata + "/exp2_baseline";
+			(new File(expdir)).mkdir();
+			String traintestpairmention = expdir + "/pairmention";
+			String trainpb = expdir + "/trainpb";
+			String testpb = expdir + "/testpb";
+			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 1000000,
+					traintestpairmention);
+			relabelTestByGoldMatching(file_gold_sql2instance, traintestpairmention + ".test", traintestpairmention
+					+ ".goldtest");
+			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
+			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			rew.learningThenTesting();
+		}
+	}
+
+	public static void manualPairLevel(String expdir) throws IOException {
+		List<String[]> all = new ArrayList<String[]>();
+		{
+			DelimitedReader dr = new DelimitedReader(expdir + "/pairlevelpred");
+			String[] l;
+			while ((l = dr.read()) != null) {
+				if (l[3].equals("true")) {
+					all.add(new String[] { l[0], l[1], l[4], l[5] });
+				}
+			}
+		}
+		DelimitedWriter dw= new DelimitedWriter(expdir+"/pairlevelpred.label");
+		StringTable.sortByColumn(all, new int[] { 1, 0 }, new boolean[] { false, true });
+		List<List<String[]>>blocks = StringTable.toblock(all, 1);
+		for(List<String[]>b: blocks){
+			for(int i=0;i<b.size() && i<10;i++){
+				dw.write(b.get(i));
+			}
+		}
+		dw.close();
+		
+	}
+
 	public static void main(String[] args) throws IOException {
+		//oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/iter2", "wikidata");
+		//oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/iter2", "nytdata");
+		manualPairLevel(Main.dir+"/iter2/nytdata/exp1_ontologicalsmooth");
+	}
+
+	public static void main2(String[] args) throws IOException {
 		//String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
 		//String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2/wikisection";
 

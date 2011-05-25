@@ -619,7 +619,7 @@ public class S2 {
 
 	public static void main(String[] args) throws Exception {
 		/** with fbsearch result's top 1 as best mid, consider the subgraph */
-		String file_Nellstr2Mid = Main.dir + "/nellstr2mid";
+		String file_Nellstr2Mid = Main.dir + "/file_nellstr2mid";
 		getNellStr2MidWithRelationMatchingResult(null, Main.file_fbsearch2, file_Nellstr2Mid);
 
 		getPath(file_Nellstr2Mid);//this function cost a lot of time

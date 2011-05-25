@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.StringTable;
+import javatools.string.StringUtil;
 
 public class Evaluation {
 	public static void manual_entity_v2() throws IOException {
@@ -212,7 +215,7 @@ public class Evaluation {
 		}
 
 		{
-			DelimitedWriter dw = new DelimitedWriter(Main.file_eval_fbsearchresult);
+			//DelimitedWriter dw = new DelimitedWriter(Main.file_eval_fbsearchresult);
 			DelimitedReader dr = new DelimitedReader(Main.file_fbsearch2);
 			List<String[]> b;
 			int[] correct_at_k_count = new int[10];
@@ -222,7 +225,7 @@ public class Evaluation {
 				String mid = answer.get(name);
 				if (mid == null) {
 					//no correct answer
-					dw.write("no answer:", name);
+					D.p("no answer:", name);
 					mid = "";
 				}
 				for (int k = 0; k < 10 && k < b.size(); k++) {
@@ -235,17 +238,76 @@ public class Evaluation {
 				divideby++;
 			}
 			for (int i = 0; i < 10; i++) {
-				dw.write("precision", i, correct_at_k_count[i] * 1.0 / divideby);
+				D.p("precision", i, correct_at_k_count[i] * 1.0 / divideby);
 			}
 			for (int i = 0; i < 10; i++) {
-				dw.write("recall", i, correct_at_k_count[i] * 1.0 / answer.size());
+				D.p("recall", i, correct_at_k_count[i] * 1.0 / answer.size());
 			}
-			dw.close();
 		}
 	}
 
+	public static void rename_relationname(String file, String file_typeconstrain) throws IOException {
+		HashMap<String, String> typeconstrain = new HashMap<String, String>();
+		{
+			List<String[]> all = (new DelimitedReader(file_typeconstrain)).readAll();
+			List<String[]> uniqc = StringTable.squeeze(all, new int[] { 0, 1 });
+			for (String[] a : uniqc) {
+				if (!typeconstrain.containsKey(a[1])) {
+					typeconstrain.put(a[1], a[2]);
+					D.p(a[1], a[2]);
+				}
+			}
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(file);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				String nellrel = l[0];
+				String []domainrange = Main.no.relname2DomainRange.get(nellrel);
+				String domainfb = typeconstrain.get(domainrange[0]);
+				String rangefb = typeconstrain.get(domainrange[1]);
+				String[] unions = l[3].split("@");
+				for (int i = 0; i < unions.length; i++) {
+					String[] joins = unions[i].split("\\|");
+					StringBuilder sb = new StringBuilder();
+					String name = join2name(joins[0]);
+					sb.append(name);
+					for (int j = 1; j < joins.length; j++) {
+						name = join2name(joins[j]);
+						sb.append("$\\Join$" + name);
+					}
+					D.p(l[0], sb, parseTypeName(domainfb), parseTypeName(rangefb));
+				}
+			}
+			dr.close();
+		}
+
+
+	}
+public static String parseTypeName(String name){
+	String []ab = name.split("/");
+	return ab[ab.length-1].replace("_", "\\_");
+}
+	public static String join2name(String join) {
+		List<String> list = StringUtil.tokenize(join, new char[] { '_', '/' });
+		HashSet<String> appear = new HashSet<String>();
+		StringBuilder sb = new StringBuilder();
+		sb.append(list.get(0));
+		appear.add(list.get(0));
+		for (String a : list) {
+			if (!appear.contains(a)) {
+				appear.add(a);
+				sb.append("\\_" + a);
+			}
+		}
+		return sb.toString();
+	}
+
 	public static void main(String[] args) throws IOException {
-		manual_entity_v3();
+		//manual_entity_v3();
 		//fbsearch_entity_topk_acc();
+		rename_relationname(Main.dir + "/iter2/afterrelmatch_relmatchres", Main.dir
+				+ "/iter2/afterrelmatch_typeconstrain");
 	}
 }
+

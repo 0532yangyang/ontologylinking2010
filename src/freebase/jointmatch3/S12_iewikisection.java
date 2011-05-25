@@ -34,7 +34,7 @@ import javatools.filehandlers.PbReader;
 import javatools.ml.rphacl2011extractor.RphExtractorWrapper;
 import javatools.mydb.StringTable;
 import multir.preprocess.RelationECML;
-import multir.util.delimited.Sort;
+import multir.util.delimited.Sort; 
 
 public class S12_iewikisection {
 	//	static void s0_give_article_id() throws IOException {
@@ -999,12 +999,12 @@ public class S12_iewikisection {
 		//String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2/wikisection";
 		(new File(Main.dir_wikisection)).mkdir();
 
-//		getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
-//				Main.file_globalsentences + ".ner", Main.file_fact_pairmentions);
-//		getSectionStuff(Main.file_fact_pairmentions, Main.file_globalsentences, Main.file_localsentences);
-//		createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", Main.file_fact_pairmentions,
-//				Main.file_pairmentions);
-//		getUniqParis2CountLabel(Main.file_pairmentions, Main.file_uniqpair_label_cnt);
+		getSectionsContainingSomeFact(Main.file_seedwidpairs, Main.file_extendedwidpairs_filter,
+				Main.file_globalsentences + ".ner", Main.file_fact_pairmentions);
+		getSectionStuff(Main.file_fact_pairmentions, Main.file_globalsentences, Main.file_localsentences);
+		createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", Main.file_fact_pairmentions,
+				Main.file_pairmentions);
+		getUniqParis2CountLabel(Main.file_pairmentions, Main.file_uniqpair_label_cnt);
 		{
 			/**test on ontological smoothed*/
 			String expdir = Main.dir_wikisection + "/exp1_ontologicalsmooth";
@@ -1012,8 +1012,8 @@ public class S12_iewikisection {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
-//			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, true, 0.9, 500000, 100000,
-//					traintestpairmention);
+			splitPairmention2traintest(Main.file_uniqpair_label_cnt, Main.file_pairmentions, true, 0.9, 500000, 100000,
+					traintestpairmention);
 			relabelTestByGoldMatching(traintestpairmention + ".test", traintestpairmention + ".goldtest");
 			createpb(Main.file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
 			createpb(Main.file_localsentences, traintestpairmention + ".goldtest", Main.dir, testpb);

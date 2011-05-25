@@ -265,7 +265,7 @@ public class S4 {
 			UnionRelation.setWeight(UnionRelationScoreIndex.SHAREWORDS, 1);
 			UnionRelation.setWeight(UnionRelationScoreIndex.SHAREINSTANCE, 1);
 			UnionRelation.setWeight(UnionRelationScoreIndex.NUMINSTANCE, 0);
-			UnionRelation.setWeight(UnionRelationScoreIndex.WIKILINK, -10);
+			UnionRelation.setWeight(UnionRelationScoreIndex.WIKILINK, 0);
 		}
 		{
 			/**Inference*/
@@ -356,11 +356,11 @@ public class S4 {
 		String file_Nellstr2Mid = Main.dir + "/nellstr2mid";
 
 		FreebaseRelation fbr = new FreebaseRelation(Main.file_seedbfspath_result);
-		//		step1_name_similarity(fbr);
-		//		step2_shareInstance_similarity(fbr);
-		//		step3_explosivejoin(fbr);
-		//		step4_negativeseed(file_Nellstr2Mid);
-		//		step5_weight_wikilink();
+		step1_name_similarity(fbr);
+		step2_shareInstance_similarity(fbr);
+		step3_explosivejoin(fbr);
+		step4_negativeseed(file_Nellstr2Mid);
+		step5_weight_wikilink();
 		stepX_inference(fbr, file_inference_relation);
 		stepX_setGoodUnionRelation(fbr, file_inference_relation, 3, file_afterrelmatch_relmatchres);
 		stepX_getTypeConstrain(fbr, file_afterrelmatch_typeconstrain);

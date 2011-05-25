@@ -98,7 +98,8 @@ public class S1 {
 					}
 					wid = s[3];
 					namealias = s[4];
-					dw.write(name, mid, wid, type, namealias);
+
+					dw.write(name, mid, wid, type, namealias, s[2]);
 				}
 			}
 			dw.close();
@@ -117,8 +118,8 @@ public class S1 {
 			dr.close();
 		}
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_globalsentences);
-			DelimitedWriter dw = new DelimitedWriter(file_wksen_subset);
+			DelimitedReader dr = new DelimitedReader(Main.file_globalsentences + ".tokens");
+			DelimitedWriter dw = new DelimitedWriter(file_wksen_subset + ".temp");
 			String[] l;
 			while ((l = dr.read()) != null) {
 				int wid = Integer.parseInt(l[1]);
@@ -134,13 +135,29 @@ public class S1 {
 			DelimitedWriter dw = new DelimitedWriter(file_wklink_subset);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[0]);
-				if (usedwid.contains(wid)) {
-					dw.write(l);
+				try {
+					int wid = Integer.parseInt(l[0]);
+					if (usedwid.contains(wid)) {
+						dw.write(l);
+					}
+				} catch (Exception e) {
+
 				}
 			}
 			dr.close();
 			dw.close();
+		}
+		{
+			Sort.sort(file_wksen_subset + ".temp", file_wksen_subset, Main.dir, new Comparator<String[]>() {
+				@Override
+				public int compare(String[] arg0, String[] arg1) {
+					// TODO Auto-generated method stub
+					int wid0 = Integer.parseInt(arg0[1]);
+					int wid1 = Integer.parseInt(arg1[1]);
+					return wid0 - wid1;
+				}
+
+			});
 		}
 	}
 
@@ -148,8 +165,8 @@ public class S1 {
 
 		/** filter stanford wikipedia to get subset stanford */
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
-		//		getraw1();
-		//		getraw2();
+		//getraw1();
+		//getraw2();
 		subsetWikiSenWikilink(Main.file_wksensubset, Main.file_wklinksub);
 
 	}

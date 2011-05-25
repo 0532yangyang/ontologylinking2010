@@ -39,10 +39,9 @@ public class QueryFBGraph {
 		}
 	}
 
-	public QueryFBGraph(boolean withType) {
+	public QueryFBGraph(boolean withType, String file_explosive) {
 		try {
-			System.setErr(new PrintStream(new BufferedOutputStream(new FileOutputStream(
-					Main.file_sql2instance_union_explosive))));
+			System.setErr(new PrintStream(new BufferedOutputStream(new FileOutputStream(file_explosive))));
 			if (withType) {
 				DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type_clean);
 				//DelimitedReader dr = new DelimitedReader(Main.dir + "/debug/gnid_subset");

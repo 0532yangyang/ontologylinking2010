@@ -185,7 +185,28 @@ public class StringUtil {
 	public static int numOfShareWords(String str1, String str2) {
 		List<String> l1 = tokenize(str1, new char[] { ' ', '_' });
 		List<String> l2 = tokenize(str2, new char[] { ' ', '_' });
+		l1 = sortUniq(l1);
+		l2 = sortUniq(l2);
 		return numOfShareWords(l1, l2);
+	}
+
+	public static int numOfShareWords(String str1, String str2, char[] split) {
+		List<String> l1 = tokenize(str1, split);
+		List<String> l2 = tokenize(str2, split);
+		l1 = sortUniq(l1);
+		l2 = sortUniq(l2);
+		return numOfShareWords(l1, l2);
+	}
+
+	public static List<String> sortUniq(List<String> list) {
+		HashSet<String> tmp = new HashSet<String>();
+		for (String a : list) {
+			tmp.add(a);
+		}
+		List<String> result = new ArrayList<String>();
+		result.addAll(tmp);
+		Collections.sort(result);
+		return result;
 	}
 
 	public static int numOfShareInteger(List<Integer> sortedList1, List<Integer> sortedList2) {
