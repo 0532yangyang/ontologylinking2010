@@ -83,6 +83,7 @@ enum UnionRelationScoreIndex {
 	SEEDNEGATIVE, //negative seeds
 	WIKILINK, //wikipedia link
 	NUMINSTANCE, //number of instances
+	JOINLEN,//join length
 }
 
 class UnionRelation {

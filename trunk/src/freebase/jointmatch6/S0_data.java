@@ -15,6 +15,7 @@ import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.StringTable;
 
 public class S0_data {
 
@@ -441,7 +442,7 @@ public class S0_data {
 				String enurl = l[1];
 				String[] x = mid2others.get(mid);
 				if (x != null) {
-					x[2] = enurl;
+					x[2] += enurl + " ";
 				}
 			}
 		}
@@ -540,8 +541,9 @@ public class S0_data {
 
 	private static void clean_gnid2others() throws IOException {
 		DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type);
-		DelimitedWriter dw = new DelimitedWriter(Main.file_gnid_mid_enurl_wid_title_type + ".clean");
+		DelimitedWriter dw = new DelimitedWriter(Main.file_gnid_mid_enurl_wid_title_type_clean);
 		String[] l;
+		int missing = 0;
 		while ((l = dr.read()) != null) {
 			try {
 				int gnid = Integer.parseInt(l[0]);
@@ -552,9 +554,11 @@ public class S0_data {
 				String type = l[5];
 				dw.write(gnid, mid, enurl, wid, title, type);
 			} catch (Exception e) {
-				D.p(l);
+				//D.p(l);
+				missing++;
 			}
 		}
+		D.p("missing",missing);
 		dw.close();
 		dr.close();
 	}
@@ -574,7 +578,9 @@ public class S0_data {
 			//create_gnid_wid_enurl_wid_title();
 
 		}
+		//StringTable.checkUniq(Main.pdir+"/fbnode.sbmid", 0);
 		//get_notable_type2();
+		//create_gnid_wid_enurl_wid_title();
 		//create_gnid_wid_enurl_wid_title_type();
 		//test_gnid_wid_enurl_wid_title();
 		clean_gnid2others();

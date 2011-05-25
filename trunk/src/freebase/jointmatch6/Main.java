@@ -48,7 +48,7 @@ public class Main {
 	static String file_fbsearch1 = dir + "/fbsearch.raw1";
 	static String file_fbsearch2 = dir + "/fbsearch.raw2";
 	static String file_wksensubset = dir + "/wksen_subset";
-	static String file_wklinksub = dir + "/wksen_subset";
+	static String file_wklinksub = dir + "/wklink_subset";
 	//	static String file_ontologyentity2fbentity_byfbsearch = dir
 	//			+ "/fbsearch_label_arg1_arg2_relation_mid1list_mid2list";
 	//	static String file_ontologyentity2fbentity_bylucene = dir + "/lucene_argname_mid_wid_names_sharewords_indegree";
@@ -182,12 +182,15 @@ public class Main {
 	static String file_globalsentences = dirwikidump + "/sentences";
 
 	/**S13 ie Nyt*/
-	static String dir_nytdump = "/projects/pardosa/data14/raphaelh/t/raw";
-	static String dir_nyt = dir + "/nyt";
+	static String dir_nytdump = pdir+"/nytdump";
 
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	public static void main(String[] args) throws Exception {
-
+		S1.main(null);
+		S2.main(null);
+		S3.main(null);
+		S4.main(null);
+		S5.main(null);
 	}
 }

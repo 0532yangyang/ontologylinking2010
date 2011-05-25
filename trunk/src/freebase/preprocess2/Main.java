@@ -17,8 +17,8 @@ public class Main {
 	static String file_delimited_sections = dir + "/wexsections_wid_sectionid_title_section";
 	static String file_wid_wholearticle = dir + "/wid_wholearticle";
 	static String file_wholewikiarticle_luceneindex = dir + "/wholewikiarticle_luceneindex";
-	static String file_parsed_wikisections = dir + "/sentences";
-	static String fout_wexsplit_template = "/projects/pardosa/data$DNUM$/clzhang/tmp/wp/wex_article.part";
+	//static String file_parsed_wikisections = dir + "/sentences";
+	//static String fout_wexsplit_template = "/projects/pardosa/data$DNUM$/clzhang/tmp/wp/wex_article.part";
 
 	//	static {
 	//		if (!(new File(fout_wexsplit_template+"0")).exists()) {
@@ -42,6 +42,7 @@ public class Main {
 	static String dir_nytdump = "/projects/pardosa/s5/clzhang/ontologylink/nytdump";
 	static String file_nyt_widsecidparagraph = dir_nytdump + "/wid_sectionid_paragraph";
 	static String file_nytsplit_template = "/projects/pardosa/data$DNUM$/clzhang/tmp/wp/nyt.part";
+	static String file_nyt_sentences = dir_nytdump+"/sentences";
 	static String[] datas = new String[] { "13", "13", "13", "13", "13", "13", "13", "13", //p07
 			"15", "15", "15", "15", "15", "15", "15"//p08
 	};

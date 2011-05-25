@@ -174,18 +174,18 @@ public class Main {
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	public static void main(String[] args) throws Exception {
-		//		S1_variable_nellent_fbmid.main(null);
+		S1_variable_nellent_fbmid.main(null);
 		S2_variable_nelltype_fbtype_count.main(null);
 		S3_typeclause.main(null);
-		//S4_variable_relationmatch.main(null);
+		S4_variable_relationmatch.main(null);
 		S6_weightrelation.main(null);
-		//		S61_typerelationjoint.main(null);
-		//		S71_seed2pairs.main(null);
-		//		S72_patternvariable.main(null);
-		//S73_getRidofNonSenseRelation.main(null);
+		S61_typerelationjoint.main(null);
+		S71_seed2pairs.main(null);
+		S72_patternvariable.main(null);
+		S73_getRidofNonSenseRelation.main(null);
 		S7X_clauserelation.main(null);
 		S8_inference.main(null);
-		//S9_extend2newinstances.main(null);
+		S9_extend2newinstances.main(null);
 		//		S11_iebing.main(null);
 		D.p((new Date()).toString());
 	}

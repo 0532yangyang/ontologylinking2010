@@ -9,11 +9,11 @@ public class Tool {
 	public static HashMap<String, String[]> get_enurl2others() throws IOException {
 		HashMap<String, String[]> map = new HashMap<String, String[]>();
 		{
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title);
+			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type_clean);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				if (l.length == 5) {
-					String enurl = l[2];
+				String[] enurls = l[2].split(" ");
+				for (String enurl : enurls) {
 					map.put(enurl, l);
 				}
 			}

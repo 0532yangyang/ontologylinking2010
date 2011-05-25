@@ -8,9 +8,12 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javatools.administrative.D;
 import javatools.datatypes.HashCount;
@@ -295,11 +298,48 @@ public class StringTable {
 	public static long intPair2Long(int a, int b) {
 		return ((long) a) * 1000000000 + b;
 	}
+
 	public static long intPair2Long(String a, String b) {
 		int a0 = Integer.parseInt(a);
 		int b0 = Integer.parseInt(b);
 		return ((long) a0) * 1000000000 + b0;
 	}
+
+	public static void delimitedWrite(List<String[]> towrite, String file) throws IOException {
+		DelimitedWriter dw = new DelimitedWriter(file);
+		for (String[] w : towrite) {
+			dw.write(w);
+		}
+		dw.close();
+	}
+
+	public static void mapKey2SetAdd(HashMap<String, Set<String>> map, String key, String value) {
+		if (!map.containsKey(key)) {
+			map.put(key, new HashSet<String>());
+		}
+		map.get(key).add(value);
+	}
+	
+	public static void mapKey2SetAdd(HashMap<String, List<String>> map, String key, String value, boolean isList) {
+		if (!map.containsKey(key)) {
+			map.put(key, new ArrayList<String>());
+		}
+		map.get(key).add(value);
+	}
+
+	public static void checkUniq(String file, int key) throws IOException {
+		DelimitedReader dr = new DelimitedReader(file);
+		String[] l;
+		HashSet<String> set = new HashSet<String>();
+		while ((l = dr.read()) != null) {
+			if (set.contains(l[key])) {
+				D.p(l);
+			}
+			set.add(l[key]);
+		}
+		dr.close();
+	}
+
 	public static void main(String[] args) {
 	}
 }
