@@ -125,6 +125,26 @@ public class DelimitedReader {
 		return block;
 	}
 
+	private String[] blockbufferlimited;
+
+	public List<String[]> readBlocklimited(int key, int limitedsize) throws IOException {
+		if (blockbufferlimited == null) {
+			blockbufferlimited = this.read();
+		}
+		if (this.EOF || blockbufferlimited == null)
+			return null;
+		List<String[]> block = new ArrayList<String[]>();
+		block.add(blockbufferlimited);
+		String[] l;
+		while ((l = this.read()) != null && l[key].equals(block.get(0)[key])) {
+			if (block.size() < limitedsize) {
+				block.add(l);
+			}
+		}
+		blockbufferlimited = l;
+		return block;
+	}
+
 	public List<String[]> readBlock(int[] keys) throws IOException {
 		if (blockbuffer == null) {
 			blockbuffer = this.read();
@@ -142,9 +162,9 @@ public class DelimitedReader {
 					break;
 				}
 			}
-			if (match){
+			if (match) {
 				block.add(l);
-			}else{
+			} else {
 				break;
 			}
 		}

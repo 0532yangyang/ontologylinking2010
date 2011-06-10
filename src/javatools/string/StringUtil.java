@@ -25,6 +25,29 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	public static String removeBlanket(String a, char blanket1, char blanket2) {
+		char[] ach = a.toCharArray();
+		StringBuilder sb = new StringBuilder();
+		int stackdepth = 0;
+		for (int i = 0; i < ach.length; i++) {
+			if (ach[i] == blanket1) {
+				stackdepth++;
+			} else if (ach[i] == blanket2 && stackdepth > 0) {
+				stackdepth--;
+				if (stackdepth == 0) {
+					sb.append(" ");
+				}
+			} else if (stackdepth == 0) {
+				if (ach[i] == ' ') {
+					sb.append("_");
+				} else {
+					sb.append(ach[i]);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	public static List<String> sortAndRemoveDuplicate(List<String> list) {
 		HashSet<String> temp = new HashSet<String>();
 		for (String a : list) {

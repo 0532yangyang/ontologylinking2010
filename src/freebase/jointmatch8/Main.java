@@ -1,4 +1,4 @@
-package freebase.jointmatch6;
+package freebase.jointmatch8;
 
 import java.io.File;
 import java.util.Date;
@@ -6,24 +6,20 @@ import java.util.Date;
 import javatools.administrative.D;
 
 public class Main {
-	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch6";
+	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch8";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
 	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
 	static String dir_wikisection = Main.dir + "/wikisection";
-	static String file_fbvisible = "/projects/pardosa/s5/clzhang/freebase/visible.filter.sbmid";
-	static String file_mid_wid_type_name_alias = "/projects/pardosa/s5/clzhang/freebase/mid_wid_type_name_alias";
 	static {
 		if (!(new File(dir)).exists()) {
 			dir = "o:/unix" + dir;
 			pdir = "o:/unix" + pdir;
 			dir_wikisection = "o:/unix" + dir_wikisection;
-			file_fbvisible = "o:/unix" + file_fbvisible;
-			file_mid_wid_type_name_alias = "o:/unix" + file_mid_wid_type_name_alias;
 		}
 	}
 	/**outside input*/
 	static String file_ontology = dir + "/nellontology";
-	static NellOntology no = new NellOntology(Main.file_ontology);
+	static NellOntology no = new NellOntology(Main.file_ontology,1);
 	public static String file_wp_stanford = pdir + "/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
 	public static String file_fbgraph_clean = pdir + "/fbGraph_clean";
 	public static String file_fbedge = pdir + "/fbedge";
@@ -51,10 +47,6 @@ public class Main {
 	/**S1*/
 	static String file_fbsearch1 = dir + "/fbsearch.raw1";
 	static String file_fbsearch2 = dir + "/fbsearch.raw2";
-	static String file_fbsearch3 = dir + "/fbsearch.raw3";
-	static String file_fbsearchmatch = dir + "/fbsearch.match";
-	static String file_fbsearchcandidate = dir + "/fbsearch.candidate";
-	static String file_fbsql2instances = dir + "/fbsearch.sql2instance";
 	static String file_wksensubset = dir + "/wksen_subset";
 	static String file_wklinksub = dir + "/wklink_subset";
 	//	static String file_ontologyentity2fbentity_byfbsearch = dir
@@ -181,7 +173,6 @@ public class Main {
 	static String file_extendedpair2bing = dir_bing + "/extendedpair2bing";
 	static String file_seed2bing_pbgz = file_seed2bing + ".pb.gz";
 	static String file_extendedpair2bing_pbgz = file_extendedpair2bing + ".pb.gz";
-
 	//static String file_extendedpair2bing_byrelationraw = file_extendedpair2bing + ".byrelationraw";
 	//static String expbingdir0 = dir_bing + "/exp0";
 
@@ -191,15 +182,11 @@ public class Main {
 	static String file_globalsentences = dirwikidump + "/sentences";
 
 	/**S13 ie Nyt*/
-	static String dir_nytdump = pdir + "/nytdump";
+	static String dir_nytdump = pdir+"/nytdump";
 
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	public static void main(String[] args) throws Exception {
-		S1.main(null);
-		S2.main(null);
-		S3.main(null);
-		S4.main(null);
-		S5.main(null);
+
 	}
 }

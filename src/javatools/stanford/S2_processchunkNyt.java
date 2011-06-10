@@ -1,4 +1,4 @@
-package freebase.preprocess2;
+package javatools.stanford;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -42,8 +42,8 @@ public class S2_processchunkNyt {
 
 	public static void main(String[] args) throws IOException {
 
+		/**This is a template to parse everything, change the inputfile to use!!!*/
 		int partId = Integer.parseInt(args[0]);
-
 		String inputFile = Main.file_nytsplit_template.replace("$DNUM$", Main.datas[partId]) + partId;
 		//String inputFile = "/projects/pardosa/data01/clzhang/tmp/wp/testfile";
 
