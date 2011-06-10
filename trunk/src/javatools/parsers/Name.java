@@ -1734,7 +1734,7 @@ public class Name {
   
   /** Test routine */
   public static void main(String[] argv) throws Exception {
-	  D.p(Name.of("President Obama").describe());
+	  D.p(Name.of("Prof. Dr. Fabian the Great III of Saarbruecken").describe());
 //    for(String s :new FileLines("./testdata/NameParserTest.txt")) {            
 //        D.p(Name.of(s).describe());
 //    }    

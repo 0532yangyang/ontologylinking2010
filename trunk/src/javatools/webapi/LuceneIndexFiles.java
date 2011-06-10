@@ -133,6 +133,46 @@ public class LuceneIndexFiles {
 		}
 	}
 
+	public static void indexDelimitedFile(String file, int[] indexColumn, int[] pathColumn, String dirIndex) {
+		Date start = new Date();
+
+		try {
+			if ((new File(dirIndex)).exists()) {
+				(new File(dirIndex)).delete();
+			}
+			Directory dir = FSDirectory.open(new File(dirIndex));
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_31);
+			IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_31, analyzer);
+			iwc.setOpenMode(OpenMode.CREATE);
+
+			// Optional: for better indexing performance, if you
+			// are indexing many documents, increase the RAM
+			// buffer.  But if you do this, increase the max heap
+			// size to the JVM (eg add -Xmx512m or -Xmx1g):
+			//
+			// iwc.setRAMBufferSizeMB(256.0);
+
+			IndexWriter writer = new IndexWriter(dir, iwc);
+			indexDocs(writer, file, indexColumn, pathColumn);
+
+			// NOTE: if you want to maximize search performance,
+			// you can optionally call optimize here.  This can be
+			// a costly operation, so generally it's only worth
+			// it when your index is relatively static (ie you're
+			// done adding documents to it):
+			//
+			// writer.optimize();
+
+			writer.close();
+
+			Date end = new Date();
+			System.out.println(end.getTime() - start.getTime() + " total milliseconds");
+
+		} catch (IOException e) {
+			System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
+		}
+	}
+
 	public static void main(String[] args) {
 		//	indexDelimitedFile
 	}
@@ -340,7 +380,33 @@ public class LuceneIndexFiles {
 			writer.addDocument(doc);
 		}
 		dr.close();
+	}
 
+	static void indexDocs(IndexWriter writer, String file, int[] indexColumn, int[] pathColumn) throws IOException {
+		DelimitedReader dr = new DelimitedReader(file);
+		String[] l;
+		int count = 0;
+		while ((l = dr.read()) != null) {
+			//			if (count++ > 10000)
+			//				break;
+			Document doc = new Document();
+			StringBuilder sbp = new StringBuilder();
+			for (int a : pathColumn) {
+				String path = l[a];
+				sbp.append(path).append("\t");
+			}
+			Field pathField = new Field("path", sbp.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+			pathField.setOmitTermFreqAndPositions(true);
+			doc.add(pathField);
+			//doc.add(new Field("contents", new StringReader(l[indexColumn])));
+			StringBuilder sb = new StringBuilder();
+			for (int x : indexColumn) {
+				sb.append(l[x] + " ");
+			}
+			doc.add(new Field("contents", sb.toString(), Field.Store.YES, Field.Index.ANALYZED));
+			writer.addDocument(doc);
+		}
+		dr.close();
 	}
 
 	public static void searchDelimitedFile(String dirIndex, List<String> list_query, String output) {
