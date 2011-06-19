@@ -346,8 +346,37 @@ public class ForLearning {
 		}
 		getSectionStuff_help(usedsectionId, in + ".tokens", out + ".tokens");
 		getSectionStuff_help(usedsectionId, in + ".ner", out + ".ner");
-		getSectionStuff_help(usedsectionId, in + ".pos", out + ".pos");
-		getSectionStuff_help(usedsectionId, in + ".deps", out + ".deps");
+		//		getSectionStuff_help(usedsectionId, in + ".pos", out + ".pos");
+		//		getSectionStuff_help(usedsectionId, in + ".deps", out + ".deps"); 
+	}
+
+	static void getShowOff4Jude(String file_match, String file_tokens, String output) throws IOException {
+		String file_match_sort = file_match + ".sbsid";
+		Sort.sort(file_match, file_match_sort, Main.dir, new Comparator<String[]>() {
+			@Override
+			public int compare(String[] arg0, String[] arg1) {
+				// TODO Auto-generated method stub
+				return Integer.parseInt(arg0[0]) - Integer.parseInt(arg1[0]);
+			}
+		});
+		DelimitedReader dr = new DelimitedReader(file_match_sort);
+		DelimitedReader drs = new DelimitedReader(file_tokens);
+		DelimitedWriter dw = new DelimitedWriter(output);
+		String[] l;
+		String[] sentence = drs.read();
+		while ((l = dr.read()) != null) {
+			int sid = Integer.parseInt(l[0]);
+			while (sentence != null && sentence.length > 0 && Integer.parseInt(sentence[0]) < sid) {
+				sentence = drs.read();
+			}
+			//sid, relation, arg1, arg2, arg1starttoken, arg1endtoken, arg2starttoken, arg2endtoken, tokens 
+			if (sentence != null && sentence.length > 0 && Integer.parseInt(sentence[0]) == sid) {
+				//31905	26589	memberOf	Theofanis Gekas	Bayer Leverkusen	0	2	3	5	PERSON	ORGANIZATION	e
+				dw.write(sid, l[2], l[3], l[4], l[5], l[6], l[7], l[8], sentence[3]);
+			}
+		}
+		dw.close();
+		dr.close();
 	}
 
 	static void getSectionStuff_help(HashSet<Integer> usedwid, String in, String out) throws IOException {
@@ -1044,7 +1073,10 @@ public class ForLearning {
 	}
 
 	public static void putHackTogether() throws IOException {
-		String[] files = new String[] { "memberof.2", "residence.city", "residence.province", "subsidiary.2" };
+		String[] files = new String[] { "memberof.2", "residence.city", "residence.province", "subsidiary.2",
+				"hasTopMemberOrEmployee", "hasEmployer.2", "attendschool.2", "spouse.2" };
+		String[] relationName = new String[] { "memberOf", "residenceInCity", "residenceInProvince", "subsidiary",
+				"hasTopMemberOrEmployee", "hasEmployer", "attendSchool", "spouse" };
 		DelimitedWriter dw = new DelimitedWriter(Main.dir + "/pairInWid");
 		HashMap<String, String[]> mid2others = new HashMap<String, String[]>();
 		{
@@ -1054,8 +1086,8 @@ public class ForLearning {
 				mid2others.put(l[0], l);
 			}
 		}
-		for (String f : files) {
-			DelimitedReader dr = new DelimitedReader(Main.dir + "/" + f);
+		for (int i = 0; i < files.length; i++) {
+			DelimitedReader dr = new DelimitedReader(Main.dir + "/" + files[i]);
 			String[] l;
 			while ((l = dr.read()) != null) {
 				String mid1 = l[0];
@@ -1068,7 +1100,7 @@ public class ForLearning {
 						String[] wid2list = s2[1].split("::");
 						for (String wid1 : wid1list) {
 							for (String wid2 : wid2list) {
-								dw.write(wid1, wid2, f,s1[3], s2[3]);
+								dw.write(wid1, wid2, relationName[i], s1[3], s2[3]);
 							}
 						}
 					} catch (Exception e) {
@@ -1086,12 +1118,12 @@ public class ForLearning {
 
 		String file_relabel_sql2instance = dir_local + "/pairInWid";
 
-
 		String dir_localdata = dir_local + "/" + name_dataset;
 		(new File(dir_localdata)).mkdir();
 
 		String file_fact_pairmentions = dir_localdata + "/factpair_mentions";
 		String file_localsentences = dir_localdata + "/sentences";
+		String file_showtojude = dir_localdata + "/sid_rel_arg1_arg2_arg1s_arg1e_arg2s_arg2e_tokens";
 		String file_pairmentions = dir_localdata + "/pair_mentions";
 		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
 
@@ -1103,40 +1135,41 @@ public class ForLearning {
 		//		relabelSql2InstanceUnionByGoldMatching(file_relation_match, file_gold_relation_match, file_sql2instance_union,
 		//				file_gold_sql2instance);
 		getSectionsContainingSomeFact(file_relabel_sql2instance, dir_globaldata + ".ner", file_fact_pairmentions);
-//		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
-//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
-//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
-//		{
-//			/**test on ontological smoothed*/
-//			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
-//			(new File(expdir)).mkdir();
-//			String traintestpairmention = expdir + "/pairmention";
-//			String trainpb = expdir + "/trainpb";
-//			String testpb = expdir + "/testpb";
-//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 1000000,
-//					traintestpairmention);
-//
-//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
-//			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
-//			//			PbReader.analyzePbData(file_trainraw + ".pb");
-//			//			PbReader.analyzePbData(file_testraw + ".pb");
-//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-//			rew.learningThenTesting();
-//		}
-//		{
-//			/**test on base line*/
-//			String expdir = dir_localdata + "/exp2_baseline";
-//			(new File(expdir)).mkdir();
-//			String traintestpairmention = expdir + "/pairmention";
-//			String trainpb = expdir + "/trainpb";
-//			String testpb = expdir + "/testpb";
-//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 1000000,
-//					traintestpairmention);
-//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
-//			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
-//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-//			rew.learningThenTesting();
-//		}
+		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
+		getShowOff4Jude(file_fact_pairmentions, file_localsentences + ".tokens", file_showtojude);
+		//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
+		//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+		//		{
+		//			/**test on ontological smoothed*/
+		//			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
+		//			(new File(expdir)).mkdir();
+		//			String traintestpairmention = expdir + "/pairmention";
+		//			String trainpb = expdir + "/trainpb";
+		//			String testpb = expdir + "/testpb";
+		//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 1000000,
+		//					traintestpairmention);
+		//
+		//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+		//			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
+		//			//			PbReader.analyzePbData(file_trainraw + ".pb");
+		//			//			PbReader.analyzePbData(file_testraw + ".pb");
+		//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+		//			rew.learningThenTesting();
+		//		}
+		//		{
+		//			/**test on base line*/
+		//			String expdir = dir_localdata + "/exp2_baseline";
+		//			(new File(expdir)).mkdir();
+		//			String traintestpairmention = expdir + "/pairmention";
+		//			String trainpb = expdir + "/trainpb";
+		//			String testpb = expdir + "/testpb";
+		//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 1000000,
+		//					traintestpairmention);
+		//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+		//			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
+		//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+		//			rew.learningThenTesting();
+		//		}
 	}
 
 	public static void manualPairLevel(String expdir) throws IOException {
@@ -1162,11 +1195,22 @@ public class ForLearning {
 
 	}
 
+	public static void judePairs(String input, String output) throws IOException {
+		DelimitedReader dr = new DelimitedReader(input);
+		String[] l;
+		while ((l = dr.read()) != null) {
+
+		}
+		dr.close();
+	}
+
 	public static void main(String[] args) throws IOException {
-		//putHackTogether();
-		//oneFigure(Main.dirwikidump + "/sentences", Main.dir, "wikidata");
+		putHackTogether();
+		oneFigure(Main.dirwikidump + "/sentences", Main.dir, "wikidata");
 		oneFigure(Main.dir_nytdump + "/sentences", Main.dir, "nytdata");
+		oneFigure(Main.dir_tacdump + "/sentences", Main.dir, "tacdata");
 		//	manualPairLevel(Main.dir+"/iter2/nytdata/exp1_ontologicalsmooth");
+
 	}
 
 }

@@ -7,6 +7,7 @@ public class Main {
 	static String dirfb = "/projects/pardosa/s5/clzhang/freebase";
 	static String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
 	static String pdir = "/projects/pardosa/s5/clzhang/ontologylink";
+	static String dir_tacdump = "/projects/pardosa/s5/clzhang/tackbp/tacdump";
 	
 	static {
 		if (!(new File(dir)).exists()) {
@@ -14,6 +15,7 @@ public class Main {
 			dirfb = "o:/unix" + dirfb;
 			dirwikidump = "o:/unix" + dirwikidump;
 			pdir = "o:/unix" + pdir;
+			dir_tacdump= "o:/unix" +dir_tacdump;
 		}
 	}
 	static String dir_nytdump = pdir + "/nytdump";
@@ -36,7 +38,8 @@ public class Main {
 	static String file_tactext = "/projects/pardosa/s5/raphaelh/tac/data/sentences.text";
 	static String file_tacmeta = "/projects/pardosa/s5/raphaelh/tac/data/sentences.meta";
 	static String file_tacsplit_template = "/projects/pardosa/data$DNUM$/clzhang/tmp/wp/tac.part";
-	static String file_parsedtac = "/projects/pardosa/s5/clzhang/tackbp/tacdump/sentences";
+	
+	static String file_parsedtac = dir_tacdump+"/sentences";
 	static String[] datas = new String[] { "13", "13", "13", "13", "13", "13", "13", "13", //p07
 		"15", "15", "15", "15", "15", "15", "15"//p08
 	};
