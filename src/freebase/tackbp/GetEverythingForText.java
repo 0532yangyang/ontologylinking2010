@@ -11,10 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 import multir.util.FileOperations;
+import multir.util.delimited.Sort;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTagger;
 import opennlp.tools.postag.POSTaggerME;
@@ -325,20 +327,6 @@ public class GetEverythingForText {
 		return s;
 	}
 
-	public static void mergeOneKind(String suffix, String outputFile) throws IOException {
-		DelimitedWriter dw = new DelimitedWriter(outputFile + suffix);
-		for (int i = 0; i < Main.datas.length; i++) {
-			String input = Main.fout_wexsplit_template.replace("$DNUM$", Main.datas[i]) + i;
-			DelimitedReader dr = new DelimitedReader(input + suffix);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				dw.write(l);
-			}
-			dr.close();
-		}
-		dw.close();
-	}
-
 	//	public static void main(String[] args) throws IOException {
 	//		mergeOneKind(".deps", Main.file_parsed_wikisections);
 	//		mergeOneKind(".ner", Main.file_parsed_wikisections);
@@ -347,7 +335,7 @@ public class GetEverythingForText {
 	//	}
 	static int[] previousLargestId;
 
-	public static void mainX(String[] args) throws IOException {
+	public static void merge_main() throws IOException {
 
 		//		String inputFile = args[0];
 		//		int numChunks = 100;
@@ -378,7 +366,7 @@ public class GetEverythingForText {
 
 	private static void mergeAlignID(String suffix) throws IOException {
 		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(Main.file_parsedtac + suffix), "utf-8"));
+				new FileOutputStream(Main.file_parsedtac + suffix+".temp"), "utf-8"));
 		for (int i = 0; i < Main.datas.length; i++) {
 			String fname = Main.file_tacsplit_template.replace("$DNUM$", Main.datas[i]) + i;
 			DelimitedReader r1 = new DelimitedReader(fname + ".ids");
@@ -403,8 +391,8 @@ public class GetEverythingForText {
 	}
 
 	private static void mergeNer() throws IOException {
-		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Main.file_parsedtac
-				+ ".ner"), "utf-8"));
+		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(Main.file_parsedtac + ".ner.temp"), "utf-8"));
 		for (int i = 0; i < Main.datas.length; i++) {
 			String fname = Main.file_tacsplit_template.replace("$DNUM$", Main.datas[i]) + i;
 			//BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(fname + ".ner"), "utf-8"));
@@ -423,11 +411,24 @@ public class GetEverythingForText {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-		//giveParagraphId();
-		//split();
-		parseChunk(Integer.parseInt(args[0]));
+	static void sort(String suffix) throws IOException {
+		Sort.sort(Main.file_parsedtac + suffix + ".temp", Main.file_parsedtac + suffix, Main.dir,
+				new Comparator<String[]>() {
 
+					@Override
+					public int compare(String[] o1, String[] o2) {
+						// TODO Auto-generated method stub
+						return Integer.parseInt(o1[0])- Integer.parseInt(o2[0]);
+					}
+				});
+	}
+
+	public static void main(String[] args) throws IOException {
+		//		split();
+		//		parseChunk(Integer.parseInt(args[0]));
+		//merge_main();
+		sort(".ner");
+		sort(".tokens");
 	}
 
 }
