@@ -5,36 +5,38 @@ import java.util.Collections;
 import java.util.List;
 
 public class MySparseVector {
-	List<Integer> dim  =new ArrayList<Integer>();
+	List<Integer> dim = new ArrayList<Integer>();
 	List<Double> val = new ArrayList<Double>();
-	
-	private boolean sorted  = false; 
-	public MySparseVector(){
-		
+
+	private boolean sorted = false;
+
+	public MySparseVector() {
+
 	}
-	
-	public MySparseVector(double v, List<Integer> dimension){
+
+	public MySparseVector(double v, List<Integer> dimension) {
 		Collections.sort(dimension);
 		dim = dimension;
-		for(int i=0;i<dim.size();i++){
+		for (int i = 0; i < dim.size(); i++) {
 			val.add(v);
 		}
 	}
-	
-	public void add(int d, double v){
+
+	public void add(int d, double v) {
 		sorted = false;
 		dim.add(d);
 		val.add(v);
 	}
-	
-	public void sortByDim(){
-		double []d = new double[dim.size()];
-		for(int i = 0;i<dim.size();i++)d[i] = dim.get(i);
-		int []index = QuickSort.quicksort(d);
-		List<Integer> dimtemp  =new ArrayList<Integer>();
+
+	public void sortByDim() {
+		double[] d = new double[dim.size()];
+		for (int i = 0; i < dim.size(); i++)
+			d[i] = dim.get(i);
+		int[] index = QuickSort.quicksort(d);
+		List<Integer> dimtemp = new ArrayList<Integer>();
 		List<Double> valtemp = new ArrayList<Double>();
-		for(int k=0;k<index.length;k++){
-			dimtemp.add( dim.get(index[k]));
+		for (int k = 0; k < index.length; k++) {
+			dimtemp.add(dim.get(index[k]));
 			valtemp.add(val.get(index[k]));
 		}
 		dim = null;
@@ -42,9 +44,17 @@ public class MySparseVector {
 		dim = dimtemp;
 		val = valtemp;
 	}
-	
-	public List<Integer> getDims(){
+
+	public List<Integer> getDims() {
 		return this.dim;
 	}
-	
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int d : dim) {
+			sb.append(d + " ");
+		}
+		return sb.toString();
+	}
+
 }

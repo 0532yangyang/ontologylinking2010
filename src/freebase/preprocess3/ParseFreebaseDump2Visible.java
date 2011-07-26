@@ -442,58 +442,122 @@ public class ParseFreebaseDump2Visible {
 
 	public static void filter() throws IOException {
 		//get mid to enid
-//		HashSet<String> wikimid = new HashSet<String>();
-//		{
-//			DelimitedWriter dw = new DelimitedWriter(Main.file_mid2wid);
-//			DelimitedReader dr = new DelimitedReader(Main.file_fbdump_2_len4);
-//			String[] l;
-//			while ((l = dr.read()) != null) {
-//				if (l[1].equals("/type/object/key") && l[2].equals("/wikipedia/en_id")) {
-//					dw.write(l[0], l[3]);
-//					wikimid.add(l[0]);
-//				}
-//			}
-//			dr.close();
-//			dw.close();
-//			D.p("wiki id size is", wikimid.size());
-//		}
-//		DelimitedWriter dw = new DelimitedWriter(Main.file_visible + ".filter");
-//		{
-//			DelimitedReader dr = new DelimitedReader(Main.file_visible);
-//			String[] l;
-//			int count = 0, write = 0;
-//			while ((l = dr.read()) != null) {
-//				count++;
-//				if (count % 100000 == 0) {
-//					D.p("count vs write", count, write);
-//				}
-//				String rel = l[2];
-//				if (rel.startsWith("/type") || rel.startsWith("/user") || rel.startsWith("/common")
-//						|| rel.startsWith("/base")) {
-//					continue;
-//				}
-//				if (l[0].startsWith("s") && !wikimid.contains(l[1])) {
-//					continue;
-//				}
-//				if (l[0].startsWith("j") && (!wikimid.contains(l[1]) || !wikimid.contains(l[3]))) {
-//					continue;
-//				}
-//				dw.write(l);
-//				write++;
-//			}
-//
-//		}
-//		dw.close();
-		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid", Main.dir,
+		//		HashSet<String> wikimid = new HashSet<String>();
+		//		{
+		//			DelimitedWriter dw = new DelimitedWriter(Main.file_mid2wid);
+		//			DelimitedReader dr = new DelimitedReader(Main.file_fbdump_2_len4);
+		//			String[] l;
+		//			while ((l = dr.read()) != null) {
+		//				if (l[1].equals("/type/object/key") && l[2].equals("/wikipedia/en_id")) {
+		//					dw.write(l[0], l[3]);
+		//					wikimid.add(l[0]);
+		//				}
+		//			}
+		//			dr.close();
+		//			dw.close();
+		//			D.p("wiki id size is", wikimid.size());
+		//		}
+		//		DelimitedWriter dw = new DelimitedWriter(Main.file_visible + ".filter");
+		//		{
+		//			DelimitedReader dr = new DelimitedReader(Main.file_visible);
+		//			String[] l;
+		//			int count = 0, write = 0;
+		//			while ((l = dr.read()) != null) {
+		//				count++;
+		//				if (count % 100000 == 0) {
+		//					D.p("count vs write", count, write);
+		//				}
+		//				String rel = l[2];
+		//				if (rel.startsWith("/type") || rel.startsWith("/user") || rel.startsWith("/common")
+		//						|| rel.startsWith("/base")) {
+		//					continue;
+		//				}
+		//				if (l[0].startsWith("s") && !wikimid.contains(l[1])) {
+		//					continue;
+		//				}
+		//				if (l[0].startsWith("j") && (!wikimid.contains(l[1]) || !wikimid.contains(l[3]))) {
+		//					continue;
+		//				}
+		//				dw.write(l);
+		//				write++;
+		//			}
+		//
+		//		}
+		//		dw.close();
+		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid", Main.dir,
+		//				new Comparator<String[]>() {
+		//
+		//					@Override
+		//					public int compare(String[] arg0, String[] arg1) {
+		//						// TODO Auto-generated method stub
+		//						return arg0[1].compareTo(arg1[1]);
+		//					}
+		//
+		//				});
+		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
+		//				new Comparator<String[]>() {
+		//
+		//					@Override
+		//					public int compare(String[] arg0, String[] arg1) {
+		//						// TODO Auto-generated method stub
+		//						return arg0[3].compareTo(arg1[3]);
+		//					}
+		//
+		//				});
+		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
 				new Comparator<String[]>() {
 
 					@Override
 					public int compare(String[] arg0, String[] arg1) {
 						// TODO Auto-generated method stub
-						return arg0[1].compareTo(arg1[1]);
+						return arg0[2].compareTo(arg1[2]);
 					}
 
 				});
+	}
+
+	public static void idlize1() throws IOException {
+		DelimitedReader dr = new DelimitedReader(Main.file_visible + ".filter.sbrel");
+		HashMap<String, Integer> map_rel2myid = new HashMap<String, Integer>();
+		HashMap<String, Integer> map_mid2myid = new HashMap<String, Integer>();
+		DelimitedWriter dwmatrix = new DelimitedWriter(Main.file_graph_matrix);
+		DelimitedWriter dwstring = new DelimitedWriter(Main.file_graph_string);
+		DelimitedWriter dwrelid = new DelimitedWriter(Main.file_graph_rel2myid);
+		DelimitedWriter dwmidid = new DelimitedWriter(Main.file_graph_mid2myid);
+
+		String[] l;
+		while ((l = dr.read()) != null) {
+			if (!map_rel2myid.containsKey(l[2])) {
+				map_rel2myid.put(l[2], map_rel2myid.size() + 1);
+			}
+			if (!map_mid2myid.containsKey(l[1])) {
+				map_mid2myid.put(l[1], map_mid2myid.size() + 1);
+			}
+			if (l[0].startsWith("s")) {
+				int relid = map_rel2myid.get(l[2]);
+				int mid1 = map_mid2myid.get(l[1]);
+				dwstring.write(mid1, l[3], relid);
+			} else {
+				if (!map_mid2myid.containsKey(l[3])) {
+					map_mid2myid.put(l[3], map_mid2myid.size() + 1);
+				}
+				int relid = map_rel2myid.get(l[2]);
+				int mid1 = map_mid2myid.get(l[1]);
+				int mid2 = map_mid2myid.get(l[3]);
+				dwmatrix.write(mid1, mid2, relid);
+			}
+		}
+		dr.close();
+		for (Entry<String, Integer> e : map_rel2myid.entrySet()) {
+			dwrelid.write(e.getKey(), e.getValue());
+		}
+		for (Entry<String, Integer> e : map_mid2myid.entrySet()) {
+			dwmidid.write(e.getKey(), e.getValue());
+		}
+		dwmatrix.close();
+		dwstring.close();
+		dwrelid.close();
+		dwmidid.close();
 	}
 
 	public static void luceneIndexMid() {
@@ -666,8 +730,9 @@ public class ParseFreebaseDump2Visible {
 		//getVisible4();
 		//merge();
 		//filter();
+		idlize1();
 		//get_notable_type();
-		getMidWidNames();
+		//getMidWidNames();
 
 	}
 }

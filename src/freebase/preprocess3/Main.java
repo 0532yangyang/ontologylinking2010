@@ -22,8 +22,15 @@ public class Main {
 	static String file_fbdump_3_str_noh_sb1 = file_fbdump_3_str + ".nohidden.sb1";
 
 	static String file_visible = dir + "/visible";
+	static String file_visible_filter = dir + "/visible.filter";
 	static String file_visible_str = dir + "/visible_str";
 	static String file_visible_jump = dir + "/visible_jump";
+
+	static String file_graph_matrix = dir + "/graph.matrix";//format: relid, myid1, myid2
+	static String file_graph_string = dir + "/graph.string";//format: relid, myid1, stringvalue;
+	static String file_graph_mid2myid = dir + "/graph.mid2myid";
+	static String file_graph_rel2myid = dir + "/graph.rel2myid";
+	
 
 	static String file_mid2wid = dir + "/mid2wid";
 	static String file_mid2notabletype = dir + "/mid2notabletype";

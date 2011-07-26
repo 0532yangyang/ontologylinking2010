@@ -11,6 +11,21 @@ public class QuickSort {
 		return index;
 	}
 
+	public static int[] quicksort(double[] main, boolean inverse) {
+		int[] index = new int[main.length];
+		for (int i = 0; i < main.length; i++) {
+			index[i] = i;
+		}
+		if (!inverse) {
+			quicksort(main, index, 0, index.length - 1);
+		}else{
+			double []temp = new double[main.length];
+			for(int i=0;i<main.length;i++)temp[i] = -1.0*main[i];
+			quicksort(temp, index, 0, index.length - 1);
+		}
+		return index;
+	}
+
 	// quicksort a[left] to a[right]
 	public static void quicksort(double[] a, int[] index, int left, int right) {
 		if (right <= left)
