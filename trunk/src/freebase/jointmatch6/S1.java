@@ -413,11 +413,11 @@ public class S1 {
 		/** Use freebase engine to get raw nellstring 2 fb enurl */
 
 		{
-			//			getraw1();
-			//			getraw2();
-			//			step1();
-			//			step2(Main.file_fbsearch3, Main.file_fbsearchmatch);
-			//step3(Main.file_fbsearchmatch, Main.file_fbsearchcandidate);
+			getraw1();
+			getraw2();
+			step1();
+			step2(Main.file_fbsearch3, Main.file_fbsearchmatch);
+			step3(Main.file_fbsearchmatch, Main.file_fbsearchcandidate);
 			step4(Main.file_fbsearchcandidate, Main.file_fbsql2instances);
 		}
 		//		subsetWikiSenWikilink(Main.file_wksensubset, Main.file_wklinksub);

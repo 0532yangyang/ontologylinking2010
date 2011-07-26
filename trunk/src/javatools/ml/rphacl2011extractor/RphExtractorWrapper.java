@@ -275,8 +275,8 @@ public class RphExtractorWrapper {
 			dw.close();
 		}
 		test.reset();
-		PrintStream ps = new PrintStream(expdir + "/results");
-		ResultWriter.eval(expdir + "/mapping", test, params, ps);
-		ps.close();
+//		PrintStream ps = new PrintStream(expdir + "/results");
+//		ResultWriter.eval(expdir + "/mapping", test, params, ps);
+//		ps.close();
 	}
 }

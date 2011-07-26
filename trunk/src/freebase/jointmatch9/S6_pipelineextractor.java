@@ -1,26 +1,25 @@
-package freebase.jointmatch8;
+package freebase.jointmatch9;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import multir.preprocess.RelationECML;
+import multir.util.delimited.Sort;
 
 import cc.factorie.protobuf.DocumentProtos.Relation;
 import cc.factorie.protobuf.DocumentProtos.Relation.Builder;
@@ -30,187 +29,135 @@ import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
-import javatools.filehandlers.PbReader;
 import javatools.ml.rphacl2011extractor.RphExtractorWrapper;
-import javatools.mydb.StringTable;
-import multir.preprocess.RelationECML;
-import multir.util.delimited.Sort;
 
-public class S7 {
-	//	static void s0_give_article_id() throws IOException {
-	//		{
-	//			String dir = "/projects/pardosa/s5/clzhang/ontologylink/wikidump/";
-	//			String output = "/projects/pardosa/s5/clzhang/ontologylink/wikidump/sid_wid_tokens_pos";
-	//			DelimitedReader dr = new DelimitedReader(dir + "/wexsections_wid_sectionid_title_section");
-	//
-	//			DelimitedReader rpos = new DelimitedReader(dir + "/sentences.pos");
-	//			DelimitedWriter wpos = new DelimitedWriter(dir + "/sentences.pos.wid");
-	//			DelimitedReader rner = new DelimitedReader(dir + "/sentences.ner");
-	//			DelimitedWriter wner = new DelimitedWriter(dir + "/sentences.ner.wid");
-	//			DelimitedReader rdeps = new DelimitedReader(dir + "/sentences.deps");
-	//			DelimitedWriter wdeps = new DelimitedWriter(dir + "/sentences.deps.wid");
-	//			int[] sid2wid = new int[25000000];
-	//			{
-	//				String[] l;
-	//				int largestSid = 0;
-	//				while ((l = dr.read()) != null) {
-	//					int wid = Integer.parseInt(l[0]);
-	//					int sid = Integer.parseInt(l[1]);
-	//					sid2wid[sid] = wid;
-	//					if (sid > largestSid) {
-	//						largestSid = sid;
-	//					}
-	//				}
-	//				D.p(largestSid);
-	//			}
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.tokens");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.pos");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.ner");
-	//			s0_give_article_id_help(sid2wid, dir + "/sentences.deps");
-	//
-	//			wpos.close();
-	//			wner.close();
-	//			wdeps.close();
-	//		}
-	//	}
-	//
-	//	static void s0_give_article_id_help(int[] sid2wid, String in) throws IOException {
-	//		{
-	//			DelimitedReader rtoken = new DelimitedReader(in);
-	//			DelimitedWriter wtoken = new DelimitedWriter(in + ".wid");
-	//			String[] l;
-	//			while ((l = rtoken.read()) != null) {
-	//				int sid = Integer.parseInt(l[0]);
-	//				int wid = sid2wid[sid];
-	//				String[] w = new String[l.length + 1];
-	//				System.arraycopy(l, 0, w, 0, l.length);
-	//				w[l.length] = wid + "";
-	//				wtoken.write(w);
-	//			}
-	//			wtoken.close();
-	//		}
-	//	}
+public class S6_pipelineextractor {
 
-	public static void splitFeaturizedpbToTrainTest(String in, String out) throws IOException {
-		InputStream is = new GZIPInputStream(new BufferedInputStream(new FileInputStream(in)));
-		OutputStream ostrain = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(out + ".train")));
-		OutputStream ostest = new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(out + ".test")));
-		Relation r = null;
-
-		Random ran = new Random();
-		while ((r = Relation.parseDelimitedFrom(is)) != null) {
-			Builder relBuilder1 = Relation.newBuilder();
-			Builder relBuilder2 = Relation.newBuilder();
-
-			relBuilder1.setRelType(r.getRelType());
-			relBuilder1.setSourceGuid(r.getSourceGuid());
-			relBuilder1.setDestGuid(r.getDestGuid());
-			relBuilder2.setRelType(r.getRelType());
-			relBuilder2.setSourceGuid(r.getSourceGuid());
-			relBuilder2.setDestGuid(r.getDestGuid());
-			for (int i = 0; i < r.getMentionCount(); i++) {
-				RelationMentionRef rmf = r.getMention(i);
-				//int filename =
-				double a = ran.nextDouble();
-				if (a > 0.7) {//test 30%
-					relBuilder2.addMention(rmf);
-				} else {
-					relBuilder1.addMention(rmf);
-				}
-			}
-			if (relBuilder1.getMentionList() != null && relBuilder1.getMentionCount() > 0) {
-				relBuilder1.build().writeDelimitedTo(ostrain);
-			}
-			if (relBuilder2.getMentionList() != null && relBuilder2.getMentionCount() > 0) {
-				relBuilder2.build().writeDelimitedTo(ostest);
-			}
-		}
-		ostrain.close();
-		ostest.close();
-	}
-
-	static void getpositivepairs(String pairfile, String file_matches_uniqpairs, String output_positive_pairs)
+	public static void relabel_sql2instance_byview(String input_view, String input_sql2instance, String output)
 			throws IOException {
-		DelimitedWriter dw = new DelimitedWriter(output_positive_pairs);
-		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
+		HashMap<String, String> mid2type = new HashMap<String, String>();
+		//HashMap<String,Integer>mid2wid = new HashMap<String,Integer>();
 		{
-			D.p("load name2wid");
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type_clean);
+			/**load mid 2 type*/
+			DelimitedReader dr = new DelimitedReader(Main.file_mid_wid_type_name_alias);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[3]);
-				String[] names = l[4].split(" ");
-				for (String n : names) {
-					name2wid.put(n.toLowerCase(), wid);
-				}
+				mid2type.put(l[0], l[2]);
+				//mid2wid.put(l[0],Integer.parseInt(l[1]));
 			}
+			dr.close();
 		}
-		HashMap<Integer, List<String>> arg1ToRel = new HashMap<Integer, List<String>>();
-		HashMap<Integer, List<String>> arg2ToRel = new HashMap<Integer, List<String>>();
+		HashMap<String, String> view2nellrel = new HashMap<String, String>();
 		{
-			BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(pairfile)));
-			String l = null;
-			while ((l = r.readLine()) != null) {
-				String[] c = l.split("\t");
-				int arg1 = Integer.parseInt(c[0]);
-				int arg2 = Integer.parseInt(c[1]);
-				c[2] = c[2].replace("_inverse", "");
-				String rel = c[0] + "\t" + c[1] + "\t" + c[2];
-				List<String> l1 = arg1ToRel.get(arg1);
-				if (l1 == null) {
-					l1 = new ArrayList<String>(1);
-					arg1ToRel.put(arg1, l1);
-				}
-				l1.add(rel);
-				List<String> l2 = arg2ToRel.get(arg2);
-				if (l2 == null) {
-					l2 = new ArrayList<String>(1);
-					arg2ToRel.put(arg2, l2);
-				}
-				l2.add(rel);
-			}
-			r.close();
-		}
-		{
-			DelimitedReader dr = new DelimitedReader(file_matches_uniqpairs);
+			DelimitedReader dr = new DelimitedReader(input_view);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				String arg1 = l[0].toLowerCase().trim().replaceAll(" ", "_");
-				String arg2 = l[1].toLowerCase().trim().replaceAll(" ", "_");
-				if (name2wid.containsKey(arg1) && name2wid.containsKey(arg2)) {
-					int wid1 = name2wid.get(arg1);
-					int wid2 = name2wid.get(arg2);
-					List<String> arg1rels = arg1ToRel.get(wid1);
-					List<String> arg2rels = arg2ToRel.get(wid2);
-					if (arg1rels == null || arg2rels == null) {
-						continue;
-					}
-					arg1rels.retainAll(arg2rels);
-
-					HashSet<String> relTypes = new HashSet<String>();
-					for (String rel : arg1rels) {
-						String[] c = rel.split("\t");
-						relTypes.add(c[2]);
-					}
-					StringBuilder sb = new StringBuilder();
-					for (String rt : relTypes) {
-						if (sb.length() > 1)
-							sb.append(",");
-						sb.append(rt);
-					}
-					if (wid1 != wid2 && sb.length() > 0) {
-						dw.write(l[0], l[1], wid1, wid2, sb);
-					}
+				//1513	bookWriter	/book/written_work/author	/en/author	/book/book
+				view2nellrel.put(l[2] + "::" + l[3] + "::" + l[4], l[1] + "::" + l[0]);
+			}
+			dr.close();
+		}
+		{
+			//process sql2instance line by line
+			DelimitedReader dr = new DelimitedReader(input_sql2instance);
+			DelimitedWriter dw = new DelimitedWriter(output);
+			String[] l;
+			// /m/01000j	/m/09nqf	/location/location/containedby||/location/country/currency_used	/m/09c7w0
+			while ((l = dr.read()) != null) {
+				String arg1type = mid2type.get(l[0]);
+				String arg2type = mid2type.get(l[1]);
+				if (arg1type == null || arg2type == null)
+					continue;
+				if(l[2].equals("/sports/sports_team/championships")){
+					//D.p(l[2]);
+				}
+				String key = l[2] + "::" + arg1type + "::" + arg2type;
+				String nellrel = view2nellrel.get(key);
+				if (nellrel != null) {
+					String[] viewid_nellrel = nellrel.split("::");
+					dw.write(l[0], l[1], l[2], viewid_nellrel[0], viewid_nellrel[1]);
 				}
 			}
 			dr.close();
+			dw.close();
+		}
+	}
+
+
+	
+	public static void oneFigure(String dir_globaldata, String dir_local,//global dir about text; 
+			String input_relabel_instances, //relabeled instances after ontology matching
+			String name_dataset) throws IOException {
+
+		/**two outside input files, file_relation_match & sql2instance_union*/
+		D.p("start doing RE on ", name_dataset);
+		String file_seedwidpairs = dir_local + "/seedwidpairs";
+
+		String dir_localdata = dir_local + "/" + name_dataset;
+		(new File(dir_localdata)).mkdir();
+
+		String file_fact_pairmentions = dir_localdata + "/factpair_mentions";
+		String file_localsentences = dir_localdata + "/sentences";
+		String file_pairmentions = dir_localdata + "/pair_mentions";
+		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+
+		String file_fact = dir_localdata + "/fact";
+		String file_trainraw = dir_localdata + "/sampletrain";
+		String file_testraw = dir_localdata + "/sampletest";
+
+//		getSeedPairs(file_seedwidpairs);
+//		getSectionsContainingSomeFact(file_seedwidpairs, input_relabel_instances, dir_globaldata + ".ner",
+//				file_fact_pairmentions);
+//		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
+//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
+//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+//		{
+//			/**test on ontological smoothed*/
+//			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
+//			(new File(expdir)).mkdir();
+//			String traintestpairmention = expdir + "/pairmention";
+//			String trainpb = expdir + "/trainpb";
+//			String testpb = expdir + "/testpb";
+//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
+//					traintestpairmention);
+//			relabelTestByGoldMatching(input_relabel_instances, traintestpairmention + ".test", traintestpairmention
+//					+ ".goldtest");
+//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+//			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
+//			//			PbReader.analyzePbData(file_trainraw + ".pb");
+//			//			PbReader.analyzePbData(file_testraw + ".pb");
+//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+//			rew.learningThenTesting();
+//		}
+		{
+			/**test on base line*/
+			String expdir = dir_localdata + "/exp2_baseline";
+			(new File(expdir)).mkdir();
+			String traintestpairmention = expdir + "/pairmention";
+			String trainpb = expdir + "/trainpb";
+			String testpb = expdir + "/testpb";
+			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 200000, 200000,
+					traintestpairmention);
+			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
+			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			rew.learningThenTesting();
+		}
+	}
+
+	static void getSeedPairs(String file_seedwidpairs) throws IOException {
+		DelimitedWriter dw = new DelimitedWriter(file_seedwidpairs);
+		for (NellRelation nr : Main.no.nellRelationList) {
+			for (String[] s : nr.seedInstances) {
+				dw.write(s[0], s[1], nr.relation_name);
+			}
 		}
 		dw.close();
 	}
 
 	static void getSectionsContainingSomeFact(String seedfile, String pairfile, String sentencener,
 			String output_wid_sid_contain_relation) throws IOException {
-		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
+		HashMap<String, String> name2mid = new HashMap<String, String>();
 		//		{
 		//			DelimitedReader dr = new DelimitedReader(Main.file_goldmapping);
 		//			String[] l;
@@ -219,14 +166,14 @@ public class S7 {
 		//			}
 		//		}
 		{
-			D.p("load name2wid");
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type_clean);
+			D.p("load name2mid");
+			DelimitedReader dr = new DelimitedReader(Main.file_mid_wid_type_name_alias);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[3]);
-				String[] names = l[4].split(" ");
+				String mid = l[0];
+				String[] names = l[4].split("::");
 				for (String n : names) {
-					name2wid.put(n.toLowerCase(), wid);
+					name2mid.put(n.toLowerCase(), mid);
 				}
 			}
 		}
@@ -235,9 +182,9 @@ public class S7 {
 			DelimitedReader dr = new DelimitedReader(pairfile);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int c1 = Integer.parseInt(l[0]);
-				int c2 = Integer.parseInt(l[1]);
-				String rel = l[2];
+				String c1 = l[0];
+				String c2 = l[1];
+				String rel = l[3];
 				//				if (!relationsToConsider.contains(rel)) {
 				//					continue;
 				//				}
@@ -274,16 +221,19 @@ public class S7 {
 			//				D.p(count, worthconsiderwid.size());
 			//			}
 			int sid = Integer.parseInt(b.get(0)[0]);
+			if(sid==213){
+				//D.p(sid);
+			}
 			int sectionId = Integer.parseInt(b.get(0)[2]);
 			for (int i = 0; i < b.size(); i++) {
 				for (int j = i + 1; j < b.size(); j++) {
 					String arg1 = b.get(i)[5]; //is it really 4?
 					String arg2 = b.get(j)[5];
-					String arg1check = arg1.replaceAll(" ", "_").toLowerCase();
-					String arg2check = arg2.replaceAll(" ", "_").toLowerCase();
-					if (name2wid.containsKey(arg1check) && name2wid.containsKey(arg2check)) {
-						int c1 = name2wid.get(arg1check);
-						int c2 = name2wid.get(arg2check);
+					String arg1check = arg1.toLowerCase();
+					String arg2check = arg2.toLowerCase();
+					if (name2mid.containsKey(arg1check) && name2mid.containsKey(arg2check)) {
+						String c1 = name2mid.get(arg1check);
+						String c2 = name2mid.get(arg2check);
 						//sid, wid, arg1, arg2, arg1pos[0], arg1pos[1], arg2pos[0],arg2pos[1],arg1ner, arg2ner
 						if (facts.containsKey(c1 + "\t" + c2)) {
 							String rel = facts.get(c1 + "\t" + c2);
@@ -311,52 +261,6 @@ public class S7 {
 		}
 		dw.close();
 	}
-
-	//
-	//	static void getArticlesContainingSomeFact2(String file_positive_pairs, String sentencener,
-	//			String output_sentenceid_contain_relation) throws IOException {
-	//		HashMap<String, String[]> argpair_relation = new HashMap<String, String[]>();
-	//		{
-	//			List<String[]> all = (new DelimitedReader(file_positive_pairs)).readAll();
-	//			for (String[] a : all) {
-	//				argpair_relation.put(a[0] + "\t" + a[1], a);
-	//			}
-	//		}
-	//		{
-	//			DelimitedWriter dwdebug = new DelimitedWriter(output_sentenceid_contain_relation + ".debug");
-	//			DelimitedReader dr = new DelimitedReader(sentencener);
-	//			List<String[]> b;
-	//			HashSet<Integer> worthconsiderwid = new HashSet<Integer>();
-	//			int count = 0;
-	//			while ((b = dr.readBlock(0)) != null) {
-	//				if (count++ % 100000 == 0) {
-	//					D.p(count, worthconsiderwid.size());
-	//				}
-	//				int sid = Integer.parseInt(b.get(0)[0]);
-	//				int wid = Integer.parseInt(b.get(0)[1]);
-	//				for (int i = 0; i < b.size(); i++) {
-	//					for (int j = i + 1; j < b.size(); j++) {
-	//						String arg1 = b.get(i)[4];
-	//						String arg2 = b.get(j)[4];
-	//						if (argpair_relation.containsKey(arg1 + "\t" + arg2)
-	//								|| argpair_relation.containsKey(arg2 + "\t" + arg1)) {
-	//							worthconsiderwid.add(wid);
-	//							dwdebug.write(wid, arg1, arg2);
-	//							//							if (worthconsidersid.size() > 100)
-	//							//								break;
-	//						}
-	//					}
-	//				}
-	//			}
-	//			dwdebug.close();
-	//			DelimitedWriter dw = new DelimitedWriter(output_sentenceid_contain_relation);
-	//			for (int x : worthconsiderwid) {
-	//				dw.write(x);
-	//			}
-	//			dw.close();
-	//		}
-	//
-	//	}
 
 	static void getSectionStuff(String file_sid_secid_contain_relation, String in, String out) throws IOException {
 		HashSet<Integer> usedsectionId = new HashSet<Integer>();
@@ -790,44 +694,7 @@ public class S7 {
 		wtrain.close();
 		wtest.close();
 	}
-
-	public static void relabelSql2InstanceUnionByGoldMatching(String file_my_relationmatch,
-			String file_gold_relationmatch, String file_sql2instance_union, String file_gold_sql2union)
-			throws IOException {
-		//first get a selected aftermatch
-		DelimitedWriter dw = new DelimitedWriter(file_gold_sql2union);
-		HashSet<String> gold = new HashSet<String>();
-		{
-			List<String[]> all = (new DelimitedReader(file_gold_relationmatch)).readAll();
-			for (String[] l : all) {
-				if (l[0].equals("1")) {
-					gold.add(l[1] + "\t" + l[2]);
-				}
-			}
-		}
-		HashMap<Integer, String> urid2nellrel = new HashMap<Integer, String>();
-		{
-			List<String[]> all = (new DelimitedReader(file_my_relationmatch)).readAll();
-			for (String[] l : all) {
-				if (gold.contains(l[0] + "\t" + l[3])) {
-					urid2nellrel.put(Integer.parseInt(l[1]), l[0]);
-				}
-			}
-		}
-		{
-			DelimitedReader dr = new DelimitedReader(file_sql2instance_union);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				int urid = Integer.parseInt(l[4]);
-				if (urid2nellrel.containsKey(urid)) {
-					dw.write(l[0], l[1], urid2nellrel.get(urid), urid);
-				}
-			}
-			dr.close();
-		}
-		dw.close();
-	}
-
+	
 	public static void relabelTestByGoldMatching(String file_gold_sql2instanceunion,//gold sql2instance
 			String test_pairmention_oldlabel,//test pairs with my ontology matching label
 			String test_pairmention_gold//test pairs with gold ontology matching label
@@ -837,20 +704,20 @@ public class S7 {
 			DelimitedReader dr = new DelimitedReader(file_gold_sql2instanceunion);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				goldfacts.put(l[0] + "\t" + l[1], l[2]);
+				goldfacts.put(l[0] + "\t" + l[1], l[3]);
 			}
 			dr.close();
 		}
-		HashMap<String, Integer> name2wid = new HashMap<String, Integer>();
+		HashMap<String, String> name2mid = new HashMap<String, String>();
 		{
-			D.p("load name2wid");
-			DelimitedReader dr = new DelimitedReader(Main.file_gnid_mid_enurl_wid_title_type_clean);
+			D.p("load name2mid");
+			DelimitedReader dr = new DelimitedReader(Main.file_mid_wid_type_name_alias);
 			String[] l;
 			while ((l = dr.read()) != null) {
-				int wid = Integer.parseInt(l[3]);
-				String[] names = l[4].split(" ");
+				String mid = l[0];
+				String[] names = l[4].split("::");
 				for (String n : names) {
-					name2wid.put(n.toLowerCase(), wid);
+					name2mid.put(n.toLowerCase(), mid);
 				}
 			}
 		}
@@ -863,8 +730,8 @@ public class S7 {
 				String oldrel = l[2];
 				String name1 = l[3];
 				String name2 = l[4];
-				Integer id1 = name2wid.get(name1.toLowerCase().replace(" ", "_"));
-				Integer id2 = name2wid.get(name2.toLowerCase().replace(" ", "_"));
+				String id1 = name2mid.get(name1.toLowerCase());
+				String id2 = name2mid.get(name2.toLowerCase());
 				if (goldfacts.containsKey(id1 + "\t" + id2)) {
 					String newrel = goldfacts.get(id1 + "\t" + id2);
 					l[2] = newrel;
@@ -884,7 +751,6 @@ public class S7 {
 		}
 
 	}
-
 	public static void createpb(String file_sentence, String file_pairmentions, String tempdir, String output)
 			throws IOException {
 
@@ -986,7 +852,7 @@ public class S7 {
 		// sort by arg1, arg2
 		Sort.sort(output, output + ".sorted", tempdir, new Comparator<String[]>() {
 			public int compare(String[] t1, String[] t2) {
-				return S7.compare(t1, t2);
+				return S6_pipelineextractor.compare(t1, t2);
 			}
 		});
 
@@ -1017,17 +883,6 @@ public class S7 {
 
 	}
 
-	private static RelationMentionRef createMention(String[] l) {
-		RelationMentionRef.Builder mntBuilder = RelationMentionRef.newBuilder();
-		mntBuilder.setFilename(l[3] + "\t" + l[4]);
-		mntBuilder.setSourceId(0);
-		mntBuilder.setDestId(0);
-		String[] fts = l[5].split("\n");
-		for (String ft : fts)
-			mntBuilder.addFeature(ft);
-		return mntBuilder.build();
-	}
-
 	private static int compare(String[] a, String[] b) {
 		return compare(a[0], a[1], b[0], b[1]);
 	}
@@ -1040,185 +895,21 @@ public class S7 {
 		return c2;
 	}
 
-	//	static HashSet<String> relationsToConsider = new HashSet<String>();
-
-	static void getSeedPairs(String file_seedwidpairs) throws IOException {
-		DelimitedWriter dw = new DelimitedWriter(file_seedwidpairs);
-		for (NellRelation nr : Main.no.nellRelationList) {
-			for (String[] s : nr.seedInstances) {
-				dw.write(s[0], s[1], nr.relation_name);
-			}
-		}
-		dw.close();
-	}
-
-	static void get_relabel_sql2instance(String file_relmatchres,//relation match result
-			String file_sql2instance_union,//sql 2 instance union
-			String file_relabel_sql2instance) throws IOException {
-		DelimitedWriter dw = new DelimitedWriter(file_relabel_sql2instance);
-		HashMap<Integer, String> urid2nellrel = new HashMap<Integer, String>();
-		{
-			List<String[]> all = (new DelimitedReader(file_relmatchres)).readAll();
-			for (String[] l : all) {
-				urid2nellrel.put(Integer.parseInt(l[1]), l[0]);
-			}
-		}
-		{
-			DelimitedReader dr = new DelimitedReader(file_sql2instance_union);
-			String[] l;
-			while ((l = dr.read()) != null) {
-				int urid = Integer.parseInt(l[4]);
-				if (urid2nellrel.containsKey(urid)) {
-					dw.write(l[0], l[1], urid2nellrel.get(urid), urid);
-				}
-			}
-			dr.close();
-		}
-		dw.close();
-	}
-
-	public static void oneFigure(String dir_globaldata, String dir_local, String name_dataset) throws IOException {
-
-		/**two outside input files, file_relation_match & sql2instance_union*/
-		String file_relation_match = dir_local + "/afterrelmatch_relmatchres";
-		String file_sql2instance_union = dir_local + "/sql2instance_union";
-		
-		String file_seedwidpairs = dir_local + "/seedwidpairs";
-		String file_relabel_sql2instance = dir_local + "/relabel_sql2instance";
-		String file_gold_relation_match = Main.dir + "/mycreateontology/gold_relmatchres";
-		String file_gold_sql2instance = dir_local + "/gold_sql2instance";
-
-		String dir_localdata = dir_local + "/" + name_dataset;
-		(new File(dir_localdata)).mkdir();
-
-		String file_fact_pairmentions = dir_localdata + "/factpair_mentions";
-		String file_localsentences = dir_localdata + "/sentences";
-		String file_pairmentions = dir_localdata + "/pair_mentions";
-		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
-
-		String file_fact = dir_localdata + "/fact";
-		String file_trainraw = dir_localdata + "/sampletrain";
-		String file_testraw = dir_localdata + "/sampletest";
-
-		getSeedPairs(file_seedwidpairs);
-		get_relabel_sql2instance(file_relation_match, file_sql2instance_union, file_relabel_sql2instance);
-		relabelSql2InstanceUnionByGoldMatching(file_relation_match, file_gold_relation_match, file_sql2instance_union,
-				file_gold_sql2instance);
-		getSectionsContainingSomeFact(file_seedwidpairs, file_relabel_sql2instance, dir_globaldata + ".ner",
-				file_fact_pairmentions);
-		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
-		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
-		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
-		{
-			/**test on ontological smoothed*/
-			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
-			(new File(expdir)).mkdir();
-			String traintestpairmention = expdir + "/pairmention";
-			String trainpb = expdir + "/trainpb";
-			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 10000, 10000,
-					traintestpairmention);
-			relabelTestByGoldMatching(file_gold_sql2instance, traintestpairmention + ".test", traintestpairmention
-					+ ".goldtest");
-			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
-			//			PbReader.analyzePbData(file_trainraw + ".pb");
-			//			PbReader.analyzePbData(file_testraw + ".pb");
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
-		}
-		{
-			/**test on base line*/
-			String expdir = dir_localdata + "/exp2_baseline";
-			(new File(expdir)).mkdir();
-			String traintestpairmention = expdir + "/pairmention";
-			String trainpb = expdir + "/trainpb";
-			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 100000,
-					traintestpairmention);
-			relabelTestByGoldMatching(file_gold_sql2instance, traintestpairmention + ".test", traintestpairmention
-					+ ".goldtest");
-			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
-		}
+	private static RelationMentionRef createMention(String[] l) {
+		RelationMentionRef.Builder mntBuilder = RelationMentionRef.newBuilder();
+		mntBuilder.setFilename(l[3] + "\t" + l[4]);
+		mntBuilder.setSourceId(0);
+		mntBuilder.setDestId(0);
+		String[] fts = l[5].split("\n");
+		for (String ft : fts)
+			mntBuilder.addFeature(ft);
+		return mntBuilder.build();
 	}
 
 	public static void main(String[] args) throws IOException {
-		//oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/iter1", "wikidata");
-		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/iter1", "nytdata");
-	}
-
-	public static void main2(String[] args) throws IOException {
-		//String dirwikidump = "/projects/pardosa/s5/clzhang/ontologylink/wikidump";
-		//String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch2/wikisection";
-
-		String dir_wikisection = Main.dir_wikisection;
-		(new File(dir_wikisection)).mkdir();
-
-		String file_relmatchres = Main.file_afterrelmatch_relmatchres;
-
-		String file_sql2instance_union = Main.file_sql2instance_union;
-
-		String file_seedwidpairs = dir_wikisection + "/seedwidpairs";
-		String file_relabel_sql2instance = dir_wikisection + "/relabel_sql2instance";
-		String file_fact_pairmentions = dir_wikisection + "/factpair_mentions";
-		String file_localsentences = dir_wikisection + "/sentences";
-		String file_pairmentions = dir_wikisection + "/pair_mentions";
-		String file_fact = dir_wikisection + "/fact";
-		String file_trainraw = dir_wikisection + "/sampletrain";
-		String file_testraw = dir_wikisection + "/sampletest";
-		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
-
-		getSeedPairs(file_seedwidpairs);
-		get_relabel_sql2instance(file_relmatchres, file_sql2instance_union, file_relabel_sql2instance);
-
-		getSectionsContainingSomeFact(file_seedwidpairs, file_relabel_sql2instance, Main.file_globalsentences + ".ner",
-				file_fact_pairmentions);
-		getSectionStuff(file_fact_pairmentions, Main.file_globalsentences, file_localsentences);
-		createAllPairToConsider(Main.dir_wikisection + "/sentences.ner", file_fact_pairmentions, file_pairmentions);
-		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
-		{
-			/**test on ontological smoothed*/
-			String expdir = Main.dir_wikisection + "/exp1_ontologicalsmooth";
-			(new File(expdir)).mkdir();
-			String traintestpairmention = expdir + "/pairmention";
-			String trainpb = expdir + "/trainpb";
-			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 100000,
-					traintestpairmention);
-			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
-			//			PbReader.analyzePbData(file_trainraw + ".pb");
-			//			PbReader.analyzePbData(file_testraw + ".pb");
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
-		}
-		{
-			/**test on base line*/
-			String expdir = Main.dir_wikisection + "/exp2_baseline";
-			(new File(expdir)).mkdir();
-			String traintestpairmention = expdir + "/pairmention";
-			String trainpb = expdir + "/trainpb";
-			String testpb = expdir + "/testpb";
-			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 100000, 100000,
-					traintestpairmention);
-			createpb(file_localsentences, traintestpairmention + ".train", Main.dir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", Main.dir, testpb);
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
-		}
-		{
-			/**Test on gold data, i.e. no NA*/
-			//		createpb(file_localsentences, file_fact_pairmentions, dir, file_fact);
-			//			splitFeaturizedpbToTrainTest(file_fact + ".pb", file_fact + ".pb");
-			//			String expdir = dir + "/exp3";
-			//			(new File(expdir)).mkdir();
-			//			RphExtractorWrapper rew = new RphExtractorWrapper(file_fact + ".pb.train", file_fact + ".pb.test", expdir);
-			//			rew.learningThenTesting();
-		}
-		//eval(file_pairmentions);
-
+//		relabel_sql2instance_byview(Main.file_jointclause + ".relaxlabel.view", Main.file_fbsql2instances,
+//				Main.file_relabel_sql2instance);
+//		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "nytdata");
+		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "wikidata");
 	}
 }

@@ -22,6 +22,32 @@ import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 
 public class StringTable {
+	public static int compare(String[] t1, String[] t2) throws Exception {
+		if (t1.length != t2.length) {
+			throw new Exception("compare different length string arrays");
+		}
+		for (int i = 0; i < t1.length; i++) {
+			int x = t1[i].compareTo(t2[i]);
+			if (x != 0) {
+				return x;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(String[] t1, String[] t2, int start, int end) throws Exception {
+		if (t1.length != t2.length) {
+			throw new Exception("compare different length string arrays");
+		}
+		for (int i = start; i < end; i++) {
+			int x = t1[i].compareTo(t2[i]);
+			if (x != 0) {
+				return x;
+			}
+		}
+		return 0;
+	}
+
 	/**
 	 * select some columns are then uniq -c put the size at column 0
 	 */
@@ -244,8 +270,10 @@ public class StringTable {
 		if (b.size() > 0)
 			result.add(b);
 		return result;
-
 	}
+	
+
+
 
 	public static void shuffleLargeFile(String file, String dir, String output) throws IOException {
 		String tempfile = file + ".shuffletemp";
@@ -319,7 +347,7 @@ public class StringTable {
 		}
 		map.get(key).add(value);
 	}
-	
+
 	public static void mapKey2SetAdd(HashMap<String, List<String>> map, String key, String value, boolean isList) {
 		if (!map.containsKey(key)) {
 			map.put(key, new ArrayList<String>());
