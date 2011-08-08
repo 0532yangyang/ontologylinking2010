@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch10;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +65,6 @@ public class S1_generatecandidate {
 			List<String> res = FBSearchEngine.query2(a, 10);
 			for (String enid : res) {
 				dw.write(a, enid);
-				dw.flush();
 			}
 		}
 		dw.close();
@@ -555,7 +554,7 @@ public class S1_generatecandidate {
 							//b: /m/07b_l, /m/010005, /m/09c7w0, stateLocatedInCountry::Texas::United States, /location/location/contains
 							String key = b[4] + b[2] + b[0] + b[1] + b[2];
 							if (!temp.contains(key)) {
-								dw.write(b[3], b[4] + "||" + s[2], b[0], b[2], b[1]);
+								dw.write(b[3], b[4] + "||" + s[2], b[0], b[1], b[2]);
 								temp.add(key);
 								count++;
 							}
@@ -747,12 +746,11 @@ public class S1_generatecandidate {
 
 	static int varid = 1;
 
-	
 	public static void main(String[] args) throws Exception {
 
 		{
-			/**Time cost from getraw1 to step4 is half hour*/
-			//getraw1();
+//			/**Time cost from getraw1 to step4 is half hour*/
+			getraw1();
 			getraw2(3);
 			/**step1 is to get A,B pair to match in good format for matching see file_fbsearch3*/
 			step1();
@@ -761,18 +759,18 @@ public class S1_generatecandidate {
 			/**extend A,B in file_fbsearch3 into all potential A,C,B*/
 			len2step0(Main.file_fbsearch3, Main.file_fbsearch4);
 			len2step1(Main.file_fbsearch4, Main.file_fbsearchmatch_len2);
-			/**match known negative seeds*/
-			knownNegativeMatch();
+
 			/**get candidate*/
 			step3_get_relation_candidate(Main.file_fbsearchmatch_len1, Main.file_fbsearchmatch_len2,
 					Main.file_relationmatch_candidate);
 			step3_get_entity_candidate(Main.file_fbsearch2, Main.file_entitymatch_candidate);
 			step3_get_type_candidate(Main.file_fbsearch2, Main.file_typematch_candidate);
-			/**from candidate to instances*/
+			/**match known negative seeds*/
+			knownNegativeMatch();
+//			/**from candidate to instances*/
 			QueryFBGraph qfb = new QueryFBGraph();
 			qfb.getNewEntitiesWithOntologyMapping(Main.file_relationmatch_candidate, Main.file_fbsql2instances);
 		}
-		//		subsetWikiSenWikilink(Main.file_wksensubset, Main.file_wklinksub);
 	}
 
 }

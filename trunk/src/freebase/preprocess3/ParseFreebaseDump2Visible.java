@@ -440,70 +440,70 @@ public class ParseFreebaseDump2Visible {
 		dw.close();
 	}
 
-	public static void filter() throws IOException {
+	public static void filter_old() throws IOException {
 		//get mid to enid
-		//		HashSet<String> wikimid = new HashSet<String>();
-		//		{
-		//			DelimitedWriter dw = new DelimitedWriter(Main.file_mid2wid);
-		//			DelimitedReader dr = new DelimitedReader(Main.file_fbdump_2_len4);
-		//			String[] l;
-		//			while ((l = dr.read()) != null) {
-		//				if (l[1].equals("/type/object/key") && l[2].equals("/wikipedia/en_id")) {
-		//					dw.write(l[0], l[3]);
-		//					wikimid.add(l[0]);
-		//				}
-		//			}
-		//			dr.close();
-		//			dw.close();
-		//			D.p("wiki id size is", wikimid.size());
-		//		}
-		//		DelimitedWriter dw = new DelimitedWriter(Main.file_visible + ".filter");
-		//		{
-		//			DelimitedReader dr = new DelimitedReader(Main.file_visible);
-		//			String[] l;
-		//			int count = 0, write = 0;
-		//			while ((l = dr.read()) != null) {
-		//				count++;
-		//				if (count % 100000 == 0) {
-		//					D.p("count vs write", count, write);
-		//				}
-		//				String rel = l[2];
-		//				if (rel.startsWith("/type") || rel.startsWith("/user") || rel.startsWith("/common")
-		//						|| rel.startsWith("/base")) {
-		//					continue;
-		//				}
-		//				if (l[0].startsWith("s") && !wikimid.contains(l[1])) {
-		//					continue;
-		//				}
-		//				if (l[0].startsWith("j") && (!wikimid.contains(l[1]) || !wikimid.contains(l[3]))) {
-		//					continue;
-		//				}
-		//				dw.write(l);
-		//				write++;
-		//			}
-		//
-		//		}
-		//		dw.close();
-		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid", Main.dir,
-		//				new Comparator<String[]>() {
-		//
-		//					@Override
-		//					public int compare(String[] arg0, String[] arg1) {
-		//						// TODO Auto-generated method stub
-		//						return arg0[1].compareTo(arg1[1]);
-		//					}
-		//
-		//				});
-		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
-		//				new Comparator<String[]>() {
-		//
-		//					@Override
-		//					public int compare(String[] arg0, String[] arg1) {
-		//						// TODO Auto-generated method stub
-		//						return arg0[3].compareTo(arg1[3]);
-		//					}
-		//
-		//				});
+		HashSet<String> wikimid = new HashSet<String>();
+		{
+			DelimitedWriter dw = new DelimitedWriter(Main.file_mid2wid);
+			DelimitedReader dr = new DelimitedReader(Main.file_fbdump_2_len4);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				if (l[1].equals("/type/object/key") && l[2].equals("/wikipedia/en_id")) {
+					dw.write(l[0], l[3]);
+					wikimid.add(l[0]);
+				}
+			}
+			dr.close();
+			dw.close();
+			D.p("wiki id size is", wikimid.size());
+		}
+		DelimitedWriter dw = new DelimitedWriter(Main.file_visible + ".filter");
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_visible);
+			String[] l;
+			int count = 0, write = 0;
+			while ((l = dr.read()) != null) {
+				count++;
+				if (count % 100000 == 0) {
+					D.p("count vs write", count, write);
+				}
+				String rel = l[2];
+				if (rel.startsWith("/type") || rel.startsWith("/user") || rel.startsWith("/common")
+						|| rel.startsWith("/base")) {
+					continue;
+				}
+				if (l[0].startsWith("s") && !wikimid.contains(l[1])) {
+					continue;
+				}
+				if (l[0].startsWith("j") && (!wikimid.contains(l[1]) || !wikimid.contains(l[3]))) {
+					continue;
+				}
+				dw.write(l);
+				write++;
+			}
+
+		}
+		dw.close();
+		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid", Main.dir,
+				new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] arg0, String[] arg1) {
+						// TODO Auto-generated method stub
+						return arg0[1].compareTo(arg1[1]);
+					}
+
+				});
+		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
+				new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] arg0, String[] arg1) {
+						// TODO Auto-generated method stub
+						return arg0[3].compareTo(arg1[3]);
+					}
+
+				});
 		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
 				new Comparator<String[]>() {
 
@@ -516,7 +516,92 @@ public class ParseFreebaseDump2Visible {
 				});
 	}
 
+	public static void filter() throws IOException {
+		//get mid to enid
+		HashSet<String> wikimid = new HashSet<String>();
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_midWidTypeNameAlias);
+			String[] l;
+			while ((l = dr.read()) != null) {
+				wikimid.add(l[0]);
+			}
+			dr.close();
+			D.p("wiki id size is", wikimid.size());
+		}
+		DelimitedWriter dw = new DelimitedWriter(Main.file_visible + ".filter");
+		{
+			DelimitedReader dr = new DelimitedReader(Main.file_visible);
+			//DelimitedReader dr = new DelimitedReader(Main.dir+"/temp");
+			String[] l;
+			int count = 0, write = 0;
+			while ((l = dr.read()) != null) {
+				count++;
+				if(l[3].equals("/m/06x68")){
+					D.p(l[3]);
+				}
+				if (count % 100000 == 0) {
+					D.p("count vs write", count, write);
+				}
+				String rel = l[2];
+				if (rel.startsWith("/type/") || rel.startsWith("/user/") || rel.startsWith("/common/")
+						|| rel.startsWith("/base/")) {
+					continue;
+				}
+				if (l[0].startsWith("s") && !wikimid.contains(l[1])) {
+					continue;
+				}
+				if (l[0].startsWith("j") && (!wikimid.contains(l[1]) || !wikimid.contains(l[3]))) {
+					continue;
+				}
+				dw.write(l);
+				write++;
+			}
+
+		}
+		dw.close();
+		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid", Main.dir,
+				new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] arg0, String[] arg1) {
+						// TODO Auto-generated method stub
+						return arg0[1].compareTo(arg1[1]);
+					}
+
+				});
+//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
+//				new Comparator<String[]>() {
+//
+//					@Override
+//					public int compare(String[] arg0, String[] arg1) {
+//						// TODO Auto-generated method stub
+//						return arg0[3].compareTo(arg1[3]);
+//					}
+//
+//				});
+//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
+//				new Comparator<String[]>() {
+//
+//					@Override
+//					public int compare(String[] arg0, String[] arg1) {
+//						// TODO Auto-generated method stub
+//						return arg0[2].compareTo(arg1[2]);
+//					}
+//
+//				});
+	}
+
 	public static void idlize1() throws IOException {
+		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
+				new Comparator<String[]>() {
+
+					@Override
+					public int compare(String[] arg0, String[] arg1) {
+						// TODO Auto-generated method stub
+						return arg0[2].compareTo(arg1[2]);
+					}
+
+				});
 		DelimitedReader dr = new DelimitedReader(Main.file_visible + ".filter.sbrel");
 		HashMap<String, Integer> map_rel2myid = new HashMap<String, Integer>();
 		HashMap<String, Integer> map_mid2myid = new HashMap<String, Integer>();

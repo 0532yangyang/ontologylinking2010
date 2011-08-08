@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch11;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -53,7 +53,8 @@ public class S6_pipelineextractor {
 			String[] l;
 			while ((l = dr.read()) != null) {
 				//1513	bookWriter	/book/written_work/author	/en/author	/book/book
-				view2nellrel.put(l[2] + "::" + l[3] + "::" + l[4], l[1] + "::" + l[0]);
+				//view2nellrel.put(l[2] + "::" + l[3] + "::" + l[4], l[1] + "::" + l[0]);
+				view2nellrel.put(l[2], l[1] + "::" + l[0]);
 			}
 			dr.close();
 		}
@@ -71,7 +72,7 @@ public class S6_pipelineextractor {
 				if(l[2].equals("/sports/sports_team/championships")){
 					//D.p(l[2]);
 				}
-				String key = l[2] + "::" + arg1type + "::" + arg2type;
+				String key = l[2];// + "::" + arg1type + "::" + arg2type;
 				String nellrel = view2nellrel.get(key);
 				if (nellrel != null) {
 					String[] viewid_nellrel = nellrel.split("::");

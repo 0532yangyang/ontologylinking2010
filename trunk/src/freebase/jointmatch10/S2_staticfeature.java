@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch10;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,8 +91,7 @@ public class S2_staticfeature {
 						//						List<String> t2 = StringUtil.tokenize(nellname, new char[] { '_', ' ' });
 						int[] par_return = new int[2];
 						int sharewords = StringUtil.numOfShareWords(fn, nellname, par_return);
-						double value = sharewords;
-						//double value = sharewords * 1.0 / Math.max(par_return[0], par_return[1]);
+						double value = sharewords * 1.0 / Math.max(par_return[0], par_return[1]);
 						if (value > maxvalue)
 							maxvalue = value;
 					}
@@ -167,8 +166,7 @@ public class S2_staticfeature {
 				//					D.p(nelltypename);
 				//				}
 				int sharewords = StringUtil.numOfShareWords(t1, t2, new boolean[]{true,true,true});
-				double value = sharewords;
-				//double value = sharewords * 1.0 / t1.size();
+				double value = sharewords * 1.0 / t1.size();
 				values.add(new FeatureValue("TYPENAME", value));
 			}
 		}
@@ -224,8 +222,7 @@ public class S2_staticfeature {
 				//					D.p(nelltypename);
 				//				}
 				int sharewords = StringUtil.numOfShareWords(t1, t2,new boolean[]{true,true,true});
-				double value = sharewords;
-				//double value = sharewords * 1.0 / t1.size();
+				double value = sharewords * 1.0 / t1.size();
 				values.add(new FeatureValue("RELNAME", value));
 			}
 		}

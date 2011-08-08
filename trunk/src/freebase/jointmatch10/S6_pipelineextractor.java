@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch10;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -68,7 +68,7 @@ public class S6_pipelineextractor {
 				String arg2type = mid2type.get(l[1]);
 				if (arg1type == null || arg2type == null)
 					continue;
-				if(l[2].equals("/sports/sports_team/championships")){
+				if (l[2].equals("/sports/sports_team/championships")) {
 					//D.p(l[2]);
 				}
 				String key = l[2] + "::" + arg1type + "::" + arg2type;
@@ -83,14 +83,13 @@ public class S6_pipelineextractor {
 		}
 	}
 
-
-	
 	public static void oneFigure(String dir_globaldata, String dir_local,//global dir about text; 
 			String input_relabel_instances, //relabeled instances after ontology matching
 			String name_dataset) throws IOException {
 
 		/**two outside input files, file_relation_match & sql2instance_union*/
 		D.p("start doing RE on ", name_dataset);
+		(new File(dir_local)).mkdir();
 		String file_seedwidpairs = dir_local + "/seedwidpairs";
 
 		String dir_localdata = dir_local + "/" + name_dataset;
@@ -221,7 +220,7 @@ public class S6_pipelineextractor {
 			//				D.p(count, worthconsiderwid.size());
 			//			}
 			int sid = Integer.parseInt(b.get(0)[0]);
-			if(sid==213){
+			if (sid == 213) {
 				//D.p(sid);
 			}
 			int sectionId = Integer.parseInt(b.get(0)[2]);
@@ -694,7 +693,7 @@ public class S6_pipelineextractor {
 		wtrain.close();
 		wtest.close();
 	}
-	
+
 	public static void relabelTestByGoldMatching(String file_gold_sql2instanceunion,//gold sql2instance
 			String test_pairmention_oldlabel,//test pairs with my ontology matching label
 			String test_pairmention_gold//test pairs with gold ontology matching label
@@ -751,6 +750,7 @@ public class S6_pipelineextractor {
 		}
 
 	}
+
 	public static void createpb(String file_sentence, String file_pairmentions, String tempdir, String output)
 			throws IOException {
 
@@ -907,7 +907,7 @@ public class S6_pipelineextractor {
 	}
 
 	public static void main(String[] args) throws IOException {
-		relabel_sql2instance_byview(Main.file_jointclause + ".gs.view", Main.file_fbsql2instances,
+		relabel_sql2instance_byview(Main.file_jointclause + ".relaxlabel.view", Main.file_fbsql2instances,
 				Main.file_relabel_sql2instance);
 		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "nytdata");
 		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "wikidata");

@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch10;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +15,90 @@ import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.mydb.StringTable;
 
+class Assignment {
+	//	List<String> nellnamelist = new ArrayList<String>();
+	//	List<List<Integer>> mgVarIdList = new ArrayList<List<Integer>>();
+	//	List<List<Double>> mgProbList = new ArrayList<List<Double>>();
+	HashMap<Integer, Double> varId2TrueProb = new HashMap<Integer, Double>();
 
+	public void add(String nellname, List<Integer> varIdOneMg, List<Double> probOneMg) {
+		//		nellnamelist.add(nellname);
+		//		mgVarIdList.add(varIdOneMg);
+		//		mgProbList.add(probOneMg);
+		for (int i = 0; i < varIdOneMg.size(); i++) {
+			varId2TrueProb.put(varIdOneMg.get(i), probOneMg.get(i));
+		}
+	}
+}
+
+class MatchGroup {
+	String nellname;
+	String matchtype; //relation; type; entity
+	List<Integer> variables = new ArrayList<Integer>();
+	List<String> variables_str = new ArrayList<String>();
+	List<Double> staticweights = new ArrayList<Double>();
+	List<Double> dynamicweights = new ArrayList<Double>();
+
+	public MatchGroup(String nellname, String matchtype) {
+		this.nellname = nellname;
+		this.matchtype = matchtype;
+	}
+
+	public void addCandidate(int varId, String varStr, double w) {
+		variables_str.add(varStr);
+		variables.add(varId);
+		staticweights.add(w);
+	}
+
+	public void assignmentByStaticWeight(List<Integer> varList, List<Double> probList) {
+		double[] dis = new double[variables.size()];
+		double sum = 0;
+		for (int i = 0; i < variables.size(); i++) {
+			double delta = 1.0 / Math.exp(-1 * staticweights.get(i) + 0.1);
+			dis[i] = delta;
+			sum += dis[i];
+		}
+		for (int i = 0; i < dis.length; i++)
+			dis[i] /= sum;
+		int[] index = QuickSort.quicksort(dis, true);
+		for (int i = 0; i < index.length; i++) {
+			varList.add(variables.get(index[i]));
+			probList.add(dis[index[i]]);
+		}
+		//D.p(variables_str.get(index[0]),dis[index[0]]);
+	}
+
+	public void assignmentByDynamicWeight(List<Integer> varList, List<Double> probList) {
+		if (this.nellname.equals("David Heckerman")) {
+			D.p("a");
+		}
+		double[] dis = new double[variables.size()];
+		double[] normalweight = new double[variables.size()];
+		double wmax = 1, probsum = 0;
+		for (int i = 0; i < variables.size(); i++) {
+			double w = staticweights.get(i) + dynamicweights.get(i);
+			normalweight[i] = w;
+			//wmax = Math.max(Math.abs(w), wmax);
+		}
+		for (int i = 0; i < normalweight.length; i++) {
+			double w = normalweight[i];
+			double delta = 1.0 / (Math.exp(-1 * w) + 0.1);
+			dis[i] = delta;
+			probsum += dis[i];
+		}
+		for (int i = 0; i < dis.length; i++)
+			dis[i] /= probsum;
+		int[] index = QuickSort.quicksort(dis, true);
+		for (int i = 0; i < index.length; i++) {
+			varList.add(variables.get(index[i]));
+			probList.add(dis[index[i]]);
+		}
+	}
+
+	public String toString() {
+		return nellname + "-->" + variables_str + " " + staticweights;
+	}
+}
 
 public class S5_relaxlabel {
 	static HashMap<Integer, String> varId2Name = new HashMap<Integer, String>();

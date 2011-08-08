@@ -1,4 +1,4 @@
-package freebase.jointmatch9;
+package freebase.jointmatch11;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -667,8 +667,11 @@ public class S1_generatecandidate {
 		HashMap<String, Set<String>> pair_evidence = new HashMap<String, Set<String>>();
 		while ((l = dr.read()) != null) {
 			String entityname = l[0];
+			if(l[0].contains("John Abizaid")){
+				D.p("a");
+			}
 			Set<String> entityclass = Main.no.entity2class.get(entityname);
-			if (entityclass.contains("writer")) {
+			if (entityclass.contains("attendedSchool")) {
 				D.p(entityname, l[3]);
 			}
 			entityclass.remove("NEG_NA");
@@ -761,13 +764,18 @@ public class S1_generatecandidate {
 			/**extend A,B in file_fbsearch3 into all potential A,C,B*/
 			len2step0(Main.file_fbsearch3, Main.file_fbsearch4);
 			len2step1(Main.file_fbsearch4, Main.file_fbsearchmatch_len2);
-			/**match known negative seeds*/
-			knownNegativeMatch();
+
 			/**get candidate*/
 			step3_get_relation_candidate(Main.file_fbsearchmatch_len1, Main.file_fbsearchmatch_len2,
 					Main.file_relationmatch_candidate);
 			step3_get_entity_candidate(Main.file_fbsearch2, Main.file_entitymatch_candidate);
+			
 			step3_get_type_candidate(Main.file_fbsearch2, Main.file_typematch_candidate);
+			
+			/**match known negative seeds*/
+			knownNegativeMatch();
+			
+			
 			/**from candidate to instances*/
 			QueryFBGraph qfb = new QueryFBGraph();
 			qfb.getNewEntitiesWithOntologyMapping(Main.file_relationmatch_candidate, Main.file_fbsql2instances);
