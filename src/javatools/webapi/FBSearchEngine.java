@@ -45,7 +45,7 @@ public class FBSearchEngine {
 		// "http://api.freebase.com/api/service/search?query=madonna"
 		try {
 			D.p(q);
-			//Thread.sleep(00);
+			Thread.sleep(2000);
 			String queries[] = null;
 			String q2 = PlingStemmer.stem(q);
 			if (!q2.equals(q)) {

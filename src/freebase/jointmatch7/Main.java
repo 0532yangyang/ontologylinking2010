@@ -1,9 +1,16 @@
 package freebase.jointmatch7;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DelimitedReader;
+import javatools.filehandlers.DelimitedWriter;
+import javatools.mydb.StringTable;
 
 public class Main {
 	static String dir = "/projects/pardosa/s5/clzhang/ontologylink/jointmatch7";
@@ -186,7 +193,8 @@ public class Main {
 
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
-	public static void main(String[] args) throws Exception {
 
+	public static void main(String[] args) throws Exception {
+		convertInfobox2Nell();
 	}
 }

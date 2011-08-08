@@ -47,13 +47,13 @@ public class DelimitedWriter {
 
 	public void write(Object... cols) throws IOException {
 		if (cols.length == 0)
-
 			return;
 		bw.write(DelimitedEscape.escape(cols[0].toString()));
 		for (int i = 1; i < cols.length; i++)
 			bw.write("\t" + DelimitedEscape.escape(cols[i].toString()));
 		bw.write("\n");
 	}
+
 
 	public void close() throws IOException {
 		bw.close();
