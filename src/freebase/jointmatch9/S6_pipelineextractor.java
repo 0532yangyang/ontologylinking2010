@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,6 +31,7 @@ import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
 import javatools.ml.rphacl2011extractor.RphExtractorWrapper;
+import javatools.mydb.StringTable;
 
 public class S6_pipelineextractor {
 
@@ -68,7 +70,7 @@ public class S6_pipelineextractor {
 				String arg2type = mid2type.get(l[1]);
 				if (arg1type == null || arg2type == null)
 					continue;
-				if(l[2].equals("/sports/sports_team/championships")){
+				if (l[2].equals("/sports/sports_team/championships")) {
 					//D.p(l[2]);
 				}
 				String key = l[2] + "::" + arg1type + "::" + arg2type;
@@ -83,10 +85,71 @@ public class S6_pipelineextractor {
 		}
 	}
 
+	public static void oneFigureDebug(String dir_globaldata, String dir_local,//global dir about text; 
+			String input_relabel_instances, //relabeled instances after ontology matching
+			String input_gold_instances, //gold instance by manually created mapping
+			String name_dataset) throws IOException {
 
-	
+		/**two outside input files, file_relation_match & sql2instance_union*/
+		D.p("start doing RE on ", name_dataset);
+		String file_seedwidpairs = dir_local + "/seedwidpairs";
+
+		String dir_localdata = dir_local + "/" + name_dataset;
+		(new File(dir_localdata)).mkdir();
+
+		String file_fact_pairmentions = dir_localdata + "/factpair_mentions";
+		String file_localsentences = dir_localdata + "/sentences";
+		String file_pairmentions = dir_localdata + "/pair_mentions";
+		String file_uniqpair_label_cnt = file_pairmentions + ".uniqpair_label_cnt";
+
+		String file_fact = dir_localdata + "/fact";
+		String file_trainraw = dir_localdata + "/sampletrain";
+		String file_testraw = dir_localdata + "/sampletest";
+
+		//		getSeedPairs(file_seedwidpairs);
+		//		getSectionsContainingSomeFact(file_seedwidpairs, input_relabel_instances, dir_globaldata + ".ner",
+		//				file_fact_pairmentions);
+		//		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
+		//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
+		//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+		{
+			/**test on ontological smoothed*/
+			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
+			(new File(expdir)).mkdir();
+			String traintestpairmention = expdir + "/pairmention";
+			String trainpb = expdir + "/trainpb";
+			String testpb = expdir + "/testpb";
+			//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 100000, 100000,
+			//					traintestpairmention);
+			//			relabelTestByGoldMatching(input_gold_instances, traintestpairmention + ".test", traintestpairmention
+			//					+ ".goldtest");
+			D.p("Relabel gold done");
+			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
+			//			PbReader.analyzePbData(file_trainraw + ".pb");
+			//			PbReader.analyzePbData(file_testraw + ".pb");
+			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			rew.learningThenTesting();
+		}
+		{
+			/**test on base line*/
+			//			String expdir = dir_localdata + "/exp2_baseline";
+			//			(new File(expdir)).mkdir();
+			//			String traintestpairmention = expdir + "/pairmention";
+			//			String trainpb = expdir + "/trainpb";
+			//			String testpb = expdir + "/testpb";
+			//			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 200000, 200000,
+			//					traintestpairmention);
+			//			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
+			//			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
+			//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			//			rew.learningThenTesting();
+		}
+	}
+
 	public static void oneFigure(String dir_globaldata, String dir_local,//global dir about text; 
 			String input_relabel_instances, //relabeled instances after ontology matching
+			String input_gold_instances, //gold instance by manually created mapping
 			String name_dataset) throws IOException {
 
 		/**two outside input files, file_relation_match & sql2instance_union*/
@@ -120,7 +183,7 @@ public class S6_pipelineextractor {
 			String testpb = expdir + "/testpb";
 			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
 					traintestpairmention);
-			relabelTestByGoldMatching(input_relabel_instances, traintestpairmention + ".test", traintestpairmention
+			relabelTestByGoldMatching(input_gold_instances, traintestpairmention + ".test", traintestpairmention
 					+ ".goldtest");
 			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
 			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
@@ -138,8 +201,10 @@ public class S6_pipelineextractor {
 			String testpb = expdir + "/testpb";
 			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, false, 0.9, 200000, 200000,
 					traintestpairmention);
+			relabelTestByGoldMatching(input_gold_instances, traintestpairmention + ".test", traintestpairmention
+					+ ".goldtest");
 			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
-			createpb(file_localsentences, traintestpairmention + ".test", expdir, testpb);
+			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
 			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
 			rew.learningThenTesting();
 		}
@@ -221,7 +286,7 @@ public class S6_pipelineextractor {
 			//				D.p(count, worthconsiderwid.size());
 			//			}
 			int sid = Integer.parseInt(b.get(0)[0]);
-			if(sid==213){
+			if (sid == 213) {
 				//D.p(sid);
 			}
 			int sectionId = Integer.parseInt(b.get(0)[2]);
@@ -694,7 +759,7 @@ public class S6_pipelineextractor {
 		wtrain.close();
 		wtest.close();
 	}
-	
+
 	public static void relabelTestByGoldMatching(String file_gold_sql2instanceunion,//gold sql2instance
 			String test_pairmention_oldlabel,//test pairs with my ontology matching label
 			String test_pairmention_gold//test pairs with gold ontology matching label
@@ -708,7 +773,8 @@ public class S6_pipelineextractor {
 			}
 			dr.close();
 		}
-		HashMap<String, String> name2mid = new HashMap<String, String>();
+		//HashMap<String, String> name2mid = new HashMap<String, String>();
+		HashMap<String, List<String>> name2midlist = new HashMap<String, List<String>>();
 		{
 			D.p("load name2mid");
 			DelimitedReader dr = new DelimitedReader(Main.file_mid_wid_type_name_alias);
@@ -717,7 +783,8 @@ public class S6_pipelineextractor {
 				String mid = l[0];
 				String[] names = l[4].split("::");
 				for (String n : names) {
-					name2mid.put(n.toLowerCase(), mid);
+					StringTable.mapKey2SetAdd(name2midlist, n.toLowerCase(), mid, true);
+					//name2mid.put(n.toLowerCase(), mid);
 				}
 			}
 		}
@@ -730,14 +797,41 @@ public class S6_pipelineextractor {
 				String oldrel = l[2];
 				String name1 = l[3];
 				String name2 = l[4];
-				String id1 = name2mid.get(name1.toLowerCase());
-				String id2 = name2mid.get(name2.toLowerCase());
-				if (goldfacts.containsKey(id1 + "\t" + id2)) {
-					String newrel = goldfacts.get(id1 + "\t" + id2);
-					l[2] = newrel;
-				} else {
-					l[2] = "NA";
+				List<String> id1list = name2midlist.get(name1.toLowerCase());
+				List<String> id2list = name2midlist.get(name2.toLowerCase());
+				if (l[3].equals("Amherst") && l[4].equals("Massachusetts")) {
+					//D.p(id1list + "\t" + id2list);
 				}
+				Set<String> newlabels = new HashSet<String>();
+				if (id1list != null && id2list != null) {
+					for (String id1 : id1list) {
+						for (String id2 : id2list) {
+							if (goldfacts.containsKey(id1 + "\t" + id2)) {
+								String newrel = goldfacts.get(id1 + "\t" + id2);
+								newlabels.add(newrel);
+							}
+						}
+					}
+				}
+				if (newlabels.size() == 0) {
+					l[2] = "NA";
+				} else if (newlabels.size() == 1) {
+					StringBuilder sb = new StringBuilder();
+					for (String a : newlabels) {
+						sb.append(a);
+					}
+					l[2] = sb.toString();
+				} else {
+					//don't write anything
+					//D.p(l[3],l[4],newlabels);
+					continue;
+				}
+				//				if (goldfacts.containsKey(id1 + "\t" + id2)) {
+				//					String newrel = goldfacts.get(id1 + "\t" + id2);
+				//					l[2] = newrel;
+				//				} else {
+				//					l[2] = "NA";
+				//				}
 				dw.write(l);
 				if (!l[2].equals(oldrel)) {
 					dwdebug.write("bad", oldrel, l[2], name1, name2);
@@ -751,6 +845,7 @@ public class S6_pipelineextractor {
 		}
 
 	}
+
 	public static void createpb(String file_sentence, String file_pairmentions, String tempdir, String output)
 			throws IOException {
 
@@ -906,10 +1001,42 @@ public class S6_pipelineextractor {
 		return mntBuilder.build();
 	}
 
+	public static void oneFigureNaiveTestOnSameTest(String dir_globaldata, String dir_local,//global dir about text; 
+			String input_relabel_instances, //relabeled instances after ontology matching
+			String input_gold_instances, //gold instance by manually created mapping
+			String name_dataset) throws IOException {
+
+		/**two outside input files, file_relation_match & sql2instance_union*/
+		D.p("start doing RE on ", name_dataset);
+		String file_seedwidpairs = dir_local + "/seedwidpairs";
+
+		String dir_localdata = dir_local + "/" + name_dataset;
+		(new File(dir_localdata)).mkdir();
+		{
+			/**test on ontological smoothed*/
+			String expdir = dir_localdata + "/exp1_ontologicalsmooth";
+			String orgdir = expdir.replace("pipeline_naive", "pipeline");
+			String trainpb = expdir + "/trainpb";
+			String testpb = orgdir + "/testpb";
+			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			rew.learningThenTesting();
+		}
+
+	}
+
 	public static void main(String[] args) throws IOException {
-		relabel_sql2instance_byview(Main.file_jointclause + ".gs.view", Main.file_fbsql2instances,
-				Main.file_relabel_sql2instance);
-		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "nytdata");
-		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance, "wikidata");
+		//		relabel_sql2instance_byview(Main.file_jointclause + ".gs.view", Main.file_fbsql2instances,
+		//				Main.file_relabel_sql2instance);
+		//		relabel_sql2instance_byview(Main.file_goldview, Main.file_fbsql2instances, Main.file_gold_sql2instance);
+		//relabel_sql2instance_byview(Main.file_naiveview, Main.file_fbsql2instances, Main.file_naive_sql2instance);
+		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
+				Main.file_gold_sql2instance, "wikidata");
+		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
+				Main.file_gold_sql2instance, "nytdata");
+		//		oneFigureNaiveTestOnSameTest(Main.dirwikidump + "/sentences", Main.dir + "/pipeline_naive", Main.file_naive_sql2instance,
+		//				Main.file_gold_sql2instance, "wikidata");
+		//		oneFigureNaiveTestOnSameTest(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline_naive", Main.file_naive_sql2instance,
+		//				Main.file_gold_sql2instance, "nytdata");
+
 	}
 }
