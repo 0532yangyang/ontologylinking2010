@@ -70,7 +70,8 @@ public class Main {
 	static String file_relationmatch_staticfeature = dir + "/staticfeature.relation";
 
 	static String file_jointclause = dir + "/jointclause";
-
+	static String file_goldview = dir+"/manual/goldview";
+	static String file_naiveview = dir+"/jointclause.naive.view";
 	static String file_fbsearchcandidate = dir + "/fbsearch.candidate";
 	//	static String file_fbsearchcandidate_len1 = dir + "/fbsearch.candidate.len1";
 	//	static String file_fbsearchcandidate_len2 = dir + "/fbsearch.candidate.len2";
@@ -108,6 +109,8 @@ public class Main {
 
 	/**S6*/
 	static String file_relabel_sql2instance = dir+"/relabel_sql2instance";
+	static String file_gold_sql2instance = dir+"/gold_sql2instance";
+	static String file_naive_sql2instance = dir+"/naive_sql2instance";
 	static String dir_nytdump = pdir+"/nytdump";
 
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;

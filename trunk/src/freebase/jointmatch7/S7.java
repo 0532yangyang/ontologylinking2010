@@ -1099,15 +1099,15 @@ public class S7 {
 		String file_trainraw = dir_localdata + "/sampletrain";
 		String file_testraw = dir_localdata + "/sampletest";
 
-//		getSeedPairs(file_seedwidpairs);
-//		get_relabel_sql2instance(file_relation_match, file_sql2instance_union, file_relabel_sql2instance);
-//		relabelSql2InstanceUnionByGoldMatching(file_relation_match, file_gold_relation_match, file_sql2instance_union,
-//				file_gold_sql2instance);
-//		getSectionsContainingSomeFact(file_seedwidpairs, file_relabel_sql2instance, dir_globaldata + ".ner",
-//				file_fact_pairmentions);
-//		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
-//		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
-//		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
+		getSeedPairs(file_seedwidpairs);
+		get_relabel_sql2instance(file_relation_match, file_sql2instance_union, file_relabel_sql2instance);
+		relabelSql2InstanceUnionByGoldMatching(file_relation_match, file_gold_relation_match, file_sql2instance_union,
+				file_gold_sql2instance);
+		getSectionsContainingSomeFact(file_seedwidpairs, file_relabel_sql2instance, dir_globaldata + ".ner",
+				file_fact_pairmentions);
+		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
+		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
+		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
 		{
 			/**test on ontological smoothed*/
 			String expdir = dir_localdata + "/exp1_ontologicalsmooth";

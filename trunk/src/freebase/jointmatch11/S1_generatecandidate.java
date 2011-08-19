@@ -769,9 +769,9 @@ public class S1_generatecandidate {
 			step3_get_relation_candidate(Main.file_fbsearchmatch_len1, Main.file_fbsearchmatch_len2,
 					Main.file_relationmatch_candidate);
 			step3_get_entity_candidate(Main.file_fbsearch2, Main.file_entitymatch_candidate);
-			
+
 			step3_get_type_candidate(Main.file_fbsearch2, Main.file_typematch_candidate);
-			
+
 			/**match known negative seeds*/
 			knownNegativeMatch();
 			

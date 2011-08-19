@@ -36,7 +36,8 @@ public class Main {
 	public static String file_wp_stanford = pdir + "/stanfordwiki_senid_artid_secid_token_pos_ner.sortbyArtid";
 	//static String file_fbnode = dir+"/fbnode";
 	static String file_fbnode_sbmid = pdir + "/fbnode.sbmid";
-
+	static String file_goldview = dir+"/manual/goldview";
+	static String file_gold_sql2instance = dir+"/gold_sql2instance";
 	/**S0*/
 	static String file_mid2enurl = pdir + "/mid2enurl";
 	static String file_gnid_mid_enurl_wid_title = pdir + "/gnid_mid_enurl_wid_title";
@@ -109,7 +110,8 @@ public class Main {
 	/**S6*/
 	static String file_relabel_sql2instance = dir+"/relabel_sql2instance";
 	static String dir_nytdump = pdir+"/nytdump";
-
+	static String file_naive_sql2instance = dir+"/naive_sql2instance";
+	static String file_naiveview = dir+"/jointclause.naive.view";
 	//static int PAR_NUM_PAIRS_PER_RELATION = 200;
 
 	public static void main(String[] args) throws Exception {
