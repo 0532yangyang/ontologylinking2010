@@ -181,7 +181,10 @@ public class S6_pipelineextractor {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
+			/** test this function with fake one
 			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
+					traintestpairmention);*/
+			splitPairmention2traintest_fake(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
 					traintestpairmention);
 			relabelTestByGoldMatching(input_gold_instances, traintestpairmention + ".test", traintestpairmention
 					+ ".goldtest");
@@ -615,6 +618,88 @@ public class S6_pipelineextractor {
 		is.close();
 	}
 
+	public static void splitPairmention2traintest_fake(String file_uniqpair_label_cnt, String file_pairmentions,
+			boolean takeExtended, double train_neg_ratio, int traintotal, int testtotal, String output)
+			throws IOException {
+		HashSet<String> testpairs = new HashSet<String>();
+		HashSet<String> trainpairs = new HashSet<String>();
+		DelimitedWriter wtrain = new DelimitedWriter(output + ".train");
+		DelimitedWriter wtest = new DelimitedWriter(output + ".test");
+		{
+			List<String[]> all = new ArrayList<String[]>(10000000);
+			DelimitedReader dr = new DelimitedReader(file_uniqpair_label_cnt);
+			String[] l;
+			//Mashriqi	Oudh	NA	1
+			int allnegsize = 0;
+			while ((l = dr.read()) != null) {
+				int cnt = Integer.parseInt(l[3]);
+				if (l[4].equals("s")) {
+					trainpairs.add(l[0] + "\t" + l[1]);
+				} else if (cnt > 1) {
+					all.add(l);
+					if (l[2].equals("NA")) {
+						allnegsize++;
+					}
+				}
+			}
+			D.p("all size", all.size());
+			D.p("all neg size", allnegsize);
+			Collections.shuffle(all);
+			int s = 0;
+			/**for the training, I keep at most traintotal pairs; the negative data is at most train_neg_ratio */
+			int trainnegsize = 0;
+			for (; s < all.size() * 0.7 && trainpairs.size() < traintotal; s++) {
+				l = all.get(s);
+				String rel = l[2];
+				if (rel.equals("NA")) {
+					if (trainnegsize * 1.0 / trainpairs.size() < train_neg_ratio) {
+						trainnegsize++;
+						trainpairs.add(l[0] + "\t" + l[1]);
+					}
+				} else {
+					if (takeExtended) {
+						trainpairs.add(l[0] + "\t" + l[1]);
+					}
+				}
+			}
+			/**for testing, I keep at most testtotal pairs*/
+			int testnegsize = 0;
+			for (; s < all.size() && testpairs.size() < testtotal; s++) {
+				l = all.get(s);
+				String rel = l[2];
+				if (rel.equals("NA")) {
+					if (testnegsize * 1.0 / testpairs.size() < train_neg_ratio) {
+						testnegsize++;
+						testpairs.add(l[0] + "\t" + l[1]);
+					}
+				} else {
+					if (takeExtended) {
+						testpairs.add(l[0] + "\t" + l[1]);
+					}
+				}
+			}
+			D.p("training negative", trainnegsize);
+			D.p("training pairs", trainpairs.size());
+			D.p("test pairs", testpairs.size());
+			D.p("test negative", testnegsize);
+		}
+		{
+			DelimitedReader dr = new DelimitedReader(file_pairmentions);
+			String[] l;
+			//223	24083124	NA	Aashirvad Cinemas	Antony Perumbavoor	0	2	9	11	LOCATION	PERSON
+			while ((l = dr.read()) != null) {
+				String pair = l[3] + "\t" + l[4];
+				if (testpairs.contains(pair)) {
+					wtest.write(l);
+				} else if (trainpairs.contains(pair)) {
+					wtrain.write(l);
+				}
+			}
+		}
+		wtrain.close();
+		wtest.close();
+	}
+
 	public static void splitPairmention2traintest(String file_uniqpair_label_cnt, String file_pairmentions,
 			boolean takeExtended, double train_neg_ratio, int traintotal, int testtotal, String output)
 			throws IOException {
@@ -1024,6 +1109,9 @@ public class S6_pipelineextractor {
 
 	}
 
+	/**How much time it cost to run oneFigure???
+	 * Start: 10:34 AM
+	 * */
 	public static void main(String[] args) throws IOException {
 		//		relabel_sql2instance_byview(Main.file_jointclause + ".gs.view", Main.file_fbsql2instances,
 		//				Main.file_relabel_sql2instance);
