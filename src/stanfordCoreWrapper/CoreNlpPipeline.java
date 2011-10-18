@@ -17,16 +17,22 @@ import edu.stanford.nlp.util.CoreMap;
 public class CoreNlpPipeline {
 	Properties props;
 	StanfordCoreNLP pipeline;
-	public CoreNlpPipeline(){
+
+	public static void main(String[] args) {
+		CoreNlpPipeline cnp = new CoreNlpPipeline();
+		
+	}
+
+	public CoreNlpPipeline() {
 		props = new Properties();
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
 		// +", parse, dcoref");
 		pipeline = new StanfordCoreNLP(props);
 	}
-	
-	public List<List<String[]>> parse(String rawText){
+
+	public List<List<String[]>> parse(String rawText) {
 		// create an empty Annotation just with the given text
-		List<List<String[]>> result = new ArrayList<List<String[]>>(); 
+		List<List<String[]>> result = new ArrayList<List<String[]>>();
 		Annotation document = new Annotation(rawText);
 
 		// run all Annotators on this text
@@ -48,18 +54,18 @@ public class CoreNlpPipeline {
 				String pos = token.get(PartOfSpeechAnnotation.class);
 				// this is the NER label of the token
 				String ne = token.get(NamedEntityTagAnnotation.class);
-				String []r = new String[]{word,pos,ne};
+				String[] r = new String[] { word, pos, ne };
 				parsed_sentence.add(r);
 				//System.out.println(word + "\t" + pos + "\t" + ne);
 			}
 			result.add(parsed_sentence);
 		}
 		return result;
-		
+
 	}
-	
-	public List<String[]> parse2lines(String rawtext){
-		List<String[]>result = new ArrayList<String[]>();
+
+	public List<String[]> parse2lines(String rawtext) {
+		List<String[]> result = new ArrayList<String[]>();
 		List<List<String[]>> parsed = parse(rawtext);
 		for (List<String[]> s : parsed) {
 			String towrite[] = new String[5];
@@ -85,7 +91,5 @@ public class CoreNlpPipeline {
 		}
 		return result;
 	}
-	
-	
-	
+
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 import javatools.administrative.D;
 import javatools.datatypes.HashCount;
 import javatools.filehandlers.DelimitedReader;
@@ -97,7 +96,7 @@ public class Evaluation {
 			for (Entry<String, Set<String>> e : pair2Rel.entrySet()) {
 				StringBuilder sb = new StringBuilder();
 				String key = e.getKey();
-				String []abkey = key.split("\t");
+				String[] abkey = key.split("\t");
 				Set<String> value = e.getValue();
 				String silver = "";
 				String gold = "";
@@ -116,12 +115,12 @@ public class Evaluation {
 					updatePR(pr, silver, 1);
 					updatePR(pr, gold, 2);
 				}
-				dw.write(abkey[0],abkey[1], sb.toString());
+				dw.write(abkey[0], abkey[1], sb.toString());
 			}
 			dw.close();
 			for (Entry<String, int[]> pr0 : pr.entrySet()) {
-				int []v = pr0.getValue();
-				dw2.write(pr0.getKey(),v[0],v[1],v[2]);
+				int[] v = pr0.getValue();
+				dw2.write(pr0.getKey(), v[0], v[1], v[2]);
 			}
 			dw2.close();
 		}
@@ -135,25 +134,40 @@ public class Evaluation {
 	}
 
 	static void averageSeed() throws IOException {
-		int up=0;
+		int up = 0;
 		int down = 0;
 		for (NellRelation nr : Main.no.nellRelationList) {
-			List<String[]>list = nr.seedInstances;
-			if(list.size()>0){
+			List<String[]> list = nr.seedInstances;
+			if (list.size() > 0) {
 				down++;
-				up+=list.size();
+				up += list.size();
 				D.p(list.size());
 			}
 		}
-		D.p(up*1.0/down);
+		D.p(up * 1.0 / down);
 
 	}
 
-	
-	
+	static void seedVsExtended() throws IOException {
+		DelimitedReader dr = new DelimitedReader( "o:/unix/projects/pardosa/s5/clzhang/ontologylink/jointmatch11/pipeline/wikidata/factpair_mentions");
+		String[] l;
+		int num_extended = 0, num_seed = 0;
+
+		while ((l = dr.read()) != null) {
+			
+				if (l[11].equals("s")) {
+					num_seed++;
+				}
+				num_extended++;
+			
+		}
+		D.p(num_seed, num_extended);
+	}
+
 	public static void main(String[] args) throws IOException {
 		//calc_groud_truth2();
 		//prOfOntologyMapping();
-		averageSeed();
+		//averageSeed();\
+		seedVsExtended();
 	}
 }

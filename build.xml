@@ -85,11 +85,7 @@
 	</target>
 
 	<target name="jar">
-		<mkdir dir="bin/jar" />
-		<jar destfile="/projects/pardosa/s1/clzhang/workspace/testsai/a.jar" basedir="bin">
-			<manifest>
-				<attribute name="Main-Class" value="freebase.typematch.Main" />
-			</manifest>
-		</jar>
+		<jar destfile="C:\Users\clzhang\workspace\a.jar" basedir="bin"></jar>
+		<copy file="C:\Users\clzhang\workspace\a.jar" tofile="o:/unix/projects/pardosa/s1/clzhang/workspace/testsai/a.jar"/>
 	</target>
 </project>
