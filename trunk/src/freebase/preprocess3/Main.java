@@ -12,7 +12,7 @@ public class Main {
 
 	static String file_fbdump = dir + "/freebase-datadump-quadruples.tsv";
 	static String file_fbdump_1_tuple = dir + "/fbdump_1_tuple";
-	static String file_fbdump_2_len4 = dir + "/fbdump_2_len4";
+	public static String file_fbdump_2_len4 = dir + "/fbdump_2_len4";
 	static String file_fbdump_3_str = dir + "/fbdump_3_str";
 	static String file_fbenglishname = dir + "/visible_name";
 
@@ -35,6 +35,7 @@ public class Main {
 	static String file_mid2wid = dir + "/mid2wid";
 	static String file_mid2notabletype = dir + "/mid2notabletype";
 	static String file_midWidTypeNameAlias = dir + "/mid_wid_type_name_alias";
+	public static String file_mid2namesfullset = dir + "/mid2namefullset";
 
 	/**Parse Wex*/
 	static String file_ibcall = dir + "/freebase-wex-2011-05-27-template_calls.tsv";

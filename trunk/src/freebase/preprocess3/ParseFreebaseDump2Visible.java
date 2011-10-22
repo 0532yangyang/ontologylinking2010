@@ -536,7 +536,7 @@ public class ParseFreebaseDump2Visible {
 			int count = 0, write = 0;
 			while ((l = dr.read()) != null) {
 				count++;
-				if(l[3].equals("/m/06x68")){
+				if (l[3].equals("/m/06x68")) {
 					D.p(l[3]);
 				}
 				if (count % 100000 == 0) {
@@ -569,26 +569,26 @@ public class ParseFreebaseDump2Visible {
 					}
 
 				});
-//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
-//				new Comparator<String[]>() {
-//
-//					@Override
-//					public int compare(String[] arg0, String[] arg1) {
-//						// TODO Auto-generated method stub
-//						return arg0[3].compareTo(arg1[3]);
-//					}
-//
-//				});
-//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
-//				new Comparator<String[]>() {
-//
-//					@Override
-//					public int compare(String[] arg0, String[] arg1) {
-//						// TODO Auto-generated method stub
-//						return arg0[2].compareTo(arg1[2]);
-//					}
-//
-//				});
+		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbmid2", Main.dir,
+		//				new Comparator<String[]>() {
+		//
+		//					@Override
+		//					public int compare(String[] arg0, String[] arg1) {
+		//						// TODO Auto-generated method stub
+		//						return arg0[3].compareTo(arg1[3]);
+		//					}
+		//
+		//				});
+		//		Sort.sort(Main.file_visible + ".filter", Main.file_visible + ".filter.sbrel", Main.dir,
+		//				new Comparator<String[]>() {
+		//
+		//					@Override
+		//					public int compare(String[] arg0, String[] arg1) {
+		//						// TODO Auto-generated method stub
+		//						return arg0[2].compareTo(arg1[2]);
+		//					}
+		//
+		//				});
 	}
 
 	public static void idlize1() throws IOException {
@@ -804,6 +804,27 @@ public class ParseFreebaseDump2Visible {
 		}
 	}
 
+	static void getFullsetMid2Name() throws IOException {
+		//load names & alias
+		DelimitedWriter dw = new DelimitedWriter(Main.file_mid2namesfullset);
+		DelimitedReader dr = new DelimitedReader(Main.file_fbdump_2_len4);
+		String[] l;
+		while ((l = dr.read()) != null) {
+			// set name
+			if (l[1].equals("/type/object/name") && l[2].equals("/lang/en")) {
+				String mid = l[0];
+				String name = l[3];
+				dw.write(mid, name, "name");
+			}
+			if (l[1].equals("/common/topic/alias") && l[2].equals("/lang/en")) {
+				String mid = l[0];
+				String name = l[3];
+				dw.write(mid, name, "alias");
+			}
+		}
+		dw.close();
+	}
+
 	public static void main(String[] args) throws IOException {
 		//split();
 		//removeHiddenFromFbdump_3_str();
@@ -815,9 +836,10 @@ public class ParseFreebaseDump2Visible {
 		//getVisible4();
 		//merge();
 		//filter();
-		idlize1();
+		//idlize1();
 		//get_notable_type();
 		//getMidWidNames();
+		getFullsetMid2Name();
 
 	}
 }
