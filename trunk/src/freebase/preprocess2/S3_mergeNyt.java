@@ -41,10 +41,11 @@ public class S3_mergeNyt {
 		//		int numChunks = 100;
 		previousLargestId = new int[Main.datas.length];
 		getPreviousLargetsId();
-		mergeAlignID(".tokens");
-		mergeAlignID(".pos");
-		mergeAlignID(".deps");
-		mergeNer();
+		//		mergeAlignID(".tokens");
+		//		mergeAlignID(".pos");
+		//		mergeAlignID(".deps");
+		mergeAlignID(".noids");
+		//mergeNer();
 	}
 
 	private static void getPreviousLargetsId() throws IOException {

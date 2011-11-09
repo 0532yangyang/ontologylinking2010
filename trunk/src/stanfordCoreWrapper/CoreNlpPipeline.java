@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javatools.administrative.D;
+
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
@@ -20,7 +22,7 @@ public class CoreNlpPipeline {
 
 	public static void main(String[] args) {
 		CoreNlpPipeline cnp = new CoreNlpPipeline();
-		
+		D.p(cnp.parse2lines("John saw Mary"));
 	}
 
 	public CoreNlpPipeline() {

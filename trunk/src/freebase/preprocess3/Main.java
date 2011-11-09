@@ -34,6 +34,8 @@ public class Main {
 
 	static String file_mid2wid = dir + "/mid2wid";
 	static String file_mid2notabletype = dir + "/mid2notabletype";
+	static String file_typeInStr2typeInID = dir+"/typeInStr2typeInID";
+	static String file_mid2typeIdLst = dir+"/mid2typeIdLst";
 	static String file_midWidTypeNameAlias = dir + "/mid_wid_type_name_alias";
 	public static String file_mid2namesfullset = dir + "/mid2namefullset";
 
