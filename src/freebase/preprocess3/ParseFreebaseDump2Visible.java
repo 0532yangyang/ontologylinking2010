@@ -719,6 +719,24 @@ public class ParseFreebaseDump2Visible {
 		}
 	}
 
+//	public static void get_notable_type_idlist() throws IOException {
+//		HashMap<String, Integer> typenamemapping = new HashMap<String, Integer>();
+//		DelimitedReader dr = new DelimitedReader(Main.file_mid2notabletype);
+//		String[] l;
+//		while ((l = dr.read()) != null) {
+//			String typeInStr = l[1];
+//			if (!typenamemapping.containsKey(typeInStr)) {
+//				typenamemapping.put(typeInStr, typenamemapping.size() + 1);
+//			}
+//			
+//		}
+//		dr.close();
+//		//write the mapping
+//		{
+//			///
+//		}
+//	}
+
 	static void getMidWidNames() throws IOException {
 		//mid, wid, notabletype, name, alias
 		HashMap<String, String[]> mid2other = new HashMap<String, String[]>();
@@ -839,7 +857,7 @@ public class ParseFreebaseDump2Visible {
 		//idlize1();
 		//get_notable_type();
 		//getMidWidNames();
-		getFullsetMid2Name();
+		//getFullsetMid2Name();
 
 	}
 }

@@ -2,6 +2,7 @@ package faust.subclass;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,22 +11,52 @@ import java.util.Set;
 import javatools.administrative.D;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.webapi.BingApi;
 
-public class GetCTO {
-	public static void main(String[] args) throws IOException {
+public class ZZZGetCTO {
+	public static void main_new(String[] args) throws IOException {
+		D.p((new Date()));
+		cto(Main.dir + "/cto");
+		D.p((new Date()));
+	}
+
+	public static void main(String[] args) throws IOException, InterruptedException {
 		String file_raw = Main.dir + "/cto_raw";
 		String file_pair_in_mid = Main.dir + "/cto_midpair";
 		String file_pair_in_mid_name = Main.dir + "/cto_midnamepair";
 		String file_heuristicmatchpairswiki = Main.dir + "/cto_heursticmatchpairs_wiki";
 		String file_heuristicmatchpairsnyt = Main.dir + "/cto_heursticmatchpairs_nyt";
+		String file_heuristicmatchpairsbing = Main.dir+"/cto_heursticmatchpairs_bing";
 		String subdir_wiki = Main.dir + "/wikisentence";
 		String subdir_nyt = Main.dir + "/nytsentence";
 		//		step1GrabVisible("/people/person/employment_history|/business/employment_tenure/title", "/m/02211by", file_raw);
 		//		step2GrabABPair(file_raw, "/people/person/employment_history|/business/employment_tenure/company",
 		//				file_pair_in_mid);
-		//step3AssignName4AB(file_pair_in_mid, file_pair_in_mid_name);
-		//step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_wiki_sentence, file_heuristicmatchpairswiki);
-		//step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_nyt_sentence, file_heuristicmatchpairsnyt);
+		//		step3AssignName4AB(file_pair_in_mid, file_pair_in_mid_name);
+//		step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_wiki_sentence, file_heuristicmatchpairswiki);
+//		step5SubsetSentenceTokenDepPos(file_heuristicmatchpairswiki, Main.file_wiki_sentence, subdir_wiki);
+		step6getBingMatch("cto", file_pair_in_mid_name, file_heuristicmatchpairsbing);
+		//		step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_nyt_sentence, file_heuristicmatchpairsnyt);
+		//		step5SubsetSentenceTokenDepPos(file_heuristicmatchpairsnyt, Main.file_nyt_sentence, subdir_nyt);
+
+	}
+
+	public static void cto(String pdir) throws IOException {
+		(new File(pdir)).mkdir();
+		String file_raw = pdir + "/raw";
+		String file_pair_in_mid = pdir + "/midpair";
+		String file_pair_in_mid_name = pdir + "/midnamepair";
+		String file_heuristicmatchpairswiki = pdir + "/heursticmatchpairs_wiki";
+		String file_heuristicmatchpairsnyt = pdir + "/heursticmatchpairs_nyt";
+		String subdir_wiki = pdir + "/wikisentence";
+		String subdir_nyt = pdir + "/nytsentence";
+		step1GrabVisible("/people/person/employment_history|/business/employment_tenure/title", "/m/02211by", file_raw);
+		step2GrabABPair(file_raw, "/people/person/employment_history|/business/employment_tenure/company",
+				file_pair_in_mid);
+		step3AssignName4AB(file_pair_in_mid, file_pair_in_mid_name);
+		step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_wiki_sentence, file_heuristicmatchpairswiki);
+		step5SubsetSentenceTokenDepPos(file_heuristicmatchpairswiki, Main.file_wiki_sentence, subdir_wiki);
+		step4HeuristicMatch("cto", file_pair_in_mid_name, Main.file_nyt_sentence, file_heuristicmatchpairsnyt);
 		step5SubsetSentenceTokenDepPos(file_heuristicmatchpairsnyt, Main.file_nyt_sentence, subdir_nyt);
 	}
 
@@ -217,6 +248,28 @@ public class GetCTO {
 			if (sentenceIdSet.contains(sentenceId)) {
 				dw.write(l);
 			}
+		}
+		dw.close();
+	}
+
+	public static void step6getBingMatch(String rel, String file_pair_in_mid_name, String file_heuristicmatch_bing)
+			throws IOException, InterruptedException {
+		DelimitedReader dr = new DelimitedReader(file_pair_in_mid_name);
+		DelimitedWriter dw = new DelimitedWriter(file_heuristicmatch_bing);
+		String[] l;
+		while ((l = dr.read()) != null) {
+			String query = "\"" + l[2] + "\" \"" + l[3] + "\"";
+			List<String[]> res = BingApi.getResult(query);
+			for (String[] r : res) {
+				String[] w = new String[r.length + 3];
+				w[0] = rel;
+				w[1] = l[2];
+				w[2] = l[3];
+				System.arraycopy(r, 0, w, 3, r.length);
+				dw.write(w);
+			}
+			dw.flush();
+			Thread.sleep(1000);
 		}
 		dw.close();
 	}

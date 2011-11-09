@@ -266,8 +266,8 @@ public class MaltiDep {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String inputFile = "/projects/pardosa/data01/clzhang/tmp/wp/wex_stanfordtext.part" + args[0];
-		//getDep(inputFile, 2);
+		String inputFile = "/projects/pardosa/data14/clzhang/MaltiDep/a";
+		getDep(inputFile, 0);
 	}
 
 	public static void main2(String[] args) throws IOException {

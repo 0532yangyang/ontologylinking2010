@@ -34,7 +34,7 @@ public class DelimitedEscape {
 				}
 				else
 				{
-					System.out.println("error unknown special char : " + c);					
+					//System.out.println("error unknown special char : " + c);					
 				}
 				state = State.NORMAL;
 			}

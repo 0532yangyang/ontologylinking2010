@@ -118,7 +118,7 @@ public class DelimitedReader {
 		List<String[]> block = new ArrayList<String[]>();
 		block.add(blockbuffer);
 		String[] l;
-		while ((l = this.read()) != null && l[key].equals(block.get(0)[key])) {
+		while ((l = this.read()) != null && l.length>key && l[key].equals(block.get(0)[key])) {
 			block.add(l);
 		}
 		blockbuffer = l;
