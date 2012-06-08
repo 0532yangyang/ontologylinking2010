@@ -170,7 +170,7 @@ public class S6_pipelineextractor {
 
 		getSeedPairs(file_seedwidpairs);
 		getSectionsContainingSomeFact(file_seedwidpairs, input_relabel_instances, dir_globaldata + ".ner",
-				file_fact_pairmentions);
+						file_fact_pairmentions);
 		getSectionStuff(file_fact_pairmentions, dir_globaldata, file_localsentences);
 		createAllPairToConsider(file_localsentences + ".ner", file_fact_pairmentions, file_pairmentions);
 		getUniqParis2CountLabel(file_pairmentions, file_uniqpair_label_cnt);
@@ -181,19 +181,19 @@ public class S6_pipelineextractor {
 			String traintestpairmention = expdir + "/pairmention";
 			String trainpb = expdir + "/trainpb";
 			String testpb = expdir + "/testpb";
-			/** test this function with fake one
+			/** test this function with fake one*/
 			splitPairmention2traintest(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
-					traintestpairmention);*/
-			splitPairmention2traintest_fake(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
-					traintestpairmention);
+								traintestpairmention);
+			//splitPairmention2traintest_fake(file_uniqpair_label_cnt, file_pairmentions, true, 0.9, 200000, 200000,
+			//		traintestpairmention);
 			relabelTestByGoldMatching(input_gold_instances, traintestpairmention + ".test", traintestpairmention
-					+ ".goldtest");
+								+ ".goldtest");
 			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
 			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
 			//			PbReader.analyzePbData(file_trainraw + ".pb");
 			//			PbReader.analyzePbData(file_testraw + ".pb");
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
+			//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			//			rew.learningThenTesting();
 		}
 		{
 			/**test on base line*/
@@ -208,8 +208,8 @@ public class S6_pipelineextractor {
 					+ ".goldtest");
 			createpb(file_localsentences, traintestpairmention + ".train", expdir, trainpb);
 			createpb(file_localsentences, traintestpairmention + ".goldtest", expdir, testpb);
-			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
-			rew.learningThenTesting();
+			//			RphExtractorWrapper rew = new RphExtractorWrapper(trainpb + ".pb", testpb + ".pb", expdir);
+			//			rew.learningThenTesting();
 		}
 	}
 
@@ -1111,16 +1111,19 @@ public class S6_pipelineextractor {
 
 	/**How much time it cost to run oneFigure???
 	 * Start: 10:34 AM
+	 * java -Xmx10g -cp "ontosmooth
 	 * */
 	public static void main(String[] args) throws IOException {
 		//		relabel_sql2instance_byview(Main.file_jointclause + ".gs.view", Main.file_fbsql2instances,
-		//				Main.file_relabel_sql2instance);
+		//						Main.file_relabel_sql2instance);
 		//		relabel_sql2instance_byview(Main.file_goldview, Main.file_fbsql2instances, Main.file_gold_sql2instance);
-		//relabel_sql2instance_byview(Main.file_naiveview, Main.file_fbsql2instances, Main.file_naive_sql2instance);
-		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
-				Main.file_gold_sql2instance, "wikidata");
-		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
-				Main.file_gold_sql2instance, "nytdata");
+		//		relabel_sql2instance_byview(Main.file_naiveview, Main.file_fbsql2instances, Main.file_naive_sql2instance);
+		//		oneFigure(Main.dirwikidump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
+		//				Main.file_gold_sql2instance, "wikidata");
+		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_gold_sql2instance,
+				Main.file_gold_sql2instance, "nytdatagold");
+//		oneFigure(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline", Main.file_relabel_sql2instance,
+//				Main.file_gold_sql2instance, "nytdata");
 		//		oneFigureNaiveTestOnSameTest(Main.dirwikidump + "/sentences", Main.dir + "/pipeline_naive", Main.file_naive_sql2instance,
 		//				Main.file_gold_sql2instance, "wikidata");
 		//		oneFigureNaiveTestOnSameTest(Main.dir_nytdump + "/sentences", Main.dir + "/pipeline_naive", Main.file_naive_sql2instance,

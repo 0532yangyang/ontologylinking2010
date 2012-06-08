@@ -25,8 +25,16 @@ import org.apache.lucene.util.Version;
 import multir.util.delimited.Sort;
 
 import javatools.administrative.D;
+import javatools.filehandlers.DR;
+import javatools.filehandlers.DW;
 import javatools.filehandlers.DelimitedReader;
 import javatools.filehandlers.DelimitedWriter;
+import javatools.filehandlers.MergeRead;
+import javatools.filehandlers.MergeReadRes;
+import javatools.filehandlers.MergeReadResStr;
+import javatools.filehandlers.MergeReadStr;
+import javatools.mydb.StringTable;
+import javatools.string.StringUtil;
 import javatools.webapi.LuceneSearch;
 
 public class ParseFreebaseDump2Visible {
@@ -719,23 +727,52 @@ public class ParseFreebaseDump2Visible {
 		}
 	}
 
-//	public static void get_notable_type_idlist() throws IOException {
-//		HashMap<String, Integer> typenamemapping = new HashMap<String, Integer>();
-//		DelimitedReader dr = new DelimitedReader(Main.file_mid2notabletype);
-//		String[] l;
-//		while ((l = dr.read()) != null) {
-//			String typeInStr = l[1];
-//			if (!typenamemapping.containsKey(typeInStr)) {
-//				typenamemapping.put(typeInStr, typenamemapping.size() + 1);
-//			}
-//			
-//		}
-//		dr.close();
-//		//write the mapping
-//		{
-//			///
-//		}
-//	}
+	public static void get_notable_type_idlist() throws IOException {
+		StringTable.strstr2svmlight(Main.file_mid2notabletype, Main.file_mid2typeIdLst, Main.file_typeInStr2typeInID,
+				"/projects/pardosa/data14/clzhang/tmp", "/projects/pardosa/data15/clzhang/tmp");
+	}
+
+	public static void get_notable_type_plus_jenny(String input_notable,
+			String input_full,
+			String output,
+			String tmpDir) throws IOException {
+		{
+			DW dw = new DW(output);
+			{
+				DR dr = new DR(input_notable);
+				String[] l;
+				while ((l = dr.read()) != null) {
+					dw.write(l);
+				}
+				dr.close();
+			}
+			{
+				//for full type, only consider /location/location, /people/person,/organization/organization
+				HashSet<String> jennys = new HashSet<String>();
+				jennys.add("/location/location");
+				jennys.add("/people/person");
+				jennys.add("/organization/organization");
+				DR dr = new DR(input_full);
+				String[] l;
+				while ((l = dr.read()) != null) {
+					if (jennys.contains(l[1])) {
+						dw.write(l);
+					}
+				}
+				dr.close();
+			}
+			dw.close();
+		}
+		{
+			Sort.sort(output, output + ".sbmid", tmpDir, new Comparator<String[]>() {
+
+				@Override
+				public int compare(String[] arg0, String[] arg1) {
+					return arg0[0].compareTo(arg1[0]);
+				}
+			});
+		}
+	}
 
 	static void getMidWidNames() throws IOException {
 		//mid, wid, notabletype, name, alias
@@ -843,7 +880,157 @@ public class ParseFreebaseDump2Visible {
 		dw.close();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void visibleSplitByRelationName_step1(String file_visible) throws IOException {
+		//idlize visible
+		DR dr = new DR(file_visible);
+		DW dw1 = new DW(file_visible + ".length1");
+		DW dw = new DW(file_visible + ".tmp1");
+
+		HashMap<String, Integer> relInStr2relid = new HashMap<String, Integer>();
+		HashMap<String, Integer> midInStr2mmid = new HashMap<String, Integer>();
+		String[] l;
+		int c = 0;
+		while ((l = dr.read()) != null) {
+			if (++c % 1000000 == 0) {
+				D.p("line number", c);
+				//break;
+			}
+			String mid1 = l[1];
+			String relInStr = l[2];
+			String arg2 = l[3];
+			if (arg2.startsWith("/m/")) {
+				String mid2 = arg2;
+				int rid = StringTable.mapKey2ID(relInStr2relid, relInStr);
+				int mmid1 = StringTable.mapKey2ID(midInStr2mmid, mid1);
+				int mmid2 = StringTable.mapKey2ID(midInStr2mmid, mid2);
+				dw.write(mmid1, mmid2, rid);
+			} else {
+				dw1.write(mid1, relInStr, arg2);
+			}
+		}
+		dr.close();
+		dw1.close();
+		dw.close();
+		{
+			DW dwmapping = new DW(file_visible + ".relmap");
+			List<String[]> table_relInStr2relInId = new ArrayList<String[]>();
+			for (Entry<String, Integer> e : relInStr2relid.entrySet()) {
+				table_relInStr2relInId.add(new String[] { e.getKey(), e.getValue() + "" });
+				//dwmapping.write(e.getKey(), e.getValue());
+			}
+			StringTable.sortByColumn(table_relInStr2relInId, new int[] { 0 });
+			for (String[] t : table_relInStr2relInId)
+				dwmapping.write(t);
+			dwmapping.close();
+		}
+		{
+			DW dwmapping = new DW(file_visible + ".midmap");
+			List<String[]> table_relInStr2relInId = new ArrayList<String[]>();
+			for (Entry<String, Integer> e : midInStr2mmid.entrySet()) {
+				table_relInStr2relInId.add(new String[] { e.getKey(), e.getValue() + "" });
+				//dwmapping.write(e.getKey(), e.getValue());
+			}
+			StringTable.sortByColumn(table_relInStr2relInId, new int[] { 0 });
+			for (String[] t : table_relInStr2relInId)
+				dwmapping.write(t);
+			dwmapping.close();
+		}
+
+	}
+
+	public static void createArgRelKey(String input, String output, int key) throws Exception {
+		DR dr = new DR(input);
+		DW dw = new DW(output);
+		String[] l;
+		while ((l = dr.read()) != null) {
+			int other = 1 - key;
+			dw.write(l[key] + ";" + l[2], l[other]);
+		}
+		dr.close();
+		dw.close();
+	}
+
+	/**A large block will kill join*/
+	public static void filterOutLargeBlock(String input, String output, int arg1or2, int theta) throws Exception {
+		D.p("filterOutLargeBlock");
+		DR dr = new DR(input);
+		DW dw = new DW(output);
+		List<String[]> b;
+		while ((b = dr.readBlocklimited(new int[] { arg1or2, 2 }, theta)) != null) {
+			if (b.size() < theta - 1) {
+				for (String[] l : b) {
+					dw.write(l);
+				}
+			}
+		}
+		dw.close();
+	}
+
+	public static void visibleJoin(String file_arg1, String file_arg2, String output) throws Exception {
+		MergeRead mr = new MergeRead(file_arg1, file_arg2, 0, 1);
+		MergeReadRes mrrs = null;
+		DW dw = new DW(output);
+		long all = 0;
+		int num_middle = 0;
+		D.p("visible join");
+		while ((mrrs = mr.read()) != null) {
+			List<String[]> a1 = mrrs.line1_list;
+			List<String[]> a2 = mrrs.line2_list;
+			//if(a1.size()*a2.size()>100)continue;
+			for (String[] l1 : a1) {
+				for (String[] l2 : a2) {
+					int arg1 = Integer.parseInt(l2[0]);
+					int arg2 = Integer.parseInt(l1[0]);
+					int arg3 = Integer.parseInt(l1[1]);
+					if (arg2 == 2694818 /*&& arg2 == 12721753*/) {
+						D.p("hello");
+					}
+					String r = l2[2] + "," + l1[2];
+					if (arg1 == arg2 || arg2 == arg3 || arg1 == arg3) {
+						continue;
+					}
+					dw.write(arg1, arg3, r, arg2);
+					all++;
+				}
+			}
+			num_middle++;
+			if (num_middle % 1000 == 0) {
+				D.p("total join pathes", all);
+				D.p("number of join operation", num_middle);
+				//break;
+			}
+		}
+		dw.close();
+
+	}
+
+	/**Join visible sort by arg1/ visible sort by arg2; 
+	 * try to avoid join explosion
+	 * INPUT: theta: ({e_i}, e_0)*(e_0, {e_j}) |{e_i}|>theta, or |{e_j}|>theta, give up join
+	 * bothsizethresh: 
+	 * */
+	public static void visibleJoin2(String file_arg1, String file_arg2, int theta, int bothsidethresh) throws Exception {
+		MergeReadStr mr = new MergeReadStr(file_arg1, file_arg2, 0, 1);
+		MergeReadResStr mrrs = null;
+		long all = 0;
+		int num_middle = 0;
+		D.p("visible join");
+		while ((mrrs = mr.read()) != null) {
+			List<String[]> a1 = mrrs.line1_list;
+			List<String[]> a2 = mrrs.line2_list;
+			if (a1.size() > theta || a2.size() > theta || a1.size() * a2.size() > bothsidethresh) {
+				continue;
+			}
+			num_middle++;
+			all += a1.size() * a2.size();
+			if (num_middle % 1000 == 0) {
+				D.p("total join pathes", all);
+				D.p("number of join operation", num_middle);
+			}
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
 		//split();
 		//removeHiddenFromFbdump_3_str();
 		//sort();
@@ -858,6 +1045,23 @@ public class ParseFreebaseDump2Visible {
 		//get_notable_type();
 		//getMidWidNames();
 		//getFullsetMid2Name();
+		if (args[0].equals("-vs1")) {
+			visibleSplitByRelationName_step1(args[1]);
+		}
+		/**sort uniq*/
+		if (args[0].equals("-vs2")) {
+			createArgRelKey(args[1], args[2], Integer.parseInt(args[3]));
+		}
+		if (args[0].equals("-filter")) {
+			filterOutLargeBlock(args[1], args[2], Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+		}
+		if (args[0].equals("-join")) {
+			visibleJoin(args[1], args[2], args[3]);
+		}
+		if (args[0].equals("-get_notable_type_plus_jenny")) {
+			get_notable_type_plus_jenny(args[1], args[2], args[3],args[4]);
+		}
 
+		//visibleSplitByRelationName();
 	}
 }
